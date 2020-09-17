@@ -1,14 +1,19 @@
 package com.b14;
 
+import com.b14.model.ModelManager;
 
-import java.rmi.server.ExportException;
+/*
+ *  TODO: there is the issue that sometimes nodes can overlap. This causes a calculation of the unit vector which results
+ *          in a 0-division, which gives us NaN. That will cause it to appear that nodes disappear to the top-left corner.
+ */
 
 public class Main {
-    static final String VERSION = "Version 0.1";
+
+    public static final String VERSION = "Version 0.5";
 
     public static void main(String[] args) {
-        Network n = new Network(25, 5);
-        n.simulateSpread(new Message(0.0f, 0.5f));
+        ModelManager manager = new ModelManager();
+        manager.runSimulation();
 
     }
 }

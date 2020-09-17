@@ -1,7 +1,10 @@
-package com.b14;
+package com.b14.model;
+
+/**
+ *  This message is what is being shared between agents
+ */
 
 public class Message {
-
     private float bias;
     private float informationQuality;
 
@@ -15,8 +18,6 @@ public class Message {
     }
 
     public float getInformationQuality() {
-        return  informationQuality;
+        return informationQuality;
     }
-
-
 }
