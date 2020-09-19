@@ -9,53 +9,28 @@ import java.util.Random;
  *  Functionality for the entire network is stored here.
  */
 
-public class GraphModel {
+public abstract class GraphModel {
 
-    private int nextFreeID;
+    protected int nextFreeID;
 
-    ArrayList<Node> nodes;
+    ArrayList<Node> nodes; 
     private final Random random = new Random(0);
-
-    private ArrayList<Node> toBeUpdated;
 
     public GraphModel() {
         nodes = new ArrayList<>();
-        toBeUpdated = new ArrayList<>();
         nextFreeID = 0;
     }
 
     /**
-     * Create a network of random nodes and connects them
-     * @param numNodes how many nodes to start with
+     * Start simulation
      */
-    public void startRandom(int numNodes) {
-        createNodes(numNodes);
-        connectProportionate();
-        createLoops();
-
-        nodeSpacingSetup();
-    }
-
-    /**
-     * Creates a set of nodes
-     * @param numNodes how many nodes to create
-     */
-
-    private void createNodes(int numNodes) {
-        assert(numNodes > 2) : "Too few nodes defined in startRandom";
-        nextFreeID = 0;
-        nodes.clear();
-
-        for (int i = 0; i < numNodes; i++) {
-            nodes.add(new Node(nextFreeID++));
-        }
-    }
+    public abstract void startRandom(int numNodes);
 
     /**
      * Connects the nodes to each other in a proportionate fashion, where nodes with more connections
      * are more likely to receive new connections.
      */
-    private void connectProportionate() {
+    protected void connectProportionate() {
         int numNodes = nodes.size();
 
         ArrayList<Node> unassigned = new ArrayList<>();
@@ -95,7 +70,7 @@ public class GraphModel {
     /**
      * Finds nodes with 1 neighbour (dead ends) and connects them together
      */
-    private void createLoops() {
+    protected void createLoops() {
         ArrayList<Node> onlyOneConnection = new ArrayList<>();
 
         for (Node n : nodes) {
@@ -120,83 +95,33 @@ public class GraphModel {
     }
 
     /**
-     * Starts the spread simulation with an initial message
-     * @param message the message to be spread throughout the network
-     */
-    public void initSimulateSpread(Message message) {
-        toBeUpdated .clear();
-
-        for (Node n : nodes) {
-            n.reset();
-        }
-
-        //TODO: Allow for specification of this number
-        int numInitialSpreaders = 5;
-
-        ArrayList<Node> initialSpreaders = new ArrayList<>();
-
-        while (numInitialSpreaders-- > 0) {
-            Node n = null;
-            do {
-                n = nodes.get(random.nextInt(nodes.size()));
-            } while (initialSpreaders.contains(n));
-            initialSpreaders.add(n);
-        }
-
-        for (Node n : initialSpreaders) {
-            ArrayList<Node> recipients = n.broadcastIntoNetwork(message);
-            if (recipients != null) {
-                toBeUpdated.addAll(recipients);
-            }
-        }
-    }
-
-    /**
-     *  Performs 1 spreading step, assuming the spread has been initialized
-     */
-    public boolean simulateSpreadStep() {
-
-        ArrayList<Node> nextToBeUpdated = new ArrayList<>();
-
-        for (Node n : toBeUpdated) {
-            ArrayList<Node> recipients = n.shareMessage();
-
-            if (recipients != null) {
-                nextToBeUpdated.addAll(recipients);
-            }
-        }
-
-        toBeUpdated = new ArrayList<>(nextToBeUpdated);
-
-        return toBeUpdated.size() > 0;
-    }
-
-    /**
      * Performs the pruning action on each node
      */
-    public void pruneDissidents() {
-        for (Node n : nodes) {
-            n.pruneDissidents();
-        }
-    }
+    public abstract void pruneDissidents();
 
     /**
      * Performs the fraternize action on each node
      */
-    public void fraternize() {
-        for (Node n : nodes) {
-            n.fraternize();
-        }
-    }
+    public abstract void fraternize();
 
+    /**
+     * Perform initial first step (what happens differs for each model)
+     */
+    public abstract void initSimulateSpread(Message Message);
 
+    /**
+     * Perform additional steps.
+     */
+    public abstract boolean simulateSpreadStep();
+
+    
     /**
      * Adds a node to the node at index idx
      * @param idx the idx of the node to which we append
      */
     public void addNodeAt(int idx) {
         Node old = nodes.get(idx);
-        Node newNode = new Node(nextFreeID++);
+        NodeOrig newNode = new NodeOrig(nextFreeID++);
         nodes.add(newNode);
 
         old.addNeighbour(newNode);

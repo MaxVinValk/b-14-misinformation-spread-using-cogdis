@@ -12,7 +12,7 @@ public class Main {
     public static final String VERSION = "Version 0.5";
 
     public static void main(String[] args) {
-        ModelManager manager = new ModelManager();
+        ModelManager manager = new ModelManager(2); // change this to 1 to get the original version!
         manager.runSimulation();
 
     }

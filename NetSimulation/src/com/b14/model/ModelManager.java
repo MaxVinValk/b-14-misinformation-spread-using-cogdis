@@ -28,10 +28,21 @@ public class ModelManager {
      * Sets up all necessary elements for running the simulation, including menus, windows, and the model itself
      */
 
-    public ModelManager() {
-        model = new GraphModel();
+    public ModelManager(int m) {
+        switch (m) {
+            case 1:
+                model = new GraphModelOrig();
+                ((GraphModelOrig) model).startRandom(50);
+                break;
+        
+            default:
+                model = new GraphModelNew();
+                ((GraphModelNew) model).startRandom(50);
+                break;
+        }
+        
 
-        model.startRandom(50);
+
 
         Dimension startingWindowSize = new Dimension(START_WIDTH, START_HEIGHT);
 
