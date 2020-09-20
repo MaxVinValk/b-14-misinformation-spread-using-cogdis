@@ -1,7 +1,6 @@
 package com.b14.controller;
 
 import com.b14.model.GraphModel;
-import com.b14.model.Message;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;

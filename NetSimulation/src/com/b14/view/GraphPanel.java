@@ -108,8 +108,10 @@ public class GraphPanel extends JPanel {
 
             for (Node n2 : n.getNeighbours()) {
 
-                if (n.getHasShared() && n2.getHasShared()) {
+                if ((n.getBelief() > 0.5) && (n2.getBelief() > 0.5)) {
                     g.setColor(Color.RED);
+                } else if ((n.getBelief() < 0.5) && (n2.getBelief() < 0.5)) {
+                    g.setColor(Color.BLUE);
                 } else {
                     g.setColor(Color.BLACK);
                 }
@@ -139,7 +141,21 @@ public class GraphPanel extends JPanel {
 
             int size = (int)(30 * camera.getScale());
 
-            g.setColor((n.getHasShared() ? Color.RED : Color.BLUE));
+            // Coloring based on dissonance and belief.
+            float[] dissonance = n.getDissonance();
+            if (n.getBelief() > 0.5) {
+                if(dissonance[0] > dissonance[1]) {
+                    g.setColor(Color.PINK);
+                } else {
+                    g.setColor(Color.RED);
+                }
+            } else {
+                if(dissonance[0] > dissonance[1]) {
+                    g.setColor(Color.GREEN);
+                } else {
+                    g.setColor(Color.BLUE);
+                }
+            }
 
             g.fillOval((int)(screenX - size/2), (int)(screenY - size / 2), size, size);
             g.setColor(Color.WHITE);

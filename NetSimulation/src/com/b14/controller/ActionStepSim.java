@@ -21,5 +21,6 @@ public class ActionStepSim extends AbstractAction {
     @Override
     public void actionPerformed(ActionEvent e) {
         model.simulateSpreadStep();
+        model.fraternize();
     }
 }

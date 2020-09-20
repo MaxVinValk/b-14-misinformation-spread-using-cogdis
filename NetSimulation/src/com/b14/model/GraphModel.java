@@ -9,22 +9,45 @@ import java.util.Random;
  *  Functionality for the entire network is stored here.
  */
 
-public abstract class GraphModel {
+public class GraphModel {
 
-    protected int nextFreeID;
-
-    ArrayList<Node> nodes; 
+    private int nextFreeID;
+    private ArrayList<Node> nodes; 
+    private ArrayList<Node> recommended;
     private final Random random = new Random(0);
 
     public GraphModel() {
         nodes = new ArrayList<>();
+        recommended = new ArrayList<>();
         nextFreeID = 0;
     }
 
     /**
-     * Start simulation
+     *  Setup a simple simulation.
      */
-    public abstract void startRandom(int numNodes);
+
+    public void startRandom(int numNodes) {
+        createNodes(numNodes);
+        connectProportionate();
+        createLoops();
+
+        nodeSpacingSetup();
+    }
+
+    /**
+     *  Create Nodes.
+     * @param numNodes Number of nodes to be created for the network.
+     */
+
+    public void createNodes(int numNodes) {
+        assert(numNodes > 5) : "Too few nodes defined in startRandom";
+        nextFreeID = 0;
+        nodes.clear();
+
+        for (int i = 0; i < numNodes; i++) {
+            nodes.add(new Node(nextFreeID++));
+        }
+    }
 
     /**
      * Connects the nodes to each other in a proportionate fashion, where nodes with more connections
@@ -95,33 +118,70 @@ public abstract class GraphModel {
     }
 
     /**
-     * Performs the pruning action on each node
+     * Recommendation set selection algorithm.
+     * @param agent the agent for which to create recommend set
+     * @param size the size of the recommendation set
+     * @param alg the algorithm by which to select nodes.
      */
-    public abstract void pruneDissidents();
+
+    void recommend(Node agent, int size, String alg) {
+        recommended.clear();
+        switch (alg) {
+            case "random":
+                while (recommended.size() < size) {
+                    Node n = nodes.get(random.nextInt(nodes.size()));
+                    if (n != agent) {
+                        recommended.add(n);
+                    }
+                }
+                break;
+        
+            default:
+                System.out.println("No Algorithm selected.");
+                break;
+        }
+    }
+
+    /**
+     *  Performs 1 spreading step for entire network.
+     */
+    public void simulateSpreadStep() {
+        for (Node n : nodes) {
+            recommend(n, 5, "random");
+            n.receiveMessages(recommended);
+            n.updateDissonance(-0.1f); // decay over time.
+        }
+    }
+
+    /**
+     *  Updates dissonance level for each agent.
+     *  @param dissonance The update in dissonance that will be applied to each agent.
+     */
+    public void updateDissonances(float dissonance) {
+        for (Node n : nodes) {
+            n.updateDissonance(dissonance);
+        }
+    }
 
     /**
      * Performs the fraternize action on each node
      */
-    public abstract void fraternize();
+    public void fraternize() {
+        for (Node n : nodes) {
+            if(n.getNeighbours().size() < n.getConnectionLimit()) {
+                n.fraternize();
+            }
+            
+        }
+    }
 
-    /**
-     * Perform initial first step (what happens differs for each model)
-     */
-    public abstract void initSimulateSpread(Message Message);
-
-    /**
-     * Perform additional steps.
-     */
-    public abstract boolean simulateSpreadStep();
-
-    
     /**
      * Adds a node to the node at index idx
      * @param idx the idx of the node to which we append
      */
     public void addNodeAt(int idx) {
         Node old = nodes.get(idx);
-        NodeOrig newNode = new NodeOrig(nextFreeID++);
+        Node newNode = new Node(nextFreeID++);
         nodes.add(newNode);
 
         old.addNeighbour(newNode);
