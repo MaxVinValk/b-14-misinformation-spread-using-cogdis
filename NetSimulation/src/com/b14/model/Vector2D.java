@@ -69,11 +69,14 @@ public class Vector2D {
      */
     public void setToUnitVector() {
 
-        //We add minor noise to the vector if length = 0, to prevent 0 divisions. This way we get a random vector
+        //We set the vector to a random unit vector if length is 0. This is needed in the case of this vector
+        //representing a distance between two nodes on the exact same spot
+        if (getLength() == 0) {
+            setToRandomUnitVector();
+        }
 
         x = x / getLength();
         y = y / getLength();
-
     }
 
     /**
@@ -108,6 +111,11 @@ public class Vector2D {
     public void set(double x, double y) {
         this.x = x;
         this.y = y;
+    }
+
+    public void setToRandomUnitVector() {
+        x = random.nextFloat();
+        y = Math.sqrt(1 - x*x);
     }
 
     /**
