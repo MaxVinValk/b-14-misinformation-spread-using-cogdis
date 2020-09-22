@@ -82,6 +82,14 @@ public class Camera {
         return y;
     }
 
+    public int getWidth() {
+        return width;
+    }
+
+    public int getHeight() {
+        return height;
+    }
+
     public int getWidthScaled() {
         return (int)(width / scale);
     }
@@ -98,6 +106,17 @@ public class Camera {
     public void setSize(int width, int height) {
         this.width = width;
         this.height = height;
+    }
+
+
+    /**
+     * Transforms camera (screen) coordinates to world coordinates
+     * @param x x-pos on screen
+     * @param y y-pos on screen
+     * @return vector holding location in world that was clicked.
+     */
+    public Vector2D cameraToWorld(int x, int y) {
+        return new Vector2D(this.x + x/scale, this.y + y/scale);
     }
 
     public void setScale(float scale) {

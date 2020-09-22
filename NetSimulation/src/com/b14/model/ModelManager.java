@@ -44,8 +44,8 @@ public class ModelManager {
         frame.setJMenuBar(menuBar);
 
         frame.setupGraph();
-        InputController inputController = new InputController(panel, camera);
-
+        InputController inputController = new InputController(panel, camera, model);
+        panel.addInputController(inputController);
     }
 
 
