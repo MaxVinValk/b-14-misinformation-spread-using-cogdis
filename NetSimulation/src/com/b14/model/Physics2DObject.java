@@ -8,11 +8,11 @@ public class Physics2DObject {
 
     private static final double FRICTION = 0.9;
 
-    private Vector2D position;
-    private Vector2D acceleration;
-    private Vector2D velocity;
+    protected Vector2D position;
+    protected Vector2D acceleration;
+    protected Vector2D velocity;
 
-    private double mass = 1;
+    protected double mass = 1.0;
 
     public Physics2DObject() {
         position = new Vector2D(0, 0);
@@ -114,6 +114,10 @@ public class Physics2DObject {
 
     public Vector2D getAcceleration() {
         return acceleration;
+    }
+
+    public double getMass() {
+        return mass;
     }
 
 

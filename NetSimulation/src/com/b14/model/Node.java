@@ -22,6 +22,8 @@ public class Node extends Physics2DObject {
     private int connectionLimit;
     private final static Random random = new Random(0);
 
+    //Graphics
+    private float size = 30.0f;
 
 
     public Node(int id) {
@@ -135,6 +137,34 @@ public class Node extends Physics2DObject {
     }
 
     /**
+     * Returns whether or not a given position (in world coordinates) falls within a node
+     * @param x The x-coordinate of the position to check
+     * @param y The y-coordinate of the position to check
+     * @return True iff (x,y) is within the node, False otherwise
+     */
+
+    public boolean pointInNode(double x, double y) {
+
+        //First we check if it is within the bounding box surrounding the sphere
+        float radius = size / 2;
+
+        if (isInBetween(position.getX() - radius, position.getX() + radius, x) &&
+            isInBetween(position.getY() - radius, position.getY() + radius, y)) {
+
+            //More expensive check to see if it is actually located in the right position
+            if ( Math.pow(x - position.getX(), 2) + Math.pow(y - position.getY(), 2) < radius*radius) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    //utility functions
+    private boolean isInBetween(double lower, double upper, double number) {
+        return (number >= lower && number < upper);
+    }
+
+    /**
      * Getters 
      */
 
@@ -172,6 +202,10 @@ public class Node extends Physics2DObject {
 
     public int getId() {
         return id;
+    }
+
+    public float getSize() {
+        return size;
     }
 
     @Override

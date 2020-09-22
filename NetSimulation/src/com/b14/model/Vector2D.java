@@ -1,5 +1,7 @@
 package com.b14.model;
 
+import java.util.Random;
+
 /**
  * A class that has some vector functionality
  */
@@ -8,6 +10,8 @@ public class Vector2D {
 
     private double x;
     private double y;
+
+    private final static Random random = new Random(0);
 
     /**
      * Creates a vector by copying another
@@ -64,6 +68,8 @@ public class Vector2D {
      * Trims the vector down such that its length is 1.
      */
     public void setToUnitVector() {
+
+        //We add minor noise to the vector if length = 0, to prevent 0 divisions. This way we get a random vector
 
         x = x / getLength();
         y = y / getLength();

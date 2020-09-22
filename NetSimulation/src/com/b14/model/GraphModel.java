@@ -16,6 +16,23 @@ public class GraphModel {
     private ArrayList<Node> recommended;
     private final Random random = new Random(0);
 
+    /*
+        What follows are the parameters for the physics simulation
+     */
+
+    //For stable behaviour, pushRange < springLength
+    private final double PUSH_RANGE         = 90.0f;
+    private final double PUSH_CONSTANT      = 0.1f;
+
+    private final double SPRING_LENGTH      = 110.0f;
+    private final double SPRING_CONSTANT    = 0.005f;
+
+    //Gravitational pull to a point
+    private final Vector2D CENTER           = new Vector2D(512, 384);
+    private final double CENTER_FORCE       = -0.25f;
+
+
+
     public GraphModel() {
         nodes = new ArrayList<>();
         recommended = new ArrayList<>();
@@ -247,79 +264,78 @@ public class GraphModel {
      */
     public void physicsUpdate() {
 
-        //For stable behaviour, pushRange < springLength
-        double pushRange = 90.0f;
-        double pushConstant = 0.1f;
-
-        double springLength = 110.0f;
-        double springConstant = 0.005f;
-
-        Vector2D center = new Vector2D(512, 384);
-        double centerForce = -0.25f;
-
         for (int i = 0; i < nodes.size(); i++) {
-
-            Node currentNode = nodes.get(i);
-
-            // First, the force that pushes them all away from one another for the sake of spacing
-            //It is like springs, but then they only enforce a minimum distance. So they only push away
-            ArrayList<Node> tooClose = new ArrayList<>();
-
-            for (int j = 0; j < nodes.size(); j++) {
-                if (i == j) {
-                    continue;
-                }
-
-                Node otherNode = nodes.get(j);
-                if (currentNode.getDistance(otherNode) < pushRange) {
-                    tooClose.add(otherNode);
-                }
-            }
-
-            // Here we apply the forces to the nodes that are too close
-            for (Node n : tooClose) {
-                double actualDistance = currentNode.getDistance(n);
-                double pushForce = pushConstant * (pushRange - actualDistance);
-                Vector2D v = new Vector2D(n.getPosition(), currentNode.getPosition());
-                v.setToUnitVector();
-                v.multiplyWith(pushForce);
-
-                currentNode.addAcceleration(v);
-            }
-
-            //And here for spring-force enacted by neighbours
-            for (Node n : currentNode.getNeighbours()) {
-
-                double actualDistance = currentNode.getDistance(n);
-                double forceExperienced = springConstant * (springLength - actualDistance);
-
-                //Get a vector from this node pointing to the other anchor-point
-                Vector2D v = new Vector2D(n.getPosition(), currentNode.getPosition());
-
-                v.setToUnitVector();
-
-                v.multiplyWith(forceExperienced);
-
-                currentNode.addAcceleration(v);
-
-            }
-
-
+            applyPushForce(i);
+            applySpringForce(i);
         }
 
         //Remove pull and push from the first node. This causes more stable behaviour, as one node is not
-        //bouncing around.
+        //bouncing around initially.
         nodes.get(0).setAcceleration(0, 0);
 
-        for (Node n : nodes) {
+        applyGravity();
+        transferForces();
+    }
 
-            //Finally apply the central pulling force:
-            Vector2D v = new Vector2D(center, n.getPosition());
+    private void applyPushForce(int nodeIdx) {
+        Node currentNode = nodes.get(nodeIdx);
+
+        // First, the force that pushes them all away from one another for the sake of spacing
+        //It is like springs, but then they only enforce a minimum distance. So they only push away
+        ArrayList<Node> tooClose = new ArrayList<>();
+
+        for (int j = 0; j < nodes.size(); j++) {
+            if (nodeIdx == j) {
+                continue;
+            }
+
+            Node otherNode = nodes.get(j);
+            if (currentNode.getDistance(otherNode) < PUSH_RANGE) {
+                tooClose.add(otherNode);
+            }
+        }
+
+        // Here we apply the forces to the nodes that are too close
+        for (Node n : tooClose) {
+            double actualDistance = currentNode.getDistance(n);
+            double pushForce = PUSH_CONSTANT * (PUSH_RANGE - actualDistance);
+            Vector2D v = new Vector2D(n.getPosition(), currentNode.getPosition());
             v.setToUnitVector();
-            v.multiplyWith(centerForce);
+            v.multiplyWith(pushForce);
 
-            //n.addAcceleration(v);
+            currentNode.addAcceleration(v);
+        }
+    }
 
+    private void applySpringForce(int nodeIdx) {
+        Node currentNode = nodes.get(nodeIdx);
+
+        for (Node n : currentNode.getNeighbours()) {
+
+            double actualDistance = currentNode.getDistance(n);
+            double forceExperienced = SPRING_CONSTANT * (SPRING_LENGTH - actualDistance);
+
+            //Get a vector from this node pointing to the other anchor-point
+            Vector2D v = new Vector2D(n.getPosition(), currentNode.getPosition());
+
+            v.setToUnitVector();
+            v.multiplyWith(forceExperienced);
+            currentNode.addAcceleration(v);
+
+        }
+    }
+
+    private void applyGravity() {
+        for (Node n : nodes) {
+            //Finally apply the central pulling force:
+            Vector2D v = new Vector2D(CENTER, n.getPosition());
+            v.setToUnitVector();
+            v.multiplyWith(CENTER_FORCE);
+        }
+    }
+
+    private void transferForces() {
+        for (Node n : nodes) {
             n.dampen();
             n.transferForce();
         }
@@ -327,6 +343,23 @@ public class GraphModel {
 
     public ArrayList<Node> getNodes() {
         return nodes;
+    }
+
+    /**
+     * Finds the node that is on the indicated coordinates.
+     * @param x The x (world) coordinate to check
+     * @param y The y (world) coordinate to check
+     * @return The node if there is one on point (x, y), and NULL otherwise
+     */
+
+    public Node getNodeOnPoint(double x, double y) {
+        for (Node n : nodes) {
+            if (n.pointInNode(x, y)) {
+                return n;
+            }
+        }
+
+        return null;
     }
 }
 
