@@ -1,6 +1,5 @@
 package com.b14.model;
 
-import java.sql.Array;
 import java.util.ArrayList;
 import java.util.Random;
 
@@ -16,7 +15,9 @@ public class Node extends Physics2DObject {
     protected int id;
     private float belief;
     private float error;
-    private float[] dissonance = {0.0f,0.0f};
+
+    private float currentDissonance = 0.0f;
+    private float dissonanceThreshold = 0.0f;
     private ArrayList<Node> confidenceSet; // in theory only values would be possible as well.
     private int connectionLimit;
     private final static Random random = new Random(0);
@@ -29,7 +30,7 @@ public class Node extends Physics2DObject {
         belief = random.nextFloat();
         error = 0.1f + random.nextFloat()*0.5f-0.1f;
         confidenceSet = new ArrayList<>();
-        dissonance[1] = 0.5f + random.nextFloat()*1.5f-0.5f; // treshold for dissonance
+        dissonanceThreshold = 0.5f + random.nextFloat()*1.5f-0.5f;
         connectionLimit = 15;
         reset();
     }
@@ -63,8 +64,8 @@ public class Node extends Physics2DObject {
      * @param value Value by which to update the current dissonance level.
      */
 
-    public void updateDissonance(float value){
-        dissonance[0] =  dissonance[0] + value;
+    public void updateDissonance(float value) {
+        currentDissonance += value;
     }
 
     /**
@@ -76,6 +77,7 @@ public class Node extends Physics2DObject {
         ArrayList<Node> possibleConnections = neighbours;
         ArrayList<Node> prunedConnections = new ArrayList<>();
         possibleConnections.addAll(recommended);
+
         for (Node n : possibleConnections) {
 
             if(Math.abs(n.belief - belief) < error) {
@@ -83,7 +85,7 @@ public class Node extends Physics2DObject {
                 addNeighbour(n); // update if other agent was in reccomended
             } else {
                 updateDissonance(0.3f);
-                if (dissonance[0] > dissonance[1]) {
+                if (currentDissonance > dissonanceThreshold) {
                     prunedConnections.add(n);
                     
                 }
@@ -140,24 +142,44 @@ public class Node extends Physics2DObject {
         confidenceSet.clear();
     }
 
-    public int getConnectionLimit () {
+    public int getConnectionLimit() {
         return connectionLimit;
     }
 
-    public float getBelief () {
+    public float getBelief() {
         return belief;
     }
 
-    public float[] getDissonance () {
-        return dissonance;
+    public float getCurrentDissonance() {
+        return currentDissonance;
+    }
+
+    public float getDissonanceThreshold() {
+        return dissonanceThreshold;
+    }
+
+    public boolean isDissonanceOverThreshold() {
+        return (currentDissonance > dissonanceThreshold);
     }
 
     public ArrayList<Node> getNeighbours() {
         return neighbours;
     }
 
+    public ArrayList<Node> getConfidenceSet() {
+        return confidenceSet;
+    }
+
     public int getId() {
         return id;
     }
 
+    @Override
+    public String toString() {
+        return  "Node:\t\t\t"           + id                    + "\n" +
+                "Error margin:\t"       + error                 + "\n" +
+                "Current dis:\t"        + currentDissonance     + "\n" +
+                "Max. dis:\t\t"         + dissonanceThreshold   + "\n" +
+                "Num. neighbours:\t"    + neighbours.size()     + "/"  + connectionLimit + "\n";
+    }
 }

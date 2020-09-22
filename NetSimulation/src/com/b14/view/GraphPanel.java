@@ -142,15 +142,16 @@ public class GraphPanel extends JPanel {
             int size = (int)(30 * camera.getScale());
 
             // Coloring based on dissonance and belief.
-            float[] dissonance = n.getDissonance();
+            boolean experiencingDissonance = n.isDissonanceOverThreshold();
+
             if (n.getBelief() > 0.5) {
-                if(dissonance[0] > dissonance[1]) {
+                if (experiencingDissonance) {
                     g.setColor(Color.PINK);
                 } else {
                     g.setColor(Color.RED);
                 }
             } else {
-                if(dissonance[0] > dissonance[1]) {
+                if (experiencingDissonance) {
                     g.setColor(Color.GREEN);
                 } else {
                     g.setColor(Color.BLUE);
