@@ -361,5 +361,9 @@ public class GraphModel {
 
         return null;
     }
+
+    public Node getNodeOnPoint(Vector2D pos) {
+        return getNodeOnPoint(pos.getX(), pos.getY());
+    }
 }
 
