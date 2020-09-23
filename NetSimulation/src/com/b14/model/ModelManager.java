@@ -8,6 +8,7 @@ import com.b14.view.GraphPanel;
 import com.b14.view.MenuBar;
 
 import java.awt.*;
+import java.util.concurrent.locks.ReentrantLock;
 
 /**
  *  This class is responsible for managing the entire simulation
@@ -23,6 +24,7 @@ public class ModelManager {
     private final GraphPanel panel;
 
     private boolean simulatePhysics = false;
+    ReentrantLock physicsLock = new ReentrantLock();
 
     /**
      * Sets up all necessary elements for running the simulation, including menus, windows, and the model itself
@@ -59,7 +61,12 @@ public class ModelManager {
         while (runSimulation) {
 
             if (simulatePhysics) {
-                model.physicsUpdate();
+                physicsLock.lock();
+                try {
+                    model.physicsUpdate();
+                } finally {
+                    physicsLock.unlock();
+                }
             }
 
             //update panels
@@ -75,4 +82,9 @@ public class ModelManager {
     public void togglePhysics() {
         simulatePhysics = !simulatePhysics;
     }
+
+    public ReentrantLock getPhysicsLock() {
+        return physicsLock;
+    }
+
 }

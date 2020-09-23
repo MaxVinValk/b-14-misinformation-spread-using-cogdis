@@ -1,17 +1,21 @@
 package com.b14.controller;
 
 import com.b14.model.GraphModel;
+import com.b14.model.ModelManager;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
+import java.util.concurrent.locks.ReentrantLock;
 
 public class ActionInitialize extends AbstractAction {
 
     private final GraphModel model;
+    private final ModelManager manager;
 
-    public ActionInitialize(GraphModel model) {
+    public ActionInitialize(ModelManager manager, GraphModel model) {
         super("Reset model");
         this.model = model;
+        this.manager = manager;
     }
 
     @Override
@@ -32,6 +36,14 @@ public class ActionInitialize extends AbstractAction {
 
         } while (numNodes == -1);
 
-        model.startRandom(numNodes);
+        ReentrantLock physicsLock = manager.getPhysicsLock();
+
+        try {
+            physicsLock.lock();
+            model.startRandom(numNodes);
+        } finally {
+            physicsLock.unlock();
+        }
+
     }
 }
