@@ -141,6 +141,8 @@ public class GraphModel {
      * @param alg the algorithm by which to select nodes.
      */
 
+    // ToDo: distinct functions per algorithm.
+
     void recommend(Node agent, int size, String alg) {
         recommended.clear();
         switch (alg) {
@@ -149,6 +151,22 @@ public class GraphModel {
                     Node n = nodes.get(random.nextInt(nodes.size()));
                     if (n != agent) {
                         recommended.add(n);
+                    }
+                }
+                break;
+            
+            case "polarize":
+                // recommends only other agents the agent does not know that are close to the agents own belief.
+                for (Node n : nodes) {
+                    if(n == agent) {
+                        continue;
+                    }
+                    if(recommended.size() > 5) {
+                        break;
+                    }
+                    if((Math.abs(n.getBelief() - agent.getBelief()) < agent.getOpenness()) &&
+                        !agent.getNeighbours().contains(n)) {
+                            recommended.add(n);
                     }
                 }
                 break;
@@ -164,9 +182,15 @@ public class GraphModel {
      */
     public void simulateSpreadStep() {
         for (Node n : nodes) {
-            recommend(n, 5, "random");
+            recommend(n, 20, "random");
             n.receiveMessages(recommended);
-            n.updateDissonance(-0.1f); // decay over time.
+            n.updateDissonance(n.getDissonanceDecay()); // decay over time.
+        }
+        // perform fraternize on entire network AFTER all received message + dissonance update
+        for (Node n : nodes) {
+            if (n.getCanConnect()) {
+                n.fraternize();
+            }
         }
     }
 
@@ -177,18 +201,6 @@ public class GraphModel {
     public void updateDissonances(float dissonance) {
         for (Node n : nodes) {
             n.updateDissonance(dissonance);
-        }
-    }
-
-    /**
-     * Performs the fraternize action on each node
-     */
-    public void fraternize() {
-        for (Node n : nodes) {
-            if(n.getNeighbours().size() < n.getConnectionLimit()) {
-                n.fraternize();
-            }
-            
         }
     }
 
@@ -308,6 +320,10 @@ public class GraphModel {
     }
 
     private void applySpringForce(int nodeIdx) {
+        /**
+         * Current issue: Exception in thread "main" java.lang.NullPointerException:
+         * Cannot invoke "com.b14.model.Physics2DObject.getX()" because "other" is null
+         */ 
         Node currentNode = nodes.get(nodeIdx);
 
         for (Node n : currentNode.getNeighbours()) {

@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Random;
 
 
-
 /**
  *  The node in the network, aka the representation of a user
  */
@@ -13,13 +12,19 @@ public class Node extends Physics2DObject {
 
     protected ArrayList<Node> neighbours;
     protected int id;
-    private float belief;
-    private float error;
 
+    // Tuning parameters
+    private float belief; // agent's belief at current time
+    private float openness; // how far another belief can be away from your's before being rejected
     private float currentDissonance = 0.0f;
-    private float dissonanceThreshold = 0.0f;
+    private float dissonanceThreshold; // dissonance becomes unbearable, agent engages in drastic measures: pruning network
     private ArrayList<Node> confidenceSet; // in theory only values would be possible as well.
-    private int connectionLimit;
+    private float dissonanceDecay;
+    private float dissonanceDecrease; // in case of a positive interaction
+    private float dissonanceIncrease; // negative, in case of conflicting information
+    private static int connectionLimit = 50; // for now. If we want super spreaders or influencers we might want to go back to create limit for each object. 
+
+    // Sampling seed
     private final static Random random = new Random(0);
 
     //Graphics
@@ -30,23 +35,37 @@ public class Node extends Physics2DObject {
         this.id = id;
         neighbours = new ArrayList<>();
         belief = random.nextFloat();
-        error = 0.1f + random.nextFloat()*0.5f-0.1f;
+        openness = 0.1f + random.nextFloat()*0.3f-0.1f;
         confidenceSet = new ArrayList<>();
         dissonanceThreshold = 0.5f + random.nextFloat()*1.5f-0.5f;
-        connectionLimit = 15;
+        dissonanceDecay = -0.1f;
+        dissonanceDecrease = -0.1f;
+        dissonanceIncrease = 0.3f;
         reset();
     }
 
     /**
      * Adds the passed in node as neighbour, if not already labelled as such
+     * and number of existing neighbors is below the connection limit.
      * @param node The neighbour to add.
      */
 
     public void addNeighbour(Node node) {
-        if (!neighbours.contains(node)) {
+        if ((!neighbours.contains(node)) && canTwoConnect(node)) {
             neighbours.add(node);
             node.getNeighbours().add(this);
         }
+    }
+
+    /**
+     * Checks whether for both nodes the number of existing neighbours is
+     * less than the connection limit.
+     * @param node the node chosen for comparison with this instance of Node.
+     */
+
+    public boolean canTwoConnect(Node node) {
+        return ((neighbours.size() < connectionLimit) &&
+                (node.getNeighbours().size() < connectionLimit));
     }
 
     /**
@@ -68,6 +87,7 @@ public class Node extends Physics2DObject {
 
     public void updateDissonance(float value) {
         currentDissonance += value;
+        currentDissonance = currentDissonance < 0.0f ? 0.0f: currentDissonance;
     }
 
     /**
@@ -76,17 +96,17 @@ public class Node extends Physics2DObject {
     */
 
     public void receiveMessages(ArrayList<Node> recommended) {
-        ArrayList<Node> possibleConnections = neighbours;
+        ArrayList<Node> possibleConnections = new ArrayList<>(neighbours);
         ArrayList<Node> prunedConnections = new ArrayList<>();
         possibleConnections.addAll(recommended);
 
         for (Node n : possibleConnections) {
-
-            if(Math.abs(n.belief - belief) < error) {
+            if(Math.abs(n.belief - belief) < openness) {
                 confidenceSet.add(n);
                 addNeighbour(n); // update if other agent was in reccomended
+                //updateDissonance(dissonanceDecrease/2.0f); // If I here something I like, I feel better.
             } else {
-                updateDissonance(0.3f);
+                updateDissonance(dissonanceIncrease);
                 if (currentDissonance > dissonanceThreshold) {
                     prunedConnections.add(n);
                     
@@ -95,7 +115,7 @@ public class Node extends Physics2DObject {
         }
         for (Node n : prunedConnections) {
             removeNeighbour(n);
-            updateDissonance(-0.1f); // reduction strategy has minimal immediate effect (currently).
+            updateDissonance(dissonanceDecrease); // reduction strategy has minimal immediate effect (currently).
         }
         updateBelief();
     }
@@ -125,7 +145,7 @@ public class Node extends Physics2DObject {
                 if (n2 == this || n == n2) {
                     continue;
                 }
-                if(Math.abs(n2.belief - belief) < error) {
+                if(Math.abs(n2.belief - belief) < openness) {
                     possibleConnections.add(n2);
                 }
             }
@@ -208,10 +228,24 @@ public class Node extends Physics2DObject {
         return size;
     }
 
+    public boolean getCanConnect() {
+        return neighbours.size() < connectionLimit;
+    }
+
+    public float getDissonanceDecay() {
+        return dissonanceDecay;
+    }
+
+    public float getOpenness() {
+        return openness;
+    }
+
+
     @Override
     public String toString() {
         return  "Node:\t\t\t"           + id                    + "\n" +
-                "Error margin:\t"       + error                 + "\n" +
+                "Current Belief:\t"     + belief                + "\n" +
+                "Openness margin:\t"    + openness                 + "\n" +
                 "Current dis:\t"        + currentDissonance     + "\n" +
                 "Max. dis:\t\t"         + dissonanceThreshold   + "\n" +
                 "Num. neighbours:\t"    + neighbours.size()     + "/"  + connectionLimit + "\n";

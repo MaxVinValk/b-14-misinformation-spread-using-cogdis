@@ -34,9 +34,7 @@ public class ActionRunSimulationSteps extends AbstractAction {
 
         while (timesSpread-- > 0)
         {
-            model.simulateSpreadStep(); // Note: pruning is now included in each spreading step!
-            model.fraternize();
-
+            model.simulateSpreadStep(); // Note: pruning + fraternize is now included in each spreading step!
         }
     }
 }
