@@ -12,6 +12,7 @@ public class DataLogger {
 
     private final static String ROOT_FOLDER = "data_out/";
     private File currentOutput = null;
+    private boolean allowOutput = true;
 
     private GraphModel model;
 
@@ -28,6 +29,11 @@ public class DataLogger {
     }
 
     public void startNewSession() {
+
+        if (!allowOutput) {
+            return;
+        }
+
         DateFormat df = new SimpleDateFormat("MM_dd_HH:mm");
 
 
@@ -43,6 +49,10 @@ public class DataLogger {
     }
 
     public void logData(int epoch) {
+
+        if (!allowOutput) {
+            return;
+        }
 
         if (currentOutput == null) {
             System.out.println("Attempted a log WITHOUT a created log file. Data is lost!");
@@ -66,6 +76,10 @@ public class DataLogger {
             System.out.println("Could not output the data for epoch: " + epoch + "!\nData is lost!");
         }
 
+    }
+
+    public void setAllowOutput(boolean value) {
+        allowOutput = value;
     }
 
     // Utility function
