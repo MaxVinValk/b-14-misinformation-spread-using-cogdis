@@ -2,6 +2,7 @@ package com.b14.controller;
 
 import com.b14.model.GraphModel;
 import com.b14.model.ModelManager;
+import com.b14.model.DataLogger;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
@@ -11,11 +12,13 @@ public class ActionInitialize extends AbstractAction {
 
     private final GraphModel model;
     private final ModelManager manager;
+    private final DataLogger dataLogger;
 
-    public ActionInitialize(ModelManager manager, GraphModel model) {
+    public ActionInitialize(ModelManager manager, GraphModel model, DataLogger dataLogger) {
         super("Reset model");
         this.model = model;
         this.manager = manager;
+        this.dataLogger = dataLogger;
     }
 
     @Override
@@ -41,6 +44,7 @@ public class ActionInitialize extends AbstractAction {
         try {
             physicsLock.lock();
             model.startRandom(numNodes);
+            dataLogger.startNewSession();
         } finally {
             physicsLock.unlock();
         }

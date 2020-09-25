@@ -16,7 +16,7 @@ public class DataLogger {
 
     private GraphModel model;
 
-    private String headers = "epoch,nodeID,belief,disLeftToThreshold,numNeighbours,avgNeighbourBelief,numConfidants,avgConfidantBelief\n";
+    private String headers = "epoch,nodeID,belief,disLeftToThreshold,numNeighbours,avgNeighbourBelief,numConfidants,avgConfidantBelief,numberOfContacts,numberOfConflicts\n";
 
     public DataLogger(GraphModel model) {
         this.model = model;
@@ -34,7 +34,7 @@ public class DataLogger {
             return;
         }
 
-        DateFormat df = new SimpleDateFormat("MM_dd_HH:mm");
+        DateFormat df = new SimpleDateFormat("MM_dd_HH_mm");
 
 
         currentOutput = new File(ROOT_FOLDER, df.format(Calendar.getInstance().getTime()) + ".csv");
@@ -66,7 +66,7 @@ public class DataLogger {
                 String result = epoch + "," + n.getId() + "," + n.getBelief() + "," +
                         (n.getDissonanceThreshold() - n.getCurrentDissonance()) + "," + n.getNeighbours().size() + "," +
                         getAvgBelief(n.getNeighbours()) + "," + n.getConfidenceSet().size() + "," +
-                        getAvgBelief(n.getConfidenceSet()) + "\n";
+                        getAvgBelief(n.getConfidenceSet()) + "," + n.getNumberOfContacts() + "," + n.getNumberOfConflicts() + "\n";
 
                         fw.write(result);
             }

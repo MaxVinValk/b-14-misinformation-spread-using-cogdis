@@ -12,6 +12,7 @@ import java.util.Random;
 public class GraphModel {
 
     private int nextFreeID;
+    private int epoch;
     private ArrayList<Node> nodes; 
     private ArrayList<Node> recommended;
     private final Random random = new Random(0);
@@ -37,6 +38,7 @@ public class GraphModel {
         nodes = new ArrayList<>();
         recommended = new ArrayList<>();
         nextFreeID = 0;
+        epoch = 0;
     }
 
     /**
@@ -44,6 +46,7 @@ public class GraphModel {
      */
 
     public void startRandom(int numNodes) {
+        epoch = 0;
         createNodes(numNodes);
         connectProportionate();
         createLoops();
@@ -184,7 +187,6 @@ public class GraphModel {
         for (Node n : nodes) {
             recommend(n, 20, "random");
             n.receiveMessages(recommended);
-            n.updateDissonance(n.getDissonanceDecay()); // decay over time.
         }
         // perform fraternize on entire network AFTER all received message + dissonance update
         for (Node n : nodes) {
@@ -192,6 +194,7 @@ public class GraphModel {
                 n.fraternize();
             }
         }
+        epoch += 1;
     }
 
     /**
@@ -200,7 +203,7 @@ public class GraphModel {
      */
     public void updateDissonances(float dissonance) {
         for (Node n : nodes) {
-            n.updateDissonance(dissonance);
+            n.setDissonance(dissonance);
         }
     }
 
@@ -380,6 +383,10 @@ public class GraphModel {
 
     public Node getNodeOnPoint(Vector2D pos) {
         return getNodeOnPoint(pos.getX(), pos.getY());
+    }
+
+    public int getEpoch(){
+        return epoch;
     }
 }
 

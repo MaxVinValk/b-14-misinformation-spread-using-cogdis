@@ -6,6 +6,7 @@ import com.b14.controller.ActionStepSim;
 import com.b14.controller.ActionUpdateNetworkDissonance;
 import com.b14.model.GraphModel;
 import com.b14.model.ModelManager;
+import com.b14.model.DataLogger;
 
 import javax.swing.*;
 
@@ -15,13 +16,13 @@ import javax.swing.*;
 
 public class MenuBarControl extends JMenu {
 
-    public MenuBarControl(ModelManager manager, GraphModel model) {
+    public MenuBarControl(ModelManager manager, GraphModel model, DataLogger dataLogger) {
         super("Sim Control");
 
-        add(new JMenuItem(new ActionInitialize(manager, model)));
+        add(new JMenuItem(new ActionInitialize(manager, model, dataLogger)));
         add(new JMenuItem(new ActionUpdateNetworkDissonance(model)));
-        add(new JMenuItem(new ActionStepSim(manager, model)));
-        add(new JMenuItem(new ActionRunSimulationSteps(manager, model)));
+        add(new JMenuItem(new ActionStepSim(manager, model, dataLogger)));
+        add(new JMenuItem(new ActionRunSimulationSteps(manager, model, dataLogger)));
 
     }
 }

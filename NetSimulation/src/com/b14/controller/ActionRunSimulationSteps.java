@@ -2,6 +2,7 @@ package com.b14.controller;
 
 import com.b14.model.GraphModel;
 import com.b14.model.ModelManager;
+import com.b14.model.DataLogger;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
@@ -15,11 +16,13 @@ public class ActionRunSimulationSteps extends AbstractAction {
 
     private final ModelManager manager;
     private final GraphModel model;
+    private final DataLogger dataLogger;
 
-    public ActionRunSimulationSteps(ModelManager manager, GraphModel model) {
+    public ActionRunSimulationSteps(ModelManager manager, GraphModel model, DataLogger dataLogger) {
         super("Perform n steps on Network");
         this.model = model;
         this.manager = manager;
+        this.dataLogger = dataLogger;
     }
 
     @Override
@@ -42,6 +45,8 @@ public class ActionRunSimulationSteps extends AbstractAction {
             physicsLock.lock();
             while (timesSpread-- > 0) {
                 model.simulateSpreadStep(); // Note: pruning + fraternize is now included in each spreading step!
+                int epoch = model.getEpoch();
+                dataLogger.logData(epoch);
             }
         } finally {
             physicsLock.unlock();

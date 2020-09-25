@@ -22,7 +22,11 @@ public class Node extends Physics2DObject {
     private float dissonanceDecay;
     private float dissonanceDecrease; // in case of a positive interaction
     private float dissonanceIncrease; // negative, in case of conflicting information
-    private static int connectionLimit = 50; // for now. If we want super spreaders or influencers we might want to go back to create limit for each object. 
+    private static int connectionLimit = 50; // for now. If we want super spreaders or influencers we might want to go back to create limit for each object.
+    
+    // Some stats (also needed for dissonance updates)
+    private int numberOfContacts;
+    private int numberOfConflicts;
 
     // Sampling seed
     private final static Random random = new Random(0);
@@ -35,12 +39,14 @@ public class Node extends Physics2DObject {
         this.id = id;
         neighbours = new ArrayList<>();
         belief = random.nextFloat();
-        openness = 0.1f + random.nextFloat()*0.3f-0.1f;
+        openness = 0.1f + random.nextFloat()*0.2f-0.1f;
         confidenceSet = new ArrayList<>();
         dissonanceThreshold = 0.5f + random.nextFloat()*1.5f-0.5f;
-        dissonanceDecay = -0.1f;
-        dissonanceDecrease = -0.1f;
+        dissonanceDecay = 0.25f;
+        dissonanceDecrease = -0.05f;
         dissonanceIncrease = 0.3f;
+        numberOfConflicts = 0;
+        numberOfContacts = 0;
         reset();
     }
 
@@ -81,13 +87,19 @@ public class Node extends Physics2DObject {
     }
 
     /**
-     * Update Dissonance using a super simple example function.
-     * @param value Value by which to update the current dissonance level.
+     * Update Dissonance according to a leaky diffusion process.
+     * The updating equation is the optimized baseline activation
+     * implemented in ACT-R: http://act-r.psy.cmu.edu/ + some noise.
+     * 
+     * Details can also be found in the AOI reader from 2019 by Dr. J. Borst.
+     * 
+     * We motivate this choice in our report.
      */
 
-    public void updateDissonance(float value) {
-        currentDissonance += value;
-        currentDissonance = currentDissonance < 0.0f ? 0.0f: currentDissonance;
+    public void updateDissonance() {
+        currentDissonance = ((float) Math.log(numberOfConflicts/(1.0f-dissonanceDecay)))
+                            - (dissonanceDecay * (float) Math.log(numberOfContacts))
+                            + (float) random.nextGaussian()*0.01f;
     }
 
     /**
@@ -104,18 +116,19 @@ public class Node extends Physics2DObject {
             if(Math.abs(n.belief - belief) < openness) {
                 confidenceSet.add(n);
                 addNeighbour(n); // update if other agent was in reccomended
-                //updateDissonance(dissonanceDecrease/2.0f); // If I here something I like, I feel better.
             } else {
-                updateDissonance(dissonanceIncrease);
+                numberOfConflicts += 1;
                 if (currentDissonance > dissonanceThreshold) {
                     prunedConnections.add(n);
                     
                 }
+            numberOfContacts += 1; // update number of total contacts
+            updateDissonance();
             }
         }
         for (Node n : prunedConnections) {
             removeNeighbour(n);
-            updateDissonance(dissonanceDecrease); // reduction strategy has minimal immediate effect (currently).
+            currentDissonance += dissonanceDecrease; // reduction strategy has minimal (still linear) immediate effect (currently).
         }
         updateBelief();
     }
@@ -147,6 +160,7 @@ public class Node extends Physics2DObject {
                 }
                 if(Math.abs(n2.belief - belief) < openness) {
                     possibleConnections.add(n2);
+                    currentDissonance += dissonanceDecrease; // If I hear what I want to hear that makes me feel good (initially only, mere exposure!!)
                 }
             }
         }
@@ -240,12 +254,27 @@ public class Node extends Physics2DObject {
         return openness;
     }
 
+    public int getNumberOfContacts() {
+        return numberOfContacts;
+    }
+
+    public int getNumberOfConflicts() {
+        return numberOfConflicts;
+    }
+
+    /**
+     * Setters
+     */
+
+     public void setDissonance(float value) {
+        currentDissonance += value;
+     }
 
     @Override
     public String toString() {
         return  "Node:\t\t\t"           + id                    + "\n" +
                 "Current Belief:\t"     + belief                + "\n" +
-                "Openness margin:\t"    + openness                 + "\n" +
+                "Openness margin:\t"    + openness              + "\n" +
                 "Current dis:\t"        + currentDissonance     + "\n" +
                 "Max. dis:\t\t"         + dissonanceThreshold   + "\n" +
                 "Num. neighbours:\t"    + neighbours.size()     + "/"  + connectionLimit + "\n";

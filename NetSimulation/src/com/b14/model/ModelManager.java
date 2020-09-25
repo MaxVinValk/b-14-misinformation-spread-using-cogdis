@@ -23,6 +23,8 @@ public class ModelManager {
     private final GraphModel model;
     private final GraphPanel panel;
 
+    private final DataLogger dataLogger;
+
     private boolean simulatePhysics = false;
     ReentrantLock physicsLock = new ReentrantLock();
 
@@ -35,6 +37,9 @@ public class ModelManager {
         model = new GraphModel();
         model.startRandom(50);
 
+        dataLogger = new DataLogger(model);
+        dataLogger.startNewSession();
+
         Dimension startingWindowSize = new Dimension(START_WIDTH, START_HEIGHT);
 
         Camera camera = new Camera(startingWindowSize);
@@ -42,7 +47,7 @@ public class ModelManager {
         GraphFrame frame = new GraphFrame("Network Simulation " + Main.VERSION, startingWindowSize, model, camera);
         panel = frame.getPanel();
 
-        MenuBar menuBar = new MenuBar(this, model, camera, panel);
+        MenuBar menuBar = new MenuBar(this, model, camera, panel, dataLogger);
         frame.setJMenuBar(menuBar);
 
         frame.setupGraph();
