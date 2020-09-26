@@ -185,7 +185,8 @@ public class GraphModel {
      */
     public void simulateSpreadStep() {
         for (Node n : nodes) {
-            recommend(n, 20, "random");
+            n.reset(); // clear confidence set
+            recommend(n, 20, "polarize");
             n.receiveMessages(recommended);
         }
         // perform fraternize on entire network AFTER all received message + dissonance update

@@ -39,10 +39,10 @@ public class Node extends Physics2DObject {
         this.id = id;
         neighbours = new ArrayList<>();
         belief = random.nextFloat();
-        openness = 0.1f + random.nextFloat()*0.2f-0.1f;
+        openness = 0.05f + random.nextFloat()*0.1f-0.05f;
         confidenceSet = new ArrayList<>();
         dissonanceThreshold = 0.5f + random.nextFloat()*1.5f-0.5f;
-        dissonanceDecay = 0.25f;
+        dissonanceDecay = 0.5f;
         dissonanceDecrease = -0.05f;
         dissonanceIncrease = 0.3f;
         numberOfConflicts = 0;
