@@ -272,11 +272,11 @@ public class Node extends Physics2DObject {
 
     @Override
     public String toString() {
-        return  "Node:\t\t\t"           + id                    + "\n" +
-                "Current Belief:\t"     + belief                + "\n" +
-                "Openness margin:\t"    + openness              + "\n" +
-                "Current dis:\t"        + currentDissonance     + "\n" +
-                "Max. dis:\t\t"         + dissonanceThreshold   + "\n" +
-                "Num. neighbours:\t"    + neighbours.size()     + "/"  + connectionLimit + "\n";
+        return  "Node:                     " + id                    + "\n" +
+                "Current Belief:        " + belief                + "\n" +
+                "Openness margin:  " + openness              + "\n" +
+                "Current dis:            " + currentDissonance     + "\n" +
+                "Max. dis:                " + dissonanceThreshold   + "\n" +
+                "Num. neighbours:  " + neighbours.size()     + "/"  + connectionLimit + "\n";
     }
 }

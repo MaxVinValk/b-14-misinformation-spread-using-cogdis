@@ -239,8 +239,7 @@ public class GraphPanel extends JPanel {
     }
 
     private void drawInfoPanel(Graphics g, String message) {
-
-        int widthSpacing = 12;
+        int widthSpacing = 10;
         int heightSpacing = 26;
         int bevel = 30;
 

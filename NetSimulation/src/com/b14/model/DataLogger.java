@@ -8,6 +8,10 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 
+/**
+ * Class responsible for all datalogging
+ */
+
 public class DataLogger {
 
     private final static String ROOT_FOLDER = "data_out/";
@@ -16,7 +20,8 @@ public class DataLogger {
 
     private GraphModel model;
 
-    private String headers = "epoch,nodeID,belief,disLeftToThreshold,dissonance,numNeighbours,avgNeighbourBelief,numConfidants,avgConfidantBelief,numberOfContacts,numberOfConflicts\n";
+    private String headers =    "epoch,nodeID,belief,disLeftToThreshold,dissonance,numNeighbours,avgNeighbourBelief," +
+                                "numConfidants,avgConfidantBelief,numberOfContacts,numberOfConflicts\n";
 
     public DataLogger(GraphModel model) {
         this.model = model;
@@ -27,6 +32,10 @@ public class DataLogger {
             rootFolder.mkdir();
         }
     }
+
+    /**
+     * Creates a new document, and a new logging session, only if output is allowed
+     */
 
     public void startNewSession() {
 
@@ -48,6 +57,10 @@ public class DataLogger {
         }
     }
 
+    /**
+     * Takes the data currently in the model and logs data of relevance
+     * @param epoch the epoch this information belongs to.
+     */
     public void logData(int epoch) {
 
         if (!allowOutput) {
@@ -64,9 +77,10 @@ public class DataLogger {
 
             for (Node n : model.getNodes()) {
                 String result = epoch + "," + n.getId() + "," + n.getBelief() + "," +
-                        (n.getDissonanceThreshold() - n.getCurrentDissonance()) + "," + n.getCurrentDissonance() + "," + n.getNeighbours().size() + "," +
-                        getAvgBelief(n.getNeighbours()) + "," + n.getConfidenceSet().size() + "," +
-                        getAvgBelief(n.getConfidenceSet()) + "," + n.getNumberOfContacts() + "," + n.getNumberOfConflicts() + "\n";
+                        (n.getDissonanceThreshold() - n.getCurrentDissonance()) + "," + n.getCurrentDissonance() + "," +
+                        n.getNeighbours().size() + "," + getAvgBelief(n.getNeighbours()) + "," +
+                        n.getConfidenceSet().size() + "," + getAvgBelief(n.getConfidenceSet()) + "," +
+                        n.getNumberOfContacts() + "," + n.getNumberOfConflicts() + "\n";
 
                         fw.write(result);
             }
@@ -78,8 +92,20 @@ public class DataLogger {
 
     }
 
+    /**
+     * Sets whether or not the logger should generate output.
+     * @param value Allow or disallow output
+     */
+
     public void setAllowOutput(boolean value) {
         allowOutput = value;
+    }
+
+    /**
+     * Toggles the allow output variable.
+     */
+    public void toggleAllowOutput() {
+        allowOutput = !allowOutput;
     }
 
     // Utility function
