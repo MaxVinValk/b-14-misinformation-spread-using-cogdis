@@ -75,13 +75,13 @@ public class GraphPanel extends JPanel implements PropertyChangeListener {
      * @param g
      */
     private void drawHeadless(Graphics g) {
-        Font font = getFont().deriveFont(30.0f*camera.getScale());
+        Font font = getFont().deriveFont(30.0f);
         g.setFont(font);
         g.setColor(Color.BLACK);
 
-        g.drawString("Running in headless mode :)\n", (int)(100 - camera.getX()), (int)(50 - camera.getY()));
+        g.drawString("Running in headless mode :)\n", 50, 50);
 
-        font = getFont().deriveFont(40.0f * camera.getScale());
+        font = getFont().deriveFont(40.0f);
         g.setFont(font);
 
         String[] robot =  { "       .- - -.     ",
@@ -95,9 +95,15 @@ public class GraphPanel extends JPanel implements PropertyChangeListener {
         int y = 100;
 
         for (String line : robot) {
-            g.drawString(line, (int)(200 - camera.getX()), (int)(y - camera.getY()));
-            y += 50 * camera.getScale();
+            g.drawString(line, 120, y);
+            y += 50;
         }
+
+        font = getFont().deriveFont(20.0f);
+        g.setFont(font);
+        g.drawString("Running a model with " + model.getNodes().size() + " nodes", 600, 50);
+        g.drawString("Current model epoch:   " + model.getEpoch(), 600, 75);
+
     }
 
 
@@ -288,7 +294,7 @@ public class GraphPanel extends JPanel implements PropertyChangeListener {
 
         if (headlessMode) {
             switch (name) {
-                case "cameraChange": this.repaint();
+                case "modelChange": this.repaint();
                 break;
             }
         } else {

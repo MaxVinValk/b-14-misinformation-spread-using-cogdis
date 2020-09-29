@@ -116,6 +116,8 @@ public class Physics2DObject {
         return acceleration;
     }
 
+    public Vector2D getVelocity() { return velocity; }
+
     public double getMass() {
         return mass;
     }

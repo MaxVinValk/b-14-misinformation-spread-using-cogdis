@@ -65,6 +65,12 @@ public class Camera {
         pcs.firePropertyChange(new PropertyChangeEvent(this, "cameraChange", null, null));
     }
 
+    public void setCameraTo(int x, int y) {
+        this.x = x;
+        this.y = y;
+        pcs.firePropertyChange(new PropertyChangeEvent(this, "cameraChange", null, null));
+    }
+
     /**
      * This function zooms the camera in or out.
      * @param scrollUp indicates scroll direction

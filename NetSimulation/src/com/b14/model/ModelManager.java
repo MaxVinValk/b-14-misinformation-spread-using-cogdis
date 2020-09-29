@@ -22,6 +22,7 @@ public class ModelManager {
 
     private final GraphModel model;
     private final GraphPanel panel;
+    private final Camera camera;
 
     private final DataLogger dataLogger;
 
@@ -42,7 +43,7 @@ public class ModelManager {
 
         Dimension startingWindowSize = new Dimension(START_WIDTH, START_HEIGHT);
 
-        Camera camera = new Camera(startingWindowSize);
+        camera = new Camera(startingWindowSize);
 
         GraphFrame frame = new GraphFrame("Network Simulation " + Main.VERSION, startingWindowSize, model, camera);
         panel = frame.getPanel();
@@ -65,6 +66,8 @@ public class ModelManager {
      */
     public void runSimulation() {
         boolean runSimulation = true;
+
+        ImageCapture ic = new ImageCapture(model, panel, camera);
 
         while (runSimulation) {
 

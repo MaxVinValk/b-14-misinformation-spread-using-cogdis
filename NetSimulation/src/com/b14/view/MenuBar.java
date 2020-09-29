@@ -1,6 +1,7 @@
 package com.b14.view;
 
 import com.b14.model.GraphModel;
+import com.b14.model.ImageCapture;
 import com.b14.model.ModelManager;
 import com.b14.model.DataLogger;
 
@@ -22,5 +23,6 @@ public class MenuBar extends JMenuBar {
         add(new MenuBarPhysics(manager));
         add(new MenuBarView(model, camera, panel));
         add(new MenuBarLogging(dataLogger));
+        add(new MenuBarCapture(new ImageCapture(model, panel, camera)));
     }
 }

@@ -296,7 +296,7 @@ public class GraphModel {
      * Forces nodes to space out: Edges function as springs,
      * and all nodes that are close to one another enact a force towards each other, to force them to space apart.
      */
-    public void physicsUpdate() {
+    public double physicsUpdate() {
 
         for (int i = 0; i < nodes.size(); i++) {
             applyPushForce(i);
@@ -304,9 +304,11 @@ public class GraphModel {
         }
 
         applyGravity();
-        transferForces();
+        double avgVelocity = transferForces();
 
-        pcs.firePropertyChange(new PropertyChangeEvent(this, "physicsUpdate", null, null));
+        pcs.firePropertyChange(new PropertyChangeEvent(this, "physicsUpdate", null, avgVelocity));
+
+        return avgVelocity;
     }
 
     private void applyPushForce(int nodeIdx) {
@@ -371,11 +373,21 @@ public class GraphModel {
         }
     }
 
-    private void transferForces() {
+    /**
+     * Transfers all accelerations to velocities, and returns average velocity at this step
+     * @return the average velocity
+     */
+    private double transferForces() {
+
+        double totalVelocity = 0.0f;
+
         for (Node n : nodes) {
             n.dampen();
             n.transferForce();
+            totalVelocity += n.getVelocity().getLength();
         }
+
+        return totalVelocity / nodes.size();
     }
 
     public ArrayList<Node> getNodes() {
