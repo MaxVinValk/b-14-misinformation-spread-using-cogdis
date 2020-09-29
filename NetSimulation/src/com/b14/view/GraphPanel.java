@@ -285,8 +285,17 @@ public class GraphPanel extends JPanel implements PropertyChangeListener {
     @Override
     public void propertyChange(PropertyChangeEvent evt) {
         String name = evt.getPropertyName();
-        if (name == "physicsUpdate" || name == "cameraChange" || name == "modelChange") {
-            this.repaint();
+
+        if (headlessMode) {
+            switch (name) {
+                case "cameraChange": this.repaint();
+                break;
+            }
+        } else {
+            switch (name) {
+                case "physicsUpdate", "cameraChange", "modelChange" -> this.repaint();
+            }
+
         }
     }
 }

@@ -12,7 +12,14 @@ public class MenuBarLogging extends JMenu {
     public MenuBarLogging(DataLogger dataLogger) {
         super("Log generation");
 
-        add(new JMenuItem(new ActionToggleLogging(dataLogger)));
+        ActionEnableLogging ael = new ActionEnableLogging(dataLogger);
+        ActionDisableLogging adl = new ActionDisableLogging(dataLogger);
+
+        dataLogger.addPropertyChangeListener(ael);
+        dataLogger.addPropertyChangeListener(adl);
+
+        add(new JMenuItem(ael));
+        add(new JMenuItem(adl));
 
     }
 }

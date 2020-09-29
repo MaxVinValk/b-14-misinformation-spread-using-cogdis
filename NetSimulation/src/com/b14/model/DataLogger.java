@@ -1,5 +1,10 @@
 package com.b14.model;
 
+import jdk.jfr.Event;
+
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+import java.beans.PropertyChangeSupport;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -16,12 +21,16 @@ public class DataLogger {
 
     private final static String ROOT_FOLDER = "data_out/";
     private File currentOutput = null;
-    private boolean allowOutput = true;
+    private boolean allowOutput = false;
+
+    private boolean createdFileSinceToggled = false;
 
     private GraphModel model = null;
 
     private String headers =    "epoch,nodeID,belief,disLeftToThreshold,dissonance,numNeighbours,avgNeighbourBelief," +
                                 "numConfidants,avgConfidantBelief,numberOfContacts,numberOfConflicts\n";
+
+    private PropertyChangeSupport pcs;
 
     public DataLogger() {
 
@@ -30,15 +39,18 @@ public class DataLogger {
         if (!rootFolder.exists()) {
             rootFolder.mkdir();
         }
+
+        pcs = new PropertyChangeSupport(this);
     }
 
     /**
      * Creates a new document, and a new logging session, only if output is allowed
      */
 
-    public void startNewSession() {
+    private void startNewSession() {
 
         if (!allowOutput) {
+            createdFileSinceToggled = false;
             return;
         }
 
@@ -54,6 +66,8 @@ public class DataLogger {
         } catch (IOException e) {
             System.out.println("Failed to write headers to output file!");
         }
+
+        createdFileSinceToggled = true;
     }
 
     /**
@@ -64,6 +78,10 @@ public class DataLogger {
 
         if (!allowOutput) {
             return;
+        }
+
+        if (!createdFileSinceToggled) {
+            startNewSession();
         }
 
         if (currentOutput == null) {
@@ -97,18 +115,32 @@ public class DataLogger {
      */
 
     public void setAllowOutput(boolean value) {
+
+        if (!allowOutput && value) {
+            createdFileSinceToggled = false;
+        }
+
         allowOutput = value;
+        pcs.firePropertyChange(new PropertyChangeEvent(this, "setLogging", null, value));
     }
 
     /**
      * Toggles the allow output variable.
      */
     public void toggleAllowOutput() {
-        allowOutput = !allowOutput;
+        setAllowOutput(!allowOutput);
     }
 
     public void setModel(GraphModel model) {
         this.model = model;
+    }
+
+    public boolean isOutputAllowed() {
+        return allowOutput;
+    }
+
+    public void addPropertyChangeListener(PropertyChangeListener pcl) {
+        pcs.addPropertyChangeListener(pcl);
     }
 
     // Utility function
@@ -125,8 +157,5 @@ public class DataLogger {
 
         return res / nodes.size();
     }
-
-
-
 
 }

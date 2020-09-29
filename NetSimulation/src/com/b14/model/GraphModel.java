@@ -65,7 +65,6 @@ public class GraphModel {
 
         nodeSpacingSetup();
 
-        dl.startNewSession();
         pcs.firePropertyChange(new PropertyChangeEvent(this, "modelChange", null, null));
     }
 
