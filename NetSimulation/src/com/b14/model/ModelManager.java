@@ -33,12 +33,12 @@ public class ModelManager {
      */
 
     public ModelManager() {
-        
-        model = new GraphModel();
-        model.startRandom(50);
 
-        dataLogger = new DataLogger(model);
-        dataLogger.startNewSession();
+        dataLogger = new DataLogger();
+        model = new GraphModel(dataLogger);
+        dataLogger.setModel(model);
+
+        model.startRandom(50);
 
         Dimension startingWindowSize = new Dimension(START_WIDTH, START_HEIGHT);
 
@@ -53,6 +53,9 @@ public class ModelManager {
         frame.setupGraph();
         InputController inputController = new InputController(panel, camera, model);
         panel.addInputController(inputController);
+
+        model.addPropertyChangeListener(panel);
+        camera.addPropertyChangeListener(panel);
     }
 
 
@@ -75,7 +78,6 @@ public class ModelManager {
             }
 
             //update panels
-            panel.repaint();
             try {
                 Thread.sleep(1000/FPS);
             } catch (InterruptedException e) {

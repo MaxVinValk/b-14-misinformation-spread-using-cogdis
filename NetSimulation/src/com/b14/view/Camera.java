@@ -3,6 +3,9 @@ package com.b14.view;
 import com.b14.model.Vector2D;
 
 import java.awt.*;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+import java.beans.PropertyChangeSupport;
 
 /**
  *  The camera class is responsible for keeping track of where the view of the user is located.
@@ -24,6 +27,8 @@ public class Camera {
     private int width;
     private int height;
 
+    private PropertyChangeSupport pcs;
+
     /**
      * Creates a camera at 0,0 with a specified width and height
      * @param dim the dimensions that the camera needs to assume
@@ -32,6 +37,8 @@ public class Camera {
     public Camera(Dimension dim) {
         this.width = dim.width;
         this.height = dim.height;
+
+        pcs = new PropertyChangeSupport(this);
     }
 
     /**
@@ -43,6 +50,7 @@ public class Camera {
     public void moveCamera(double x, double y) {
         this.x += x;
         this.y += y;
+        pcs.firePropertyChange(new PropertyChangeEvent(this, "cameraChange", null, null));
     }
 
     /**
@@ -54,6 +62,7 @@ public class Camera {
         setScale(1.0f);
         x = pos.getX() - (width / 2);
         y = pos.getY() - (height / 2);
+        pcs.firePropertyChange(new PropertyChangeEvent(this, "cameraChange", null, null));
     }
 
     /**
@@ -62,6 +71,7 @@ public class Camera {
      */
 
     public void scale(boolean scrollUp) {
+
         if (scrollUp) {
             if (scale * SCALE_FACTOR <= MAX_SCALE) {
                 scale *= SCALE_FACTOR;
@@ -71,6 +81,8 @@ public class Camera {
                 scale /= SCALE_FACTOR;
             }
         }
+
+        pcs.firePropertyChange(new PropertyChangeEvent(this, "cameraChange", null, null));
     }
 
     //Getters & Setters
@@ -106,6 +118,7 @@ public class Camera {
     public void setSize(int width, int height) {
         this.width = width;
         this.height = height;
+        pcs.firePropertyChange(new PropertyChangeEvent(this, "cameraChange", null, null));
     }
 
 
@@ -121,5 +134,10 @@ public class Camera {
 
     public void setScale(float scale) {
         this.scale = scale;
+        pcs.firePropertyChange(new PropertyChangeEvent(this, "cameraChange", null, null));
+    }
+
+    public void addPropertyChangeListener(PropertyChangeListener pcl) {
+        pcs.addPropertyChangeListener(pcl);
     }
 }

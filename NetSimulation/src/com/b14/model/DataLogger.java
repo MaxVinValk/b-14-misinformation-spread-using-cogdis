@@ -18,13 +18,12 @@ public class DataLogger {
     private File currentOutput = null;
     private boolean allowOutput = true;
 
-    private GraphModel model;
+    private GraphModel model = null;
 
     private String headers =    "epoch,nodeID,belief,disLeftToThreshold,dissonance,numNeighbours,avgNeighbourBelief," +
                                 "numConfidants,avgConfidantBelief,numberOfContacts,numberOfConflicts\n";
 
-    public DataLogger(GraphModel model) {
-        this.model = model;
+    public DataLogger() {
 
         File rootFolder = new File(ROOT_FOLDER);
 
@@ -106,6 +105,10 @@ public class DataLogger {
      */
     public void toggleAllowOutput() {
         allowOutput = !allowOutput;
+    }
+
+    public void setModel(GraphModel model) {
+        this.model = model;
     }
 
     // Utility function

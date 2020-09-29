@@ -8,6 +8,8 @@ import com.b14.model.Vector2D;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseEvent;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
 import java.util.Random;
 
@@ -16,7 +18,7 @@ import java.util.Random;
  *  on the screen.
  */
 
-public class GraphPanel extends JPanel {
+public class GraphPanel extends JPanel implements PropertyChangeListener {
 
     //Bunch of constant colors
     private static final Color RED_TRANS = new Color(255, 0, 0, 127);
@@ -271,6 +273,7 @@ public class GraphPanel extends JPanel {
 
     public void toggleHeadless() {
         headlessMode = !headlessMode;
+        repaint();
     }
 
     @Override
@@ -279,4 +282,11 @@ public class GraphPanel extends JPanel {
         drawSelf(g);
     }
 
+    @Override
+    public void propertyChange(PropertyChangeEvent evt) {
+        String name = evt.getPropertyName();
+        if (name == "physicsUpdate" || name == "cameraChange" || name == "modelChange") {
+            this.repaint();
+        }
+    }
 }

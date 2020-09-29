@@ -1,5 +1,8 @@
 package com.b14.model;
 
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+import java.beans.PropertyChangeSupport;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.Queue;
@@ -17,6 +20,10 @@ public class GraphModel {
     private ArrayList<Node> recommended;
     private final Random random = new Random(0);
 
+    private DataLogger dl;
+
+    private PropertyChangeSupport pcs;
+
     /*
         What follows are the parameters for the physics simulation
      */
@@ -30,15 +37,20 @@ public class GraphModel {
 
     //Gravitational pull to a point
     private final Vector2D CENTER           = new Vector2D(512, 384);
-    private final double CENTER_FORCE       = -0.25f;
+    private final double CENTER_FORCE       = 0.5f;
 
 
 
-    public GraphModel() {
+    public GraphModel(DataLogger dl) {
+
+        this.dl = dl;
+
         nodes = new ArrayList<>();
         recommended = new ArrayList<>();
         nextFreeID = 0;
         epoch = 0;
+
+        pcs = new PropertyChangeSupport(this);
     }
 
     /**
@@ -52,6 +64,9 @@ public class GraphModel {
         createLoops();
 
         nodeSpacingSetup();
+
+        dl.startNewSession();
+        pcs.firePropertyChange(new PropertyChangeEvent(this, "modelChange", null, null));
     }
 
     /**
@@ -196,6 +211,10 @@ public class GraphModel {
             }
         }
         epoch += 1;
+
+        dl.logData(epoch);
+        pcs.firePropertyChange(new PropertyChangeEvent(this, "modelChange", null, null));
+
     }
 
     /**
@@ -285,12 +304,10 @@ public class GraphModel {
             applySpringForce(i);
         }
 
-        //Remove pull and push from the first node. This causes more stable behaviour, as one node is not
-        //bouncing around initially.
-        nodes.get(0).setAcceleration(0, 0);
-
         applyGravity();
         transferForces();
+
+        pcs.firePropertyChange(new PropertyChangeEvent(this, "physicsUpdate", null, null));
     }
 
     private void applyPushForce(int nodeIdx) {
@@ -348,9 +365,10 @@ public class GraphModel {
     private void applyGravity() {
         for (Node n : nodes) {
             //Finally apply the central pulling force:
-            Vector2D v = new Vector2D(CENTER, n.getPosition());
+            Vector2D v = new Vector2D(n.getPosition(), CENTER);
             v.setToUnitVector();
             v.multiplyWith(CENTER_FORCE);
+            n.addAcceleration(v);
         }
     }
 
@@ -388,6 +406,12 @@ public class GraphModel {
 
     public int getEpoch(){
         return epoch;
+    }
+
+    //Functions for propertyChangeListeners / support
+
+    public void addPropertyChangeListener(PropertyChangeListener pcl) {
+        pcs.addPropertyChangeListener(pcl);
     }
 }
 

@@ -12,13 +12,11 @@ public class ActionInitialize extends AbstractAction {
 
     private final GraphModel model;
     private final ModelManager manager;
-    private final DataLogger dataLogger;
 
-    public ActionInitialize(ModelManager manager, GraphModel model, DataLogger dataLogger) {
+    public ActionInitialize(ModelManager manager, GraphModel model) {
         super("Reset model");
         this.model = model;
         this.manager = manager;
-        this.dataLogger = dataLogger;
     }
 
     @Override
@@ -44,7 +42,6 @@ public class ActionInitialize extends AbstractAction {
         try {
             physicsLock.lock();
             model.startRandom(numNodes);
-            dataLogger.startNewSession();
         } finally {
             physicsLock.unlock();
         }
