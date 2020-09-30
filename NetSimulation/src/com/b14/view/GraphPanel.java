@@ -293,7 +293,7 @@ public class GraphPanel extends JPanel implements PropertyChangeListener {
             }
         } else {
             switch (name) {
-                case "physicsUpdate", "cameraChange", "modelChange", "nodeSelected" -> this.repaint();
+                case "physicsUpdate", "cameraChange", "modelChange", "nodeSelected": this.repaint();
             }
         }
     }

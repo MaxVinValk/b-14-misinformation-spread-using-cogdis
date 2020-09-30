@@ -92,9 +92,14 @@ public class ImageCapture {
         manager.setPhysics(false);  // disable physics updating from main
         double maxVelocity;
 
+        int physicsSteps = 0;
+
         do {
             maxVelocity = model.physicsUpdate();
-        } while (maxVelocity > 10.0f);
+
+            physicsSteps++;
+
+        } while (maxVelocity > 10.0f && physicsSteps < maxPhysicsSettleStepsBeforeCapture);
     }
 
     private BufferedImage paintImage() {
