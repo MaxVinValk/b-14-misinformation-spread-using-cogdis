@@ -52,8 +52,10 @@ public class ModelManager {
         frame.setJMenuBar(menuBar);
 
         frame.setupGraph();
+
         InputController inputController = new InputController(panel, camera, model);
         panel.addInputController(inputController);
+        inputController.addPropertyChangeListener(panel);
 
         ImageCapture ic = new ImageCapture(this, model, panel, camera);
         dataLogger.setImageCapture(ic);

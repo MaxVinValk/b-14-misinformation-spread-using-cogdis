@@ -4,10 +4,14 @@ import com.b14.model.GraphModel;
 import com.b14.model.Node;
 import com.b14.view.Camera;
 import com.b14.view.GraphPanel;
+import jdk.jfr.Event;
 
 import javax.swing.event.MouseInputAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+import java.beans.PropertyChangeSupport;
 
 /**
  * This class is responsible for getting input from the user.
@@ -18,6 +22,8 @@ public class InputController extends MouseInputAdapter {
 
     private Camera camera;
     private GraphModel model;
+
+    private PropertyChangeSupport pcs;
 
     private boolean leftMouseButtonDown = false;
     private int mousePressLocationX = 0;
@@ -37,13 +43,18 @@ public class InputController extends MouseInputAdapter {
         panel.addMouseWheelListener(this);
         this.camera = camera;
         this.model = model;
+
+        pcs = new PropertyChangeSupport(this);
     }
 
     @Override
     public void mouseClicked(MouseEvent event) {
         if (event.getButton() == MouseEvent.BUTTON1 || event.getButton() == MouseEvent.BUTTON3 ) {
+            Node oldSelected = selectedNode;
             selectedNode = model.getNodeOnPoint(camera.cameraToWorld(event.getX(), event.getY()));
             lastClicked = event.getButton();
+
+            pcs.firePropertyChange(new PropertyChangeEvent(this, "nodeSelected", oldSelected, selectedNode));
         }
     }
 
@@ -91,5 +102,9 @@ public class InputController extends MouseInputAdapter {
 
     public int getLastClicked() {
         return lastClicked;
+    }
+
+    public void addPropertyChangeListener(PropertyChangeListener pcl) {
+        pcs.addPropertyChangeListener(pcl);
     }
 }

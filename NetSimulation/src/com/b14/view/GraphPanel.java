@@ -10,6 +10,7 @@ import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.beans.PropertyChangeSupport;
 import java.util.ArrayList;
 import java.util.Random;
 
@@ -20,11 +21,9 @@ import java.util.Random;
 
 public class GraphPanel extends JPanel implements PropertyChangeListener {
 
-    //Bunch of constant colors
+    //Bunch of constant colors, used for the edges
     private static final Color RED_TRANS = new Color(255, 0, 0, 127);
-    private static final Color GREEN_TRANS = new Color(0, 255, 0, 127);
     private static final Color BLUE_TRANS = new Color(0, 0, 255, 127);
-    private static final Color PINK_TRANS = new Color(211, 91, 255, 127);
     private static final Color BLACK_TRANS = new Color(0, 0, 0, 127);
     private static final Color GRAY_TRANS = new Color(141, 141, 141, 139);
 
@@ -39,6 +38,11 @@ public class GraphPanel extends JPanel implements PropertyChangeListener {
     private final Random random = new Random(0);
 
     private boolean headlessMode = true;
+    private boolean drawBelief = true;
+    private boolean drawNodeIDs = false;
+
+    private PropertyChangeSupport pcs;
+
 
     /**
      * Creates a new graph panel
@@ -48,6 +52,8 @@ public class GraphPanel extends JPanel implements PropertyChangeListener {
     public GraphPanel(GraphModel model, Camera camera) {
         this.model = model;
         this.camera = camera;
+
+        pcs = new PropertyChangeSupport(this);
     }
 
     public void addInputController(InputController controller) {
@@ -195,31 +201,24 @@ public class GraphPanel extends JPanel implements PropertyChangeListener {
 
             int size = (int)(30 * camera.getScale());
 
-            // Coloring based on dissonance and belief.
-            boolean experiencingDissonance = n.isDissonanceOverThreshold();
-
-            if (n.getBelief() > 0.5) {
-                if (experiencingDissonance) {
-                    g.setColor((selected == null ? Color.PINK : GraphPanel.PINK_TRANS));
-                } else {
-                    g.setColor((selected == null ? Color.RED : GraphPanel.RED_TRANS));
-                }
+            if (drawBelief) {
+                g.setColor(n.getColorBelief(selected != null));
             } else {
-                if (experiencingDissonance) {
-                    g.setColor((selected == null ? Color.GREEN : GraphPanel.GREEN_TRANS));
-                } else {
-                    g.setColor((selected == null ? Color.BLUE : GraphPanel.BLUE_TRANS));
-                }
+                g.setColor(n.getColorDissonance(selected != null));
             }
+
 
             if (n == selected) {
                 g.setColor(Color.BLACK);
             }
 
             g.fillOval((int)(screenX - size/2), (int)(screenY - size / 2), size, size);
-            g.setColor(Color.WHITE);
-            g.drawString(new String("" + n.getId()), (int)(screenX - 5 * camera.getScale()) ,
-                    (int)(screenY + 5 * camera.getScale()));
+
+            if (drawNodeIDs) {
+                g.setColor(Color.WHITE);
+                g.drawString(new String("" + n.getId()), (int) (screenX - 5 * camera.getScale()),
+                        (int) (screenY + 5 * camera.getScale()));
+            }
         }
     }
 
@@ -294,22 +293,41 @@ public class GraphPanel extends JPanel implements PropertyChangeListener {
             }
         } else {
             switch (name) {
-                case "physicsUpdate", "cameraChange", "modelChange" -> this.repaint();
+                case "physicsUpdate", "cameraChange", "modelChange", "nodeSelected" -> this.repaint();
             }
-
         }
     }
 
+    public void addPropertyChangeListener(PropertyChangeListener pcl) {
+        pcs.addPropertyChangeListener(pcl);
+    }
+
     public void toggleHeadless() {
-        headlessMode = !headlessMode;
+        setHeadless(!headlessMode);
+    }
+
+    public void toggleDrawIDs() {
+        drawNodeIDs = !drawNodeIDs;
         repaint();
+    }
+
+    public void setHeadless(boolean val) {
+        headlessMode = val;
+        repaint();
+    }
+
+    public void setDrawBelief(boolean val) {
+        boolean oldVal = drawBelief;
+        drawBelief = val;
+        repaint();
+        pcs.firePropertyChange(new PropertyChangeEvent(this, "changedDrawBelief", oldVal, drawBelief));
     }
 
     public boolean isHeadless() {
         return headlessMode;
     }
 
-    public void setHeadless(boolean val) {
-        headlessMode = val;
+    public boolean isDrawingBelief() {
+        return drawBelief;
     }
 }

@@ -1,5 +1,6 @@
 package com.b14.model;
 
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.Random;
 
@@ -201,6 +202,34 @@ public class Node extends Physics2DObject {
     /**
      * Getters 
      */
+
+    /**
+     * Determines the color of the node based on belief.
+     * @return the color of the node
+     */
+    public Color getColorBelief(boolean transparent) {
+
+        float beliefDeviation = Math.abs(0.5f - belief) * 2;
+
+        int r = (int)((belief > 0.5 ? 1 : 0) * 255 * beliefDeviation);
+        int g = 0;
+        int b = (int)((belief < 0.5 ? 1 : 0) * 255 * beliefDeviation);
+        int a = 127 + ((transparent ? 0 : 1) * 128);
+
+        return new Color(r, g, b, a);
+    }
+
+    /**
+     * Determines the color of the node based on dissonance
+     * @return the color of the node
+     */
+    public Color getColorDissonance(boolean transparent) {
+        int isDistressed = (isDissonanceOverThreshold() ? 255 : 0);
+        int a = 127 + ((transparent ? 0 : 1) * 128);
+
+        return new Color(isDistressed, 0, 0, a);
+    }
+
 
     public void reset() {
         confidenceSet.clear();

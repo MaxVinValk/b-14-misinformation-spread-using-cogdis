@@ -1,8 +1,6 @@
 package com.b14.view;
 
-import com.b14.controller.ActionCameraToNode;
-import com.b14.controller.ActionResetZoom;
-import com.b14.controller.ActionToggleHeadless;
+import com.b14.controller.*;
 import com.b14.model.GraphModel;
 
 import javax.swing.*;
@@ -22,6 +20,21 @@ public class MenuBarView extends JMenu {
         super("View");
 
         add(new JMenuItem(new ActionToggleHeadless(panel)));
+
+        addSeparator();
+
+        add(new JMenuItem(new ActionToggleDrawIDs(panel)));
+
+        ActionShowBelief asb = new ActionShowBelief(panel);
+        ActionShowDissonance asd = new ActionShowDissonance(panel);
+
+        panel.addPropertyChangeListener(asb);
+        panel.addPropertyChangeListener(asd);
+
+        add(new JMenuItem(asb));
+        add(new JMenuItem(asd));
+
+        addSeparator();
         add(new JMenuItem(new ActionResetZoom(camera)));
         add(new JMenuItem(new ActionCameraToNode(model, camera)));
 
