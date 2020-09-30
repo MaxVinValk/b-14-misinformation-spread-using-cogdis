@@ -64,6 +64,7 @@ public class GraphModel {
         createLoops();
 
         nodeSpacingSetup();
+        dl.startNewCapture();
 
         pcs.firePropertyChange(new PropertyChangeEvent(this, "modelChange", null, null));
     }
@@ -379,15 +380,16 @@ public class GraphModel {
      */
     private double transferForces() {
 
-        double totalVelocity = 0.0f;
+        double avgVelocity = 0.0f;
 
         for (Node n : nodes) {
             n.dampen();
             n.transferForce();
-            totalVelocity += n.getVelocity().getLength();
+
+            avgVelocity += n.getVelocity().getLength();
         }
 
-        return totalVelocity / nodes.size();
+        return avgVelocity / nodes.size();
     }
 
     public ArrayList<Node> getNodes() {

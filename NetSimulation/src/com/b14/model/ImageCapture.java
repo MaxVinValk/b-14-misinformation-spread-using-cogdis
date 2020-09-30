@@ -8,49 +8,41 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.nio.Buffer;
 
 public class ImageCapture {
 
+    private ModelManager manager;
     private GraphPanel panel;
     private Camera camera;
     private GraphModel model;
 
+    private String outputFolder = null;
 
-    public ImageCapture(GraphModel model, GraphPanel panel, Camera camera) {
+    private float maxAvgVelocityBeforeCapture = 10.0f;
+
+
+    public ImageCapture(ModelManager manager, GraphModel model, GraphPanel panel, Camera camera) {
+        this.manager = manager;
         this.model = model;
         this.panel = panel;
         this.camera = camera;
     }
 
+
     public void captureImage() {
 
-        //keep waiting until the physics update cool down
-        double avgVelocity;
+        boolean prevHeadless = panel.isHeadless();
+        panel.setHeadless(false);
 
-        do {
-            avgVelocity = model.physicsUpdate();
-            System.out.println(avgVelocity);
-        } while (avgVelocity > 0.5f);
-
+        letPhysicsSettle();
         setCameraOnAll();
-        int w = panel.getWidth();
-        int h = panel.getHeight();
 
-        BufferedImage bi = new BufferedImage(w, h, BufferedImage.TYPE_INT_RGB);
-        Graphics2D g = bi.createGraphics();
+        BufferedImage bi = paintImage();
 
-        panel.paint(g);
-        g.dispose();
+        saveToFile(bi);
 
-        File outputFile = new File("test.png");
-
-        try {
-            ImageIO.write(bi, "png", outputFile);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-
+        panel.setHeadless(prevHeadless);
     }
 
     private void setCameraOnAll() {
@@ -83,7 +75,71 @@ public class ImageCapture {
         }
 
         camera.setCameraTo(lowX - 50, lowY - 50);
-        camera.setScale(0.35f);
+
+        //float widthScale = camera.getWidthScaled() / (float)(highX - lowX + 100);
+        float heightScale = camera.getHeight() / (float)(highY - lowY + 150);
+
+        //float largestScaleDiff = Math.max(widthScale, heightScale);
+
+        camera.setScale(heightScale);
+
+
+
     }
 
+    private void letPhysicsSettle() {
+        manager.setPhysics(false);  // disable physics updating from main
+        double maxVelocity;
+
+        do {
+            maxVelocity = model.physicsUpdate();
+            System.out.println(maxVelocity);
+
+        } while (maxVelocity > 10.0f);
+    }
+
+    private BufferedImage paintImage() {
+        int w = panel.getWidth();
+        int h = panel.getHeight();
+
+        BufferedImage bi = new BufferedImage(w, h, BufferedImage.TYPE_INT_RGB);
+        Graphics2D g = bi.createGraphics();
+
+        panel.paint(g);
+        g.dispose();
+
+        return bi;
+    }
+
+    private void saveToFile(BufferedImage bi) {
+
+        assert(outputFolder != null) : "image was not provided with an output folder";
+
+        File outputFile = new File(outputFolder, model.getEpoch() + ".png");
+
+        try {
+            ImageIO.write(bi, "png", outputFile);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    public void setOutputFolder(String outputFolder) {
+        this.outputFolder = outputFolder;
+
+        File folder = new File(outputFolder);
+
+        if (!folder.exists()) {
+            folder.mkdirs();
+        }
+    }
+
+    public void setMaxAvgVelocityBeforeCapture(float maxAvgVelocityBeforeCapture) {
+        this.maxAvgVelocityBeforeCapture = maxAvgVelocityBeforeCapture;
+    }
+
+    public float getMaxAvgVelocityBeforeCapture() {
+        return maxAvgVelocityBeforeCapture;
+    }
 }

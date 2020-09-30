@@ -55,6 +55,9 @@ public class ModelManager {
         InputController inputController = new InputController(panel, camera, model);
         panel.addInputController(inputController);
 
+        ImageCapture ic = new ImageCapture(this, model, panel, camera);
+        dataLogger.setImageCapture(ic);
+
         model.addPropertyChangeListener(panel);
         camera.addPropertyChangeListener(panel);
     }
@@ -66,8 +69,6 @@ public class ModelManager {
      */
     public void runSimulation() {
         boolean runSimulation = true;
-
-        ImageCapture ic = new ImageCapture(model, panel, camera);
 
         while (runSimulation) {
 
@@ -93,8 +94,15 @@ public class ModelManager {
         simulatePhysics = !simulatePhysics;
     }
 
+    public void setPhysics(boolean val) {
+        simulatePhysics = val;
+    }
+
     public ReentrantLock getPhysicsLock() {
         return physicsLock;
     }
 
+    public int getFPS() {
+        return FPS;
+    }
 }

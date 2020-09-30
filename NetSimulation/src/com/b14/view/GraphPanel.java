@@ -277,11 +277,6 @@ public class GraphPanel extends JPanel implements PropertyChangeListener {
         }
     }
 
-    public void toggleHeadless() {
-        headlessMode = !headlessMode;
-        repaint();
-    }
-
     @Override
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
@@ -303,5 +298,18 @@ public class GraphPanel extends JPanel implements PropertyChangeListener {
             }
 
         }
+    }
+
+    public void toggleHeadless() {
+        headlessMode = !headlessMode;
+        repaint();
+    }
+
+    public boolean isHeadless() {
+        return headlessMode;
+    }
+
+    public void setHeadless(boolean val) {
+        headlessMode = val;
     }
 }

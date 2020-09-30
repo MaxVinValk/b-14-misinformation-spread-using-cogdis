@@ -24,3 +24,4 @@ hs_err_pid*
 
 # generated data within the output folder
 NetSimulation/data_out/*.csv
+NetSimulation/data_out/*.png

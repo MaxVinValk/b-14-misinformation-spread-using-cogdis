@@ -2,6 +2,7 @@ package com.b14.model;
 
 import jdk.jfr.Event;
 
+import java.awt.*;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
@@ -22,10 +23,14 @@ public class DataLogger {
     private final static String ROOT_FOLDER = "data_out/";
     private File currentOutput = null;
     private boolean allowOutput = false;
+    private boolean generateImages = false;
 
     private boolean createdFileSinceToggled = false;
 
     private GraphModel model = null;
+    private ImageCapture ic = null;
+    private int captureTimer    = 0;
+    private int captureTimerMax = 100;
 
     private String headers =    "epoch,nodeID,belief,disLeftToThreshold,dissonance,numNeighbours,avgNeighbourBelief," +
                                 "numConfidants,avgConfidantBelief,numberOfContacts,numberOfConflicts\n";
@@ -35,9 +40,8 @@ public class DataLogger {
     public DataLogger() {
 
         File rootFolder = new File(ROOT_FOLDER);
-
         if (!rootFolder.exists()) {
-            rootFolder.mkdir();
+            rootFolder.mkdirs();
         }
 
         pcs = new PropertyChangeSupport(this);
@@ -49,15 +53,25 @@ public class DataLogger {
 
     private void startNewSession() {
 
+        assert(ic != null) : "Image capture not added to logger!";
+
         if (!allowOutput) {
             createdFileSinceToggled = false;
             return;
         }
 
-        DateFormat df = new SimpleDateFormat("MM_dd_HH_mm");
+        DateFormat df = new SimpleDateFormat("MM_dd_HH_mm-ss");
 
+        String timeStamp = df.format(Calendar.getInstance().getTime());
 
-        currentOutput = new File(ROOT_FOLDER, df.format(Calendar.getInstance().getTime()) + ".csv");
+        File runFolder = new File(ROOT_FOLDER + "/" + timeStamp);
+
+        if (!runFolder.exists()) {
+            runFolder.mkdir();
+        }
+
+        currentOutput = new File(runFolder, "data.csv");
+        ic.setOutputFolder(runFolder + "/imgs");
 
         try {
             FileWriter fw = new FileWriter(currentOutput);
@@ -107,6 +121,13 @@ public class DataLogger {
             System.out.println("Could not output the data for epoch: " + epoch + "!\nData is lost!");
         }
 
+        if (captureTimer-- == 0) {
+            if (generateImages) {
+                ic.captureImage();
+            }
+            captureTimer = captureTimerMax-1;
+        }
+
     }
 
     /**
@@ -135,12 +156,38 @@ public class DataLogger {
         this.model = model;
     }
 
+    public void setImageCapture(ImageCapture ic) {
+        this.ic = ic;
+    }
+
+    public void startNewCapture() {
+        createdFileSinceToggled = false;
+    }
+
     public boolean isOutputAllowed() {
         return allowOutput;
     }
 
+    public boolean isImgsGenerated() {
+        return generateImages;
+    }
+
+    public void setImgsGenerated(boolean value) {
+        generateImages = value;
+        pcs.firePropertyChange(new PropertyChangeEvent(this, "setImg", null, value));
+    }
+
+    public void setCaptureTimer(int val) {
+        this.captureTimer = 0;
+        this.captureTimerMax = val;
+    }
+
     public void addPropertyChangeListener(PropertyChangeListener pcl) {
         pcs.addPropertyChangeListener(pcl);
+    }
+
+    public ImageCapture getIc() {
+        return ic;
     }
 
     // Utility function

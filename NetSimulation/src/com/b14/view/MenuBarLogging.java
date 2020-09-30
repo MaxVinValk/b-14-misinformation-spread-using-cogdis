@@ -14,12 +14,19 @@ public class MenuBarLogging extends JMenu {
 
         ActionEnableLogging ael = new ActionEnableLogging(dataLogger);
         ActionDisableLogging adl = new ActionDisableLogging(dataLogger);
+        ActionDisableImg adi = new ActionDisableImg(dataLogger);
+        ActionSetAvgMaxMovement asamm = new ActionSetAvgMaxMovement(dataLogger);
 
         dataLogger.addPropertyChangeListener(ael);
         dataLogger.addPropertyChangeListener(adl);
+        dataLogger.addPropertyChangeListener(adi);
+        dataLogger.addPropertyChangeListener(asamm);
 
         add(new JMenuItem(ael));
         add(new JMenuItem(adl));
+        add(new JMenuItem(new ActionEnableImg(dataLogger)));
+        add(new JMenuItem(adi));
+        add(new JMenuItem(asamm));
 
     }
 }

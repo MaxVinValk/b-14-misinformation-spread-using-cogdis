@@ -23,6 +23,5 @@ public class MenuBar extends JMenuBar {
         add(new MenuBarPhysics(manager));
         add(new MenuBarView(model, camera, panel));
         add(new MenuBarLogging(dataLogger));
-        add(new MenuBarCapture(new ImageCapture(model, panel, camera)));
     }
 }
