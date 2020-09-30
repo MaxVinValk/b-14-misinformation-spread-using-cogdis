@@ -19,7 +19,8 @@ public class ImageCapture {
 
     private String outputFolder = null;
 
-    private float maxAvgVelocityBeforeCapture = 10.0f;
+    private int maxPhysicsSettleStepsBeforeCapture  = 50000;
+    private float maxAvgVelocityBeforeCapture       = 10.0f;
 
 
     public ImageCapture(ModelManager manager, GraphModel model, GraphPanel panel, Camera camera) {
@@ -93,8 +94,6 @@ public class ImageCapture {
 
         do {
             maxVelocity = model.physicsUpdate();
-            System.out.println(maxVelocity);
-
         } while (maxVelocity > 10.0f);
     }
 
