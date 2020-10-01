@@ -227,7 +227,7 @@ public class Node extends Physics2DObject {
         int isDistressed = (isDissonanceOverThreshold() ? 255 : 0);
         int a = 127 + ((transparent ? 0 : 1) * 128);
 
-        return new Color(isDistressed, 0, 0, a);
+        return new Color(0, isDistressed, 0, a);
     }
 
 
