@@ -1,14 +1,15 @@
 package com.b14.controller;
 
 import com.b14.model.GraphModel;
+import com.b14.model.ModelManager;
 import com.b14.model.Node;
 import com.b14.view.Camera;
+import com.b14.view.GraphFrame;
 import com.b14.view.GraphPanel;
 import jdk.jfr.Event;
 
 import javax.swing.event.MouseInputAdapter;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseWheelEvent;
+import java.awt.event.*;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
@@ -18,7 +19,7 @@ import java.beans.PropertyChangeSupport;
  * At the moment it only deals with mouse input, but it can be extended later to allow keyboard-input, too
  */
 
-public class InputController extends MouseInputAdapter {
+public class InputController extends MouseInputAdapter implements KeyListener {
 
     private Camera camera;
     private GraphModel model;
@@ -32,17 +33,24 @@ public class InputController extends MouseInputAdapter {
     private Node selectedNode = null;
     private int lastClicked = -1;
 
+    private ActionStepSim spaceAction;
+
     /**
      * Creates an input controller
      * @param panel     The panel that displays the simulation
      * @param camera    The camera that determines what is within the panel view
      */
-    public InputController(GraphPanel panel, Camera camera, GraphModel model) {
+    public InputController(ModelManager manager, GraphModel model, Camera camera, GraphPanel panel, GraphFrame frame) {
+
+        frame.addKeyListener(this);
+
         panel.addMouseListener(this);
         panel.addMouseMotionListener(this);
         panel.addMouseWheelListener(this);
         this.camera = camera;
         this.model = model;
+
+        spaceAction = new ActionStepSim(manager, model);
 
         pcs = new PropertyChangeSupport(this);
     }
@@ -106,5 +114,22 @@ public class InputController extends MouseInputAdapter {
 
     public void addPropertyChangeListener(PropertyChangeListener pcl) {
         pcs.addPropertyChangeListener(pcl);
+    }
+
+    @Override
+    public void keyTyped(KeyEvent e) {
+    }
+
+    @Override
+    public void keyPressed(KeyEvent e) {
+        if (e.getKeyCode() == KeyEvent.VK_SPACE) {
+            spaceAction.actionPerformed(new ActionEvent(this, ActionEvent.ACTION_PERFORMED, "step"));
+        }
+
+    }
+
+    @Override
+    public void keyReleased(KeyEvent e) {
+
     }
 }

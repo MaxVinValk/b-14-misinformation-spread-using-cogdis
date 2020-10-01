@@ -23,7 +23,6 @@ public class ActionShowBelief extends AbstractAction implements PropertyChangeLi
     }
 
     private void setState() {
-        System.out.println("Setting state");
         setEnabled(!panel.isDrawingBelief());
     }
 

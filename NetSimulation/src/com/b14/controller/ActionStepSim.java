@@ -18,7 +18,7 @@ public class ActionStepSim extends AbstractAction {
     private final ModelManager manager;
 
     public ActionStepSim(ModelManager manager, GraphModel model) {
-        super("Step simulation");
+        super("Step simulation (spacebar)");
         this.model = model;
         this.manager = manager;
     }

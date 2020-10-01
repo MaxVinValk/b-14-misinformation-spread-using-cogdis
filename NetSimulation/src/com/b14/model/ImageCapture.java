@@ -23,7 +23,7 @@ public class ImageCapture {
     private float maxAvgVelocityBeforeCapture       = 10.0f;
 
 
-    public ImageCapture(ModelManager manager, GraphModel model, GraphPanel panel, Camera camera) {
+    public ImageCapture(ModelManager manager, GraphModel model, Camera camera, GraphPanel panel) {
         this.manager = manager;
         this.model = model;
         this.panel = panel;

@@ -31,17 +31,19 @@ public class ModelManager {
 
     /**
      * Sets up all necessary elements for running the simulation, including menus, windows, and the model itself
+     * A bit messy at this moment, but it links together a lot of components.
      */
 
     public ModelManager() {
+
+        Dimension startingWindowSize = new Dimension(START_WIDTH, START_HEIGHT);
+
 
         dataLogger = new DataLogger();
         model = new GraphModel(dataLogger);
         dataLogger.setModel(model);
 
         model.startRandom(50);
-
-        Dimension startingWindowSize = new Dimension(START_WIDTH, START_HEIGHT);
 
         camera = new Camera(startingWindowSize);
 
@@ -50,14 +52,14 @@ public class ModelManager {
 
         MenuBar menuBar = new MenuBar(this, model, camera, panel, dataLogger);
         frame.setJMenuBar(menuBar);
-
+        
         frame.setupGraph();
 
-        InputController inputController = new InputController(panel, camera, model);
+        InputController inputController = new InputController(this, model, camera, panel, frame);
         panel.addInputController(inputController);
         inputController.addPropertyChangeListener(panel);
 
-        ImageCapture ic = new ImageCapture(this, model, panel, camera);
+        ImageCapture ic = new ImageCapture(this, model, camera, panel);
         dataLogger.setImageCapture(ic);
 
         model.addPropertyChangeListener(panel);
