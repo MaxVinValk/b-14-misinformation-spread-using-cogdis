@@ -292,6 +292,38 @@ public class GraphModel {
 
             processedNodes.add(currentNode);
         }
+
+        findPositionForUnlinkedNodes();
+
+    }
+
+    /**
+     * Places all nodes that have not been assigned with an initial position by nodeSpacingSetup
+     * in such a manner that the physics doesn't go haywire
+     */
+
+    private void findPositionForUnlinkedNodes() {
+
+        int spiralPosition = 500;
+        int spiralStepSize = 25;
+        int x = 0;
+        int y = 0;
+
+        for (Node n : nodes) {
+            Vector2D pos = n.getPosition();
+
+            if (pos.getX() == 0 && pos.getY() == 0) {
+
+                while (getNodeOnPoint(x, y) != null) {
+                    spiralPosition += spiralStepSize;
+                    x = (int)(0.25 * spiralPosition * Math.cos(spiralPosition));
+                    y = (int)(0.25 * spiralPosition * Math.sin(spiralPosition));
+                }
+
+                n.setPosition(x, y);
+                spiralPosition += spiralStepSize;
+            }
+        }
     }
 
     //Very expensive: Consider performing local updates
@@ -435,6 +467,19 @@ public class GraphModel {
 
     public void setRecommendationSize(int recommendationSize) {
         this.recommendationSize = recommendationSize;
+    }
+
+    public void setConnectionLimitOnNodes(int newLimit) {
+        Node.setConnectionLimit(newLimit);
+
+        for(Node n : nodes) {
+
+            while (n.getConnectionCount() > newLimit) {
+                Node nodeToRemove = n.getNeighbours().get(random.nextInt(n.getConnectionCount()));
+                n.removeNeighbour(nodeToRemove);
+            }
+        }
+        pcs.firePropertyChange(new PropertyChangeEvent(this, "modelChange", null, null));
     }
 
     //Functions for propertyChangeListeners / support

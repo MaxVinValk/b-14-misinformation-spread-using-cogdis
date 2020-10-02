@@ -50,13 +50,7 @@ public class ActionUpdateNodeConnectionLimit extends AbstractAction {
 
         try {
             physicsLock.lock();
-            for(Node n : model.getNodes()) {
-                
-                while (n.getConnectionCount() > connectionLimit) {
-                    Node nodeToRemove = n.getNeighbours().get(random.nextInt(n.getConnectionCount()));
-                    n.removeNeighbour(nodeToRemove);
-                }
-            }
+            model.setConnectionLimitOnNodes(connectionLimit);
         } finally {
             physicsLock.unlock();
         }
