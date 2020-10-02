@@ -239,6 +239,10 @@ public class Node extends Physics2DObject {
         return connectionLimit;
     }
 
+    public int getConnectionCount() {
+        return neighbours.size();
+    }
+
     public float getBelief() {
         return belief;
     }

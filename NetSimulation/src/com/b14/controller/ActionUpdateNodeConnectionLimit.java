@@ -1,8 +1,14 @@
 package com.b14.controller;
 
 import com.b14.model.GraphModel;
+import com.b14.model.Node;
+import com.b14.model.ModelManager;
+
 import javax.swing.*;
 import java.awt.event.ActionEvent;
+import java.util.ArrayList;
+import java.util.Random;
+import java.util.concurrent.locks.ReentrantLock;
 
 /**
  *  Changes connection limit for nodes.
@@ -11,10 +17,13 @@ import java.awt.event.ActionEvent;
 public class ActionUpdateNodeConnectionLimit extends AbstractAction {
 
     private final GraphModel model;
+    private final ModelManager manager;
+    private final Random random = new Random(0);
 
-    public ActionUpdateNodeConnectionLimit(GraphModel model) {
+    public ActionUpdateNodeConnectionLimit(ModelManager manager, GraphModel model) {
         super("Update connection limit for nodes");
         this.model = model;
+        this.manager = manager;
     }
 
     @Override
@@ -35,6 +44,21 @@ public class ActionUpdateNodeConnectionLimit extends AbstractAction {
 
         } while (connectionLimit == 0);
 
-        model.changeNodeConnectionLimit(connectionLimit);
+        Node.setConnectionLimit(connectionLimit);
+
+        ReentrantLock physicsLock = manager.getPhysicsLock();
+
+        try {
+            physicsLock.lock();
+            for(Node n : model.getNodes()) {
+                
+                while (n.getConnectionCount() > connectionLimit) {
+                    Node nodeToRemove = n.getNeighbours().get(random.nextInt(n.getConnectionCount()));
+                    n.removeNeighbour(nodeToRemove);
+                }
+            }
+        } finally {
+            physicsLock.unlock();
+        }
     }
 }

@@ -19,7 +19,7 @@ public class MenuBarControl extends JMenu {
         add(new JMenuItem(new ActionInitialize(manager, model)));
         add(new JMenuItem(new ActionUpdateNetworkDissonance(model)));
         add(new JMenuItem(new ActionUpdateNetworkRecommendation(model)));
-        add(new JMenuItem(new ActionUpdateNodeConnectionLimit(model)));
+        add(new JMenuItem(new ActionUpdateNodeConnectionLimit(manager, model)));
         add(new JMenuItem(new ActionStepSim(manager, model)));
         add(new JMenuItem(new ActionRunSimulationSteps(manager, model)));
     }

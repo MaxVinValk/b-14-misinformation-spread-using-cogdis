@@ -74,15 +74,6 @@ public class GraphModel {
     }
 
     /**
-     * Changes connection limit of Node class.
-     * @param connectionLimit New connection limit enforced for nodes.
-     */
-
-    public void changeNodeConnectionLimit(int connectionLimit) {
-        Node.setConnectionLimit(connectionLimit);
-    }
-
-    /**
      *  Create Nodes.
      * @param numNodes Number of nodes to be created for the network.
      */
