@@ -9,6 +9,8 @@ import java.awt.event.ActionEvent;
  *  Sets new recommendation strategy and size
  */
 
+//TODO: Make the pop-up multiple-choice
+
 public class ActionUpdateNetworkRecommendation extends AbstractAction {
 
     private final GraphModel model;
@@ -36,7 +38,14 @@ public class ActionUpdateNetworkRecommendation extends AbstractAction {
 
         } while (strategy.equals("None"));
 
-        Integer size;
+        GraphModel.RecommendationStrategy rs = GraphModel.RecommendationStrategy.RANDOM;
+
+        switch (strategy) {
+            case "polarize": rs = GraphModel.RecommendationStrategy.POLARISE; break;
+            case "random": rs = GraphModel.RecommendationStrategy.RANDOM; break;
+        }
+
+        int size;
 
         do {
             try {
@@ -51,7 +60,7 @@ public class ActionUpdateNetworkRecommendation extends AbstractAction {
 
         } while (size == -1);
 
-        model.setRecommendationStrategy(strategy);
+        model.setRecommendationStrategy(rs);
         model.setRecommendationSize(size);
     }
 }

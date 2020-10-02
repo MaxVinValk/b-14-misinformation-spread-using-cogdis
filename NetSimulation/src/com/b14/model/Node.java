@@ -11,6 +11,8 @@ import java.util.Random;
 
 public class Node extends Physics2DObject {
 
+    private static int connectionLimit = 50; // for now. If we want super spreaders or influencers we might want to go back to create limit for each object.
+
     protected ArrayList<Node> neighbours;
     protected int id;
 
@@ -23,7 +25,6 @@ public class Node extends Physics2DObject {
     private float dissonanceDecay;
     private float dissonanceDecrease; // in case of a positive interaction
     private float dissonanceIncrease; // negative, in case of conflicting information (Not in use)
-    private static int connectionLimit = 50; // for now. If we want super spreaders or influencers we might want to go back to create limit for each object.
     
     // Some stats (also needed for dissonance updates)
     private int numberOfContacts;
@@ -235,7 +236,7 @@ public class Node extends Physics2DObject {
         confidenceSet.clear();
     }
 
-    public int getConnectionLimit() {
+    public static int getConnectionLimit() {
         return connectionLimit;
     }
 
@@ -294,6 +295,7 @@ public class Node extends Physics2DObject {
     public int getNumberOfConflicts() {
         return numberOfConflicts;
     }
+
 
     /**
      * Setters

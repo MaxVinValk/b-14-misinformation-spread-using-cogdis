@@ -12,14 +12,28 @@ import java.util.Random;
  *  Functionality for the entire network is stored here.
  */
 
+//TODO: Perhaps break up the physics simulation aspect of the model and the information aspect of the model?
+/*
+        Strategy proposed: Have a GraphModel that contains the physics, which governs a list of PhysicsNodes.
+        Then extend this GraphModel with a InformationNetwork class, that then stores InformationNetworkNodes (which
+        extend the PhysicsNodes). This way we can cleanly break up this class in the two distinct roles it plays.
+ */
+
 public class GraphModel {
 
+    public enum RecommendationStrategy {
+        RANDOM, POLARISE
+    }
+
     private int nextFreeID;
+
     private int epoch;
-    private String recommendationStrategy;
+
+    private RecommendationStrategy rs;
     private int recommendationSize;
     private ArrayList<Node> nodes; 
     private ArrayList<Node> recommended;
+
     private final Random random = new Random(0);
 
     private DataLogger dl;
@@ -39,7 +53,7 @@ public class GraphModel {
 
     //Gravitational pull to a point
     private final Vector2D CENTER           = new Vector2D(512, 384);
-    private final double CENTER_FORCE       = 0.5f;
+    private double centerForce       = 0.5f;
 
 
 
@@ -49,7 +63,8 @@ public class GraphModel {
 
         nodes = new ArrayList<>();
         recommended = new ArrayList<>();
-        recommendationStrategy = "polarize";
+
+        rs = RecommendationStrategy.POLARISE;
         recommendationSize = 20;
         nextFreeID = 0;
         epoch = 0;
@@ -114,7 +129,11 @@ public class GraphModel {
             int selectedIdx = 0;
 
             for (int i = 0; i < numNodes; i++) {
-                selected -= nodes.get(i).getNeighbours().size();
+                int numConnections = nodes.get(i).getNeighbours().size();
+
+                if (numConnections != Node.getConnectionLimit()) {
+                    selected -= nodes.get(i).getNeighbours().size();
+                }
 
                 if (selected < 0) {
                     selectedIdx = i;
@@ -126,6 +145,11 @@ public class GraphModel {
             newNeighbour.addNeighbour(unconnected);
 
             totalConnections += 2;
+
+            if (newNeighbour.getNeighbours().size() == Node.getConnectionLimit()) {
+                totalConnections -= Node.getConnectionLimit();
+            }
+
         }
     }
 
@@ -160,15 +184,15 @@ public class GraphModel {
      * Recommendation set selection algorithm.
      * @param agent the agent for which to create recommend set
      * @param size the size of the recommendation set
-     * @param alg the algorithm by which to select nodes.
+     * @param rs the algorithm by which to select nodes.
      */
 
     // ToDo: distinct functions per algorithm.
 
-    void recommend(Node agent, int size, String alg) {
+    void recommend(Node agent, int size, RecommendationStrategy rs) {
         recommended.clear();
-        switch (alg) {
-            case "random":
+        switch (rs) {
+            case RANDOM:
                 while (recommended.size() < size) {
                     Node n = nodes.get(random.nextInt(nodes.size()));
                     if (n != agent) {
@@ -177,7 +201,7 @@ public class GraphModel {
                 }
                 break;
             
-            case "polarize":
+            case POLARISE:
                 // recommends only other agents the agent does not know that are close to the agents own belief.
                 for (Node n : nodes) {
                     if(n == agent) {
@@ -204,7 +228,7 @@ public class GraphModel {
     public void simulateSpreadStep() {
         for (Node n : nodes) {
             n.reset(); // clear confidence set
-            recommend(n, recommendationSize, recommendationStrategy);
+            recommend(n, recommendationSize, rs);
             n.receiveMessages(recommended);
         }
         // perform fraternize on entire network AFTER all received message + dissonance update
@@ -404,7 +428,7 @@ public class GraphModel {
             //Finally apply the central pulling force:
             Vector2D v = new Vector2D(n.getPosition(), CENTER);
             v.setToUnitVector();
-            v.multiplyWith(CENTER_FORCE);
+            v.multiplyWith(centerForce);
             n.addAcceleration(v);
         }
     }
@@ -456,13 +480,20 @@ public class GraphModel {
         return epoch;
     }
 
-    /**
-     * 
+    public double getCenterForce() {
+        return centerForce;
+    }
+
+    /*
      * Setters
      */
 
-    public void setRecommendationStrategy(String recommendationStrategy) {
-        this.recommendationStrategy = recommendationStrategy;
+    public void setCenterForce(double centerForce) {
+        this.centerForce = centerForce;
+    }
+
+    public void setRecommendationStrategy(RecommendationStrategy rs) {
+        this.rs = rs;
     }
 
     public void setRecommendationSize(int recommendationSize) {

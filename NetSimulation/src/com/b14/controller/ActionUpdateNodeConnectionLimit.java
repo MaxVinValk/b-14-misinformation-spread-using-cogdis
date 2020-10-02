@@ -33,12 +33,12 @@ public class ActionUpdateNodeConnectionLimit extends AbstractAction {
 
         do {
             try {
-                connectionLimit = Integer.parseInt(JOptionPane.showInputDialog("New connection limit (must be larger than 0, should be larger than 5):"));
+                connectionLimit = Integer.parseInt(JOptionPane.showInputDialog("New connection limit (must be larger than 1, should be larger than 5):"));
             } catch (NumberFormatException e) {
                 connectionLimit = 0;
             }
 
-            if (connectionLimit < 1) {
+            if (connectionLimit < 2) {
                 connectionLimit = 0;
             }
 

@@ -20,7 +20,7 @@ public class MenuBar extends JMenuBar {
      */
     public MenuBar(ModelManager manager, GraphModel model, Camera camera, GraphPanel panel, DataLogger dataLogger) {
         add(new MenuBarControl(manager, model, panel, dataLogger));
-        add(new MenuBarPhysics(manager));
+        add(new MenuBarPhysics(manager, model));
         add(new MenuBarView(model, camera, panel));
         add(new MenuBarLogging(dataLogger));
     }
