@@ -22,7 +22,7 @@ public class Node extends Physics2DObject {
     private ArrayList<Node> confidenceSet; // in theory only values would be possible as well.
     private float dissonanceDecay;
     private float dissonanceDecrease; // in case of a positive interaction
-    private float dissonanceIncrease; // negative, in case of conflicting information
+    private float dissonanceIncrease; // negative, in case of conflicting information (Not in use)
     private static int connectionLimit = 50; // for now. If we want super spreaders or influencers we might want to go back to create limit for each object.
     
     // Some stats (also needed for dissonance updates)
@@ -40,7 +40,7 @@ public class Node extends Physics2DObject {
         this.id = id;
         neighbours = new ArrayList<>();
         belief = random.nextFloat();
-        openness = 0.05f + random.nextFloat()*0.1f-0.05f;
+        openness = 0.05f + random.nextFloat()*0.2f-0.05f;
         confidenceSet = new ArrayList<>();
         dissonanceThreshold = 0.5f + random.nextFloat()*1.5f-0.5f;
         dissonanceDecay = 0.5f;
@@ -297,6 +297,10 @@ public class Node extends Physics2DObject {
 
      public void setDissonance(float value) {
         currentDissonance += value;
+     }
+
+     public static void setConnectionLimit(int connectionLimit) {
+         Node.connectionLimit = connectionLimit;
      }
 
     @Override

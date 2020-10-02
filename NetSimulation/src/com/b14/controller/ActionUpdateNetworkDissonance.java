@@ -14,7 +14,7 @@ public class ActionUpdateNetworkDissonance extends AbstractAction {
     private final GraphModel model;
 
     public ActionUpdateNetworkDissonance(GraphModel model) {
-        super("Updates dissonance network wide.");
+        super("Update dissonance network wide");
         this.model = model;
     }
 
@@ -25,8 +25,8 @@ public class ActionUpdateNetworkDissonance extends AbstractAction {
 
         do {
             try {
-                dissonanceUpdate = Float.parseFloat(JOptionPane.showInputDialog("Dissonance update (-1.0 - 1.0)?"));
-            } catch (NumberFormatException e) {
+                dissonanceUpdate = Float.parseFloat(JOptionPane.showInputDialog("Dissonance update (-1.0 - 1.0):"));
+            } catch (NumberFormatException | NullPointerException e) {
                 dissonanceUpdate = -2;
             }
 

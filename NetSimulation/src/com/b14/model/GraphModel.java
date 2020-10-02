@@ -16,6 +16,8 @@ public class GraphModel {
 
     private int nextFreeID;
     private int epoch;
+    private String recommendationStrategy;
+    private int recommendationSize;
     private ArrayList<Node> nodes; 
     private ArrayList<Node> recommended;
     private final Random random = new Random(0);
@@ -47,6 +49,8 @@ public class GraphModel {
 
         nodes = new ArrayList<>();
         recommended = new ArrayList<>();
+        recommendationStrategy = "polarize";
+        recommendationSize = 20;
         nextFreeID = 0;
         epoch = 0;
 
@@ -67,6 +71,15 @@ public class GraphModel {
         dl.startNewCapture();
 
         pcs.firePropertyChange(new PropertyChangeEvent(this, "modelChange", null, null));
+    }
+
+    /**
+     * Changes connection limit of Node class.
+     * @param connectionLimit New connection limit enforced for nodes.
+     */
+
+    public void changeNodeConnectionLimit(int connectionLimit) {
+        Node.setConnectionLimit(connectionLimit);
     }
 
     /**
@@ -179,7 +192,7 @@ public class GraphModel {
                     if(n == agent) {
                         continue;
                     }
-                    if(recommended.size() > 5) {
+                    if(recommended.size() > size) {
                         break;
                     }
                     if((Math.abs(n.getBelief() - agent.getBelief()) < agent.getOpenness()) &&
@@ -190,7 +203,6 @@ public class GraphModel {
                 break;
         
             default:
-                System.out.println("No Algorithm selected.");
                 break;
         }
     }
@@ -201,7 +213,7 @@ public class GraphModel {
     public void simulateSpreadStep() {
         for (Node n : nodes) {
             n.reset(); // clear confidence set
-            recommend(n, 20, "polarize");
+            recommend(n, recommendationSize, recommendationStrategy);
             n.receiveMessages(recommended);
         }
         // perform fraternize on entire network AFTER all received message + dissonance update
@@ -419,6 +431,19 @@ public class GraphModel {
 
     public int getEpoch(){
         return epoch;
+    }
+
+    /**
+     * 
+     * Setters
+     */
+
+    public void setRecommendationStrategy(String recommendationStrategy) {
+        this.recommendationStrategy = recommendationStrategy;
+    }
+
+    public void setRecommendationSize(int recommendationSize) {
+        this.recommendationSize = recommendationSize;
     }
 
     //Functions for propertyChangeListeners / support
