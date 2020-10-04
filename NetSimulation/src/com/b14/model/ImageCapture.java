@@ -19,7 +19,7 @@ public class ImageCapture {
 
     private String outputFolder = null;
 
-    private int maxPhysicsSettleStepsBeforeCapture  = 50000;
+    private int maxPhysicsSettleStepsBeforeCapture  = 5000;
     private float maxAvgVelocityBeforeCapture       = 10.0f;
 
 

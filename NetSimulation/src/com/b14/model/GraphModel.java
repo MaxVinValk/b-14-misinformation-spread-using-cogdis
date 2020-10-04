@@ -19,57 +19,30 @@ import java.util.Random;
         extend the PhysicsNodes). This way we can cleanly break up this class in the two distinct roles it plays.
  */
 
-public class GraphModel {
+public class GraphModel extends GraphPhysicsModel {
 
     public enum RecommendationStrategy {
         RANDOM, POLARISE
     }
 
-    private int nextFreeID;
-
     private int epoch;
 
     private RecommendationStrategy rs;
     private int recommendationSize;
-    private ArrayList<Node> nodes; 
-    private ArrayList<Node> recommended;
 
-    private final Random random = new Random(0);
+    private ArrayList<Node> recommended;
 
     private DataLogger dl;
 
-    private PropertyChangeSupport pcs;
-
-    /*
-        What follows are the parameters for the physics simulation
-     */
-
-    //For stable behaviour, pushRange < springLength
-    private final double PUSH_RANGE         = 90.0f;
-    private final double PUSH_CONSTANT      = 0.1f;
-
-    private final double SPRING_LENGTH      = 110.0f;
-    private final double SPRING_CONSTANT    = 0.005f;
-
-    //Gravitational pull to a point
-    private final Vector2D CENTER           = new Vector2D(512, 384);
-    private double centerForce       = 0.5f;
-
-
 
     public GraphModel(DataLogger dl) {
-
         this.dl = dl;
 
-        nodes = new ArrayList<>();
         recommended = new ArrayList<>();
 
         rs = RecommendationStrategy.POLARISE;
         recommendationSize = 20;
-        nextFreeID = 0;
         epoch = 0;
-
-        pcs = new PropertyChangeSupport(this);
     }
 
     /**
@@ -78,106 +51,8 @@ public class GraphModel {
 
     public void startRandom(int numNodes) {
         epoch = 0;
-        createNodes(numNodes);
-        connectProportionate();
-        createLoops();
-
-        nodeSpacingSetup();
+        super.startRandom(numNodes);
         dl.startNewCapture();
-
-        pcs.firePropertyChange(new PropertyChangeEvent(this, "modelChange", null, null));
-    }
-
-    /**
-     *  Create Nodes.
-     * @param numNodes Number of nodes to be created for the network.
-     */
-
-    public void createNodes(int numNodes) {
-        assert(numNodes > 5) : "Too few nodes defined in startRandom";
-        nextFreeID = 0;
-        nodes.clear();
-
-        for (int i = 0; i < numNodes; i++) {
-            nodes.add(new Node(nextFreeID++));
-        }
-    }
-
-    /**
-     * Connects the nodes to each other in a proportionate fashion, where nodes with more connections
-     * are more likely to receive new connections.
-     */
-    protected void connectProportionate() {
-        int numNodes = nodes.size();
-
-        ArrayList<Node> unassigned = new ArrayList<>();
-        unassigned.addAll(nodes);
-
-        Node outgoing = unassigned.get(0);
-        Node ingoing = unassigned.get(1);
-
-        outgoing.addNeighbour(ingoing);
-        unassigned.remove(outgoing);
-        unassigned.remove(ingoing);
-
-        int totalConnections = 2;
-
-        for (Node unconnected : unassigned) {
-            int unconnectedIdx = nodes.indexOf(unconnected);
-
-            int selected = random.nextInt(totalConnections);
-            int selectedIdx = 0;
-
-            for (int i = 0; i < numNodes; i++) {
-                int numConnections = nodes.get(i).getNeighbours().size();
-
-                if (numConnections != Node.getConnectionLimit()) {
-                    selected -= nodes.get(i).getNeighbours().size();
-                }
-
-                if (selected < 0) {
-                    selectedIdx = i;
-                    break;
-                }
-            }
-
-            Node newNeighbour = nodes.get(selectedIdx);
-            newNeighbour.addNeighbour(unconnected);
-
-            totalConnections += 2;
-
-            if (newNeighbour.getNeighbours().size() == Node.getConnectionLimit()) {
-                totalConnections -= Node.getConnectionLimit();
-            }
-
-        }
-    }
-
-    /**
-     * Finds nodes with 1 neighbour (dead ends) and connects them together
-     */
-    protected void createLoops() {
-        ArrayList<Node> onlyOneConnection = new ArrayList<>();
-
-        for (Node n : nodes) {
-            if (n.getNeighbours().size() == 1) {
-                onlyOneConnection.add(n);
-            }
-        }
-
-        while (onlyOneConnection.size() >= 2) {
-            Node firstToConnect = onlyOneConnection.get(random.nextInt(onlyOneConnection.size()));
-            Node secondToConnect = null;
-
-            do {
-                secondToConnect = onlyOneConnection.get(random.nextInt(onlyOneConnection.size()));
-            } while (firstToConnect == secondToConnect);
-
-            firstToConnect.addNeighbour(secondToConnect);
-
-            onlyOneConnection.remove(firstToConnect);
-            onlyOneConnection.remove(secondToConnect);
-        }
     }
 
     /**
@@ -241,7 +116,6 @@ public class GraphModel {
 
         dl.logData(epoch);
         pcs.firePropertyChange(new PropertyChangeEvent(this, "modelChange", null, null));
-
     }
 
     /**
@@ -254,243 +128,14 @@ public class GraphModel {
         }
     }
 
-    /**
-     * Adds a node to the node at index idx
-     * @param idx the idx of the node to which we append
-     */
-    public void addNodeAt(int idx) {
-        Node old = nodes.get(idx);
-        Node newNode = new Node(nextFreeID++);
-        nodes.add(newNode);
-
-        old.addNeighbour(newNode);
-
-        Vector2D pos = old.getPosition().getCopy();
-        pos.add(150, 150);
-        System.out.println(pos);
-
-        newNode.setPosition(pos);
-    }
-
-    /**
-     * Sets the x, y coordinates of all nodes in an initial configuration.
-     */
-    public void nodeSpacingSetup() {
-
-        nodes.get(0).setPosition(400, 400);
-
-        ArrayList<Node> processedNodes = new ArrayList<>();
-        Queue<Node> nodesToProcess = new LinkedList<>();
-
-        nodesToProcess.add(nodes.get(0));
-
-        double linkDistance = 150;
-
-        while (!nodesToProcess.isEmpty()) {
-            Node currentNode = nodesToProcess.remove();
-
-            double currentX = currentNode.getX();
-            double currentY = currentNode.getY();
-
-            ArrayList<Node> neighbours = currentNode.getNeighbours();
-
-            double angle = (2*Math.PI) / neighbours.size();
-
-            for (int i = 0; i < neighbours.size(); i++) {
-
-                Node currentNeighbour = neighbours.get(i);
-
-                if (processedNodes.contains(currentNeighbour)) {
-                    continue;
-                }
-
-                //We add random noise to prevent overlapping... Overlapping does weird things to the system.
-                //Perhaps should be made more robust to prevent issues with them still overlapping regardless of
-                //the noise
-                double desiredXPos = currentX + linkDistance * Math.cos(angle * i) + (random.nextFloat()*10);
-                double desiredYPos = currentY + linkDistance * Math.sin(angle * i) + (random.nextFloat()*10);
-
-                currentNeighbour.setPosition(desiredXPos, desiredYPos);
-                nodesToProcess.add(currentNeighbour);
-            }
-
-            processedNodes.add(currentNode);
-        }
-
-        findPositionForUnlinkedNodes();
-
-    }
-
-    /**
-     * Places all nodes that have not been assigned with an initial position by nodeSpacingSetup
-     * in such a manner that the physics doesn't go haywire
-     */
-
-    private void findPositionForUnlinkedNodes() {
-
-        int spiralPosition = 500;
-        int spiralStepSize = 25;
-        int x = 0;
-        int y = 0;
-
-        for (Node n : nodes) {
-            Vector2D pos = n.getPosition();
-
-            if (pos.getX() == 0 && pos.getY() == 0) {
-
-                while (getNodeOnPoint(x, y) != null) {
-                    spiralPosition += spiralStepSize;
-                    x = (int)(0.25 * spiralPosition * Math.cos(spiralPosition));
-                    y = (int)(0.25 * spiralPosition * Math.sin(spiralPosition));
-                }
-
-                n.setPosition(x, y);
-                spiralPosition += spiralStepSize;
-            }
-        }
-    }
-
-    //Very expensive: Consider performing local updates
-
-    /**
-     * Forces nodes to space out: Edges function as springs,
-     * and all nodes that are close to one another enact a force towards each other, to force them to space apart.
-     */
-    public double physicsUpdate() {
-
-        for (int i = 0; i < nodes.size(); i++) {
-            applyPushForce(i);
-            applySpringForce(i);
-        }
-
-        applyGravity();
-        double avgVelocity = transferForces();
-
-        pcs.firePropertyChange(new PropertyChangeEvent(this, "physicsUpdate", null, avgVelocity));
-
-        return avgVelocity;
-    }
-
-    private void applyPushForce(int nodeIdx) {
-        Node currentNode = nodes.get(nodeIdx);
-
-        // First, the force that pushes them all away from one another for the sake of spacing
-        //It is like springs, but then they only enforce a minimum distance. So they only push away
-        ArrayList<Node> tooClose = new ArrayList<>();
-
-        for (int j = 0; j < nodes.size(); j++) {
-            if (nodeIdx == j) {
-                continue;
-            }
-
-            Node otherNode = nodes.get(j);
-            if (currentNode.getDistance(otherNode) < PUSH_RANGE) {
-                tooClose.add(otherNode);
-            }
-        }
-
-        // Here we apply the forces to the nodes that are too close
-        for (Node n : tooClose) {
-            double actualDistance = currentNode.getDistance(n);
-            double pushForce = PUSH_CONSTANT * (PUSH_RANGE - actualDistance);
-            Vector2D v = new Vector2D(n.getPosition(), currentNode.getPosition());
-            v.setToUnitVector();
-            v.multiplyWith(pushForce);
-
-            currentNode.addAcceleration(v);
-        }
-    }
-
-    private void applySpringForce(int nodeIdx) {
-        /**
-         * Current issue: Exception in thread "main" java.lang.NullPointerException:
-         * Cannot invoke "com.b14.model.Physics2DObject.getX()" because "other" is null
-         */ 
-        Node currentNode = nodes.get(nodeIdx);
-
-        for (Node n : currentNode.getNeighbours()) {
-
-            double actualDistance = currentNode.getDistance(n);
-            double forceExperienced = SPRING_CONSTANT * (SPRING_LENGTH - actualDistance);
-
-            //Get a vector from this node pointing to the other anchor-point
-            Vector2D v = new Vector2D(n.getPosition(), currentNode.getPosition());
-
-            v.setToUnitVector();
-            v.multiplyWith(forceExperienced);
-            currentNode.addAcceleration(v);
-
-        }
-    }
-
-    private void applyGravity() {
-        for (Node n : nodes) {
-            //Finally apply the central pulling force:
-            Vector2D v = new Vector2D(n.getPosition(), CENTER);
-            v.setToUnitVector();
-            v.multiplyWith(centerForce);
-            n.addAcceleration(v);
-        }
-    }
-
-    /**
-     * Transfers all accelerations to velocities, and returns average velocity at this step
-     * @return the average velocity
-     */
-    private double transferForces() {
-
-        double avgVelocity = 0.0f;
-
-        for (Node n : nodes) {
-            n.dampen();
-            n.transferForce();
-
-            avgVelocity += n.getVelocity().getLength();
-        }
-
-        return avgVelocity / nodes.size();
-    }
-
-    public ArrayList<Node> getNodes() {
-        return nodes;
-    }
-
-    /**
-     * Finds the node that is on the indicated coordinates.
-     * @param x The x (world) coordinate to check
-     * @param y The y (world) coordinate to check
-     * @return The node if there is one on point (x, y), and NULL otherwise
-     */
-
-    public Node getNodeOnPoint(double x, double y) {
-        for (Node n : nodes) {
-            if (n.pointInNode(x, y)) {
-                return n;
-            }
-        }
-
-        return null;
-    }
-
-    public Node getNodeOnPoint(Vector2D pos) {
-        return getNodeOnPoint(pos.getX(), pos.getY());
-    }
 
     public int getEpoch(){
         return epoch;
     }
 
-    public double getCenterForce() {
-        return centerForce;
-    }
-
     /*
      * Setters
      */
-
-    public void setCenterForce(double centerForce) {
-        this.centerForce = centerForce;
-    }
 
     public void setRecommendationStrategy(RecommendationStrategy rs) {
         this.rs = rs;
@@ -513,10 +158,5 @@ public class GraphModel {
         pcs.firePropertyChange(new PropertyChangeEvent(this, "modelChange", null, null));
     }
 
-    //Functions for propertyChangeListeners / support
-
-    public void addPropertyChangeListener(PropertyChangeListener pcl) {
-        pcs.addPropertyChangeListener(pcl);
-    }
 }
 
