@@ -26,7 +26,10 @@ In the model all relevant simulation operations are performed. The highest level
 The model manager is responsible for setting up everything for the simulation to run, as well as the main program loop that keeps the logic going.
 
 ### GraphModel
-One of the two "hearts" of the simulation. It tracks all nodes in a simulation, as well as code for spacing them out such that they can be displayed nicely.
+One of the two "hearts" of the simulation. It tracks all nodes in a simulation, and deals with any logic regarding information spread on a network level. It extends the GraphPhysicsModel, which is responsible for handling the physics updates throughout the network itself.
+
+### GraphPhysicsModel
+Handles all physics updates.
 
 ### Node
 The other heart of the simulation. All relevant logic with regards to the flow of information through a network takes place here. The functions for the logic of the nodes forming and disengaging from links can be found in here.
