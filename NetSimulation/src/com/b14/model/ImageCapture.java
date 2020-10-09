@@ -12,6 +12,9 @@ import java.io.IOException;
 
 public class ImageCapture {
 
+    private final String DIR_BELIEF = "/belief";
+    private final String DIR_DISSONANCE = "/dissonance";
+
     private ModelManager manager;
     private GraphPanel panel;
     private Camera camera;
@@ -39,9 +42,13 @@ public class ImageCapture {
         letPhysicsSettle();
         setCameraOnAll();
 
+        panel.setDrawBelief(true);
         BufferedImage bi = paintImage();
+        saveToFile(bi, DIR_BELIEF);
 
-        saveToFile(bi);
+        panel.setDrawBelief(false);
+        bi = paintImage();
+        saveToFile(bi, DIR_DISSONANCE);
 
         panel.setHeadless(prevHeadless);
     }
@@ -115,11 +122,11 @@ public class ImageCapture {
         return bi;
     }
 
-    private void saveToFile(BufferedImage bi) {
+    private void saveToFile(BufferedImage bi, String subDirectory) {
 
         assert(outputFolder != null) : "image was not provided with an output folder";
 
-        File outputFile = new File(outputFolder, model.getEpoch() + ".png");
+        File outputFile = new File(outputFolder + subDirectory, model.getEpoch() + ".png");
 
         try {
             ImageIO.write(bi, "png", outputFile);
@@ -137,6 +144,12 @@ public class ImageCapture {
         if (!folder.exists()) {
             folder.mkdirs();
         }
+
+        File belief = new File(outputFolder + DIR_BELIEF);
+        File dissonance = new File(outputFolder + DIR_DISSONANCE);
+
+        belief.mkdir();
+        dissonance.mkdir();
     }
 
     public void setMaxAvgVelocityBeforeCapture(float maxAvgVelocityBeforeCapture) {
