@@ -1,12 +1,11 @@
 package com.b14.controller;
 
 import com.b14.model.GraphModel;
-import com.b14.model.ModelManager;
+import com.b14.ModelManager;
 import com.b14.model.Node;
 import com.b14.view.Camera;
 import com.b14.view.GraphFrame;
 import com.b14.view.GraphPanel;
-import jdk.jfr.Event;
 
 import javax.swing.event.MouseInputAdapter;
 import java.awt.event.*;

@@ -1,5 +1,6 @@
 package com.b14.model;
 
+import com.b14.ModelManager;
 import com.b14.view.Camera;
 import com.b14.view.GraphPanel;
 
@@ -8,7 +9,6 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
-import java.nio.Buffer;
 
 public class ImageCapture {
 

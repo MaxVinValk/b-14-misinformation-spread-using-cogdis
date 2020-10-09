@@ -128,6 +128,14 @@ public class GraphModel extends GraphPhysicsModel {
         }
     }
 
+    /**
+     * Loads in agents on the basis of a CSV file specifying the traits of each agent in the network.
+     */
+    public void setAgentsFromFile(String filePath) {
+        
+    }
+
+    // getters
 
     public int getEpoch(){
         return epoch;

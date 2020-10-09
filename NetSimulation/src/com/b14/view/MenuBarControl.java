@@ -2,7 +2,7 @@ package com.b14.view;
 
 import com.b14.controller.*;
 import com.b14.model.GraphModel;
-import com.b14.model.ModelManager;
+import com.b14.ModelManager;
 import com.b14.model.DataLogger;
 
 import javax.swing.*;

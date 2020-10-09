@@ -2,11 +2,10 @@ package com.b14.controller;
 
 import com.b14.model.GraphModel;
 import com.b14.model.Node;
-import com.b14.model.ModelManager;
+import com.b14.ModelManager;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
-import java.util.ArrayList;
 import java.util.Random;
 import java.util.concurrent.locks.ReentrantLock;
 

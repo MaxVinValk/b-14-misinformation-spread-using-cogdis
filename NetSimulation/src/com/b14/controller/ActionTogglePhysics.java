@@ -1,6 +1,6 @@
 package com.b14.controller;
 
-import com.b14.model.ModelManager;
+import com.b14.ModelManager;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;

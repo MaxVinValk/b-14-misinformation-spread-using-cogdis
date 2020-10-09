@@ -1,7 +1,10 @@
-package com.b14.model;
+package com.b14;
 
 import com.b14.Main;
 import com.b14.controller.InputController;
+import com.b14.model.DataLogger;
+import com.b14.model.GraphModel;
+import com.b14.model.ImageCapture;
 import com.b14.view.Camera;
 import com.b14.view.GraphFrame;
 import com.b14.view.GraphPanel;
@@ -50,7 +53,7 @@ public class ModelManager {
         GraphFrame frame = new GraphFrame("Network Simulation " + Main.VERSION, startingWindowSize, model, camera);
         panel = frame.getPanel();
 
-        MenuBar menuBar = new MenuBar(this, model, camera, panel, dataLogger);
+        MenuBar menuBar = new MenuBar(this, model, camera, panel, frame, dataLogger);
         frame.setJMenuBar(menuBar);
         
         frame.setupGraph();

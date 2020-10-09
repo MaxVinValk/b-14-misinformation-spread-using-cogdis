@@ -3,7 +3,7 @@ package com.b14.view;
 import com.b14.controller.ActionSetGravity;
 import com.b14.controller.ActionTogglePhysics;
 import com.b14.model.GraphModel;
-import com.b14.model.ModelManager;
+import com.b14.ModelManager;
 
 import javax.swing.*;
 
