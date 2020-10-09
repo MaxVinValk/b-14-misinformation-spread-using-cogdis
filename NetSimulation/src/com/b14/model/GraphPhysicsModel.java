@@ -61,11 +61,8 @@ public class GraphPhysicsModel {
 
     protected void startRandom(int numNodes) {
         createNodes(numNodes);
-        connectProportionate();
-        createLoops();
-        nodeSpacingSetup();
 
-        pcs.firePropertyChange(new PropertyChangeEvent(this, "modelChange", null, null));
+        setupNetworkStructure();
     }
 
     /**
@@ -81,6 +78,14 @@ public class GraphPhysicsModel {
         for (int i = 0; i < numNodes; i++) {
             nodes.add(new Node(nextFreeID++));
         }
+    }
+
+    protected void setupNetworkStructure() {
+        connectProportionate();
+        createLoops();
+        nodeSpacingSetup();
+
+        pcs.firePropertyChange(new PropertyChangeEvent(this, "modelChange", null, null));
     }
 
     /**

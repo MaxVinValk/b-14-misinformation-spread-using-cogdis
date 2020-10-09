@@ -3,6 +3,11 @@ package com.b14.model;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
+import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
+import java.nio.Buffer;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.Queue;
@@ -10,13 +15,6 @@ import java.util.Random;
 
 /**
  *  Functionality for the entire network is stored here.
- */
-
-//TODO: Perhaps break up the physics simulation aspect of the model and the information aspect of the model?
-/*
-        Strategy proposed: Have a GraphModel that contains the physics, which governs a list of PhysicsNodes.
-        Then extend this GraphModel with a InformationNetwork class, that then stores InformationNetworkNodes (which
-        extend the PhysicsNodes). This way we can cleanly break up this class in the two distinct roles it plays.
  */
 
 public class GraphModel extends GraphPhysicsModel {
@@ -131,8 +129,30 @@ public class GraphModel extends GraphPhysicsModel {
     /**
      * Loads in agents on the basis of a CSV file specifying the traits of each agent in the network.
      */
-    public void setAgentsFromFile(String filePath) {
-        
+    public void setAgentsFromFile(String filePath) throws FileNotFoundException, IOException {
+
+        nextFreeID = 0;
+        nodes.clear();
+
+        BufferedReader reader = new BufferedReader(new FileReader(filePath));
+        String line = reader.readLine().strip();
+
+        if (!line.equals("neuroticism,extraversion,openness")) {
+            throw new IOException();
+        }
+
+        do {
+            line = reader.readLine();
+            if (line != null) {
+                String[] vals = line.strip().split(",");
+
+                nodes.add(new Node( nextFreeID++, Float.parseFloat(vals[0]), Float.parseFloat(vals[1]),
+                                    Float.parseFloat(vals[2])));
+            }
+        } while (line != null);
+
+        reader.close();
+        setupNetworkStructure();
     }
 
     // getters

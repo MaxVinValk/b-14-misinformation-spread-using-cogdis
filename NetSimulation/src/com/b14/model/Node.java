@@ -18,14 +18,18 @@ public class Node extends Physics2DObject {
 
     // Tuning parameters
     private float belief; // agent's belief at current time
-    private float openness; // how far another belief can be away from your's before being rejected
     private float currentDissonance = 0.0f;
     private float dissonanceThreshold; // dissonance becomes unbearable, agent engages in drastic measures: pruning network
     private ArrayList<Node> confidenceSet; // in theory only values would be possible as well.
     private float dissonanceDecay;
     private float dissonanceDecrease; // in case of a positive interaction
     private float dissonanceIncrease; // negative, in case of conflicting information (Not in use)
-    
+
+    //personality traits
+    private float openness; // how far another belief can be away from your's before being rejected
+    private float neuroticism;
+    private float extraversion;
+
     // Some stats (also needed for dissonance updates)
     private int numberOfContacts;
     private int numberOfConflicts;
@@ -50,6 +54,14 @@ public class Node extends Physics2DObject {
         numberOfConflicts = 0;
         numberOfContacts = 0;
         reset();
+    }
+
+    public Node(int id, float neuroticism, float extraversion, float openness) {
+        this(id);
+
+        this.openness = openness;
+        this.neuroticism = neuroticism;
+        this.extraversion = extraversion;
     }
 
     /**

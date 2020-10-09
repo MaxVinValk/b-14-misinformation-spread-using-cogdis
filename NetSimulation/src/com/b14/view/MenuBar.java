@@ -18,7 +18,7 @@ public class MenuBar extends JMenuBar {
      * @param camera    The camera that decides what is in view (and what not)
      */
     public MenuBar(ModelManager manager, GraphModel model, Camera camera, GraphPanel panel, GraphFrame frame, DataLogger dataLogger) {
-        add(new MenuBarFile(frame));
+        add(new MenuBarFile(manager, model, frame));
         add(new MenuBarControl(manager, model, panel, dataLogger));
         add(new MenuBarPhysics(manager, model));
         add(new MenuBarView(model, camera, panel));
