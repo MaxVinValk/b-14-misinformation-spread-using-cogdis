@@ -27,8 +27,8 @@ public class Node extends Physics2DObject {
 
     //personality traits
     private float openness; // how far another belief can be away from your's before being rejected
-    private float neuroticism;
-    private float extraversion;
+    private float neuroticism; // use neuroticism to inform resilience to dissonance
+    private float extraversion; // use extraversion to define benefit of positive encounter and network size
 
     // Some stats (also needed for dissonance updates)
     private int numberOfContacts;
@@ -47,21 +47,23 @@ public class Node extends Physics2DObject {
         belief = random.nextFloat();
         openness = 0.05f + random.nextFloat()*0.2f-0.05f;
         confidenceSet = new ArrayList<>();
-        dissonanceThreshold = 0.5f + random.nextFloat()*1.5f-0.5f;
+        dissonanceThreshold = random.nextFloat();
         dissonanceDecay = 0.5f;
         dissonanceDecrease = -0.05f;
         dissonanceIncrease = 0.3f;
         numberOfConflicts = 0;
         numberOfContacts = 0;
+        extraversion = 1f; // penalty on network size for individual is inactive for purely simulated data
         reset();
     }
 
     public Node(int id, float neuroticism, float extraversion, float openness) {
         this(id);
 
-        this.openness = openness;
-        this.neuroticism = neuroticism;
-        this.extraversion = extraversion;
+        this.openness = openness; 
+        this.dissonanceThreshold = 1f - neuroticism;
+        this.currentDissonance = random.nextFloat()*dissonanceThreshold;
+        this.extraversion = extraversion; 
     }
 
     /**
@@ -84,8 +86,8 @@ public class Node extends Physics2DObject {
      */
 
     public boolean canTwoConnect(Node node) {
-        return ((neighbours.size() < connectionLimit) &&
-                (node.getNeighbours().size() < connectionLimit));
+        return ((neighbours.size() < getIndividualConnectionLimit()) &&
+                (node.getNeighbours().size() < node.getIndividualConnectionLimit()));
     }
 
     /**
@@ -114,6 +116,18 @@ public class Node extends Physics2DObject {
         currentDissonance = ((float) Math.log(numberOfConflicts/(1.0f-dissonanceDecay)))
                             - (dissonanceDecay * (float) Math.log(numberOfContacts))
                             + (float) random.nextGaussian()*0.01f;
+        // Enforce limits
+        currentDissonance = (currentDissonance < 0) ? 0f : currentDissonance;
+        currentDissonance = (currentDissonance > 1) ? 1f : currentDissonance;
+    }
+
+    /**
+     * Calculates boost to dissonance level in case of a positive encounter or pruning after negative encounter.
+     */
+
+    public void boostDissonance() {
+        currentDissonance += (extraversion * dissonanceDecrease);
+        currentDissonance = (currentDissonance < 0) ? 0f : currentDissonance;
     }
 
     /**
@@ -127,12 +141,12 @@ public class Node extends Physics2DObject {
         possibleConnections.addAll(recommended);
 
         for (Node n : possibleConnections) {
-            if(Math.abs(n.belief - belief) < openness) {
+            if(Math.abs(n.belief - belief) < getWeightedOpenness()) {
                 confidenceSet.add(n);
                 addNeighbour(n); // update if other agent was in reccomended
             } else {
                 numberOfConflicts += 1;
-                if (currentDissonance > dissonanceThreshold) {
+                if (currentDissonance >= dissonanceThreshold) {
                     prunedConnections.add(n);
                     
                 }
@@ -142,7 +156,7 @@ public class Node extends Physics2DObject {
         }
         for (Node n : prunedConnections) {
             removeNeighbour(n);
-            currentDissonance += dissonanceDecrease; // reduction strategy has minimal (still linear) immediate effect (currently).
+            boostDissonance(); // reduction strategy has minimal (still linear) immediate effect (currently).
         }
         updateBelief();
     }
@@ -172,9 +186,14 @@ public class Node extends Physics2DObject {
                 if (n2 == this || n == n2) {
                     continue;
                 }
-                if(Math.abs(n2.belief - belief) < openness) {
+                if(Math.abs(n2.belief - belief) < getWeightedOpenness()) {
                     possibleConnections.add(n2);
-                    currentDissonance += dissonanceDecrease; // If I hear what I want to hear that makes me feel good (initially only, mere exposure!!)
+                    /*
+                    If I hear what I want to hear that makes me feel
+                    good (initially only, mere exposure!!). This boost
+                    depends agent's level of extraversion.
+                    */
+                    boostDissonance(); 
                 }
             }
         }
@@ -248,10 +267,6 @@ public class Node extends Physics2DObject {
         confidenceSet.clear();
     }
 
-    public static int getConnectionLimit() {
-        return connectionLimit;
-    }
-
     public int getConnectionCount() {
         return neighbours.size();
     }
@@ -289,7 +304,27 @@ public class Node extends Physics2DObject {
     }
 
     public boolean getCanConnect() {
-        return neighbours.size() < connectionLimit;
+        return neighbours.size() < getIndividualConnectionLimit();
+    }
+
+    /**
+     * Used to calculate the soft connection limit.
+     * Hard connection limit is determined by
+     * @param connectionLimit which enforces the
+     * maximum of possible connections. We use
+     * @param extraversion to determine individual
+     * differences in their personal network size
+     * 
+     * @return personal (soft) connection limit
+     */
+
+    public int getIndividualConnectionLimit() {
+        return (int) (extraversion*connectionLimit);
+    }
+
+    public float getWeightedOpenness() {
+        float ratio = openness - currentDissonance/dissonanceThreshold;
+        return ((ratio >= 0) ? ratio : 0f);
     }
 
     public float getDissonanceDecay() {
@@ -328,6 +363,6 @@ public class Node extends Physics2DObject {
                 "Openness margin:  " + openness              + "\n" +
                 "Current dis:            " + currentDissonance     + "\n" +
                 "Max. dis:                " + dissonanceThreshold   + "\n" +
-                "Num. neighbours:  " + neighbours.size()     + "/"  + connectionLimit + "\n";
+                "Num. neighbours:  " + neighbours.size()     + "/"  + getIndividualConnectionLimit() + "\n";
     }
 }

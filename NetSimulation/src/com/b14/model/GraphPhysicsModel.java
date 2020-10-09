@@ -115,7 +115,7 @@ public class GraphPhysicsModel {
             for (int i = 0; i < numNodes; i++) {
                 int numConnections = nodes.get(i).getNeighbours().size();
 
-                if (numConnections != Node.getConnectionLimit()) {
+                if (numConnections != nodes.get(i).getIndividualConnectionLimit()) {
                     selected -= nodes.get(i).getNeighbours().size();
                 }
 
@@ -130,8 +130,8 @@ public class GraphPhysicsModel {
 
             totalConnections += 2;
 
-            if (newNeighbour.getNeighbours().size() == Node.getConnectionLimit()) {
-                totalConnections -= Node.getConnectionLimit();
+            if (newNeighbour.getNeighbours().size() == newNeighbour.getIndividualConnectionLimit()) {
+                totalConnections -= newNeighbour.getIndividualConnectionLimit();
             }
 
         }

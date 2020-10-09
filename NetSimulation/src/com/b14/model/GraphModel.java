@@ -83,7 +83,7 @@ public class GraphModel extends GraphPhysicsModel {
                     if(recommended.size() > size) {
                         break;
                     }
-                    if((Math.abs(n.getBelief() - agent.getBelief()) < agent.getOpenness()) &&
+                    if((Math.abs(n.getBelief() - agent.getBelief()) < agent.getWeightedOpenness()) &&
                         !agent.getNeighbours().contains(n)) {
                             recommended.add(n);
                     }
@@ -178,7 +178,7 @@ public class GraphModel extends GraphPhysicsModel {
 
         for(Node n : nodes) {
 
-            while (n.getConnectionCount() > newLimit) {
+            while (n.getConnectionCount() > n.getIndividualConnectionLimit()) {
                 Node nodeToRemove = n.getNeighbours().get(random.nextInt(n.getConnectionCount()));
                 n.removeNeighbour(nodeToRemove);
             }
