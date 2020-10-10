@@ -18,7 +18,7 @@ public class Node extends Physics2DObject {
 
     // Tuning parameters
     private float belief; // agent's belief at current time
-    private float currentDissonance = 0.0f;
+    private double currentDissonance = 0.0f;
     private float dissonanceThreshold; // dissonance becomes unbearable, agent engages in drastic measures: pruning network
     private ArrayList<Node> confidenceSet; // in theory only values would be possible as well.
     private float dissonanceDecay;
@@ -113,9 +113,18 @@ public class Node extends Physics2DObject {
      */
 
     public void updateDissonance() {
-        currentDissonance = ((float) Math.log(numberOfConflicts/(1.0f-dissonanceDecay)))
-                            - (dissonanceDecay * (float) Math.log(numberOfContacts))
-                            + (float) random.nextGaussian()*0.01f;
+
+        if(neighbours.size() == 0) {
+            numberOfContacts += 1;
+        }
+
+        currentDissonance = Math.log(numberOfConflicts/(1.0f-dissonanceDecay))
+                            - (dissonanceDecay * Math.log(numberOfContacts))
+                            + random.nextGaussian()*0.01f;
+
+        if(id == 482) {
+            System.out.println(currentDissonance + " " + numberOfContacts + " " + numberOfConflicts);
+        }
         // Enforce limits
         currentDissonance = (currentDissonance < 0) ? 0f : currentDissonance;
         currentDissonance = (currentDissonance > 1) ? 1f : currentDissonance;
@@ -151,9 +160,12 @@ public class Node extends Physics2DObject {
                     
                 }
             numberOfContacts += 1; // update number of total contacts
-            updateDissonance();
+            
             }
         }
+
+        updateDissonance();
+
         for (Node n : prunedConnections) {
             removeNeighbour(n);
             boostDissonance(); // reduction strategy has minimal (still linear) immediate effect (currently).
@@ -275,7 +287,7 @@ public class Node extends Physics2DObject {
         return belief;
     }
 
-    public float getCurrentDissonance() {
+    public double getCurrentDissonance() {
         return currentDissonance;
     }
 
@@ -323,8 +335,10 @@ public class Node extends Physics2DObject {
     }
 
     public float getWeightedOpenness() {
-        float ratio = openness - currentDissonance/dissonanceThreshold;
-        return ((ratio >= 0) ? ratio : 0f);
+        double ratio = currentDissonance/dissonanceThreshold;
+        ratio = (ratio > 1 ? 1 : ratio);
+        float weightedOpenness = openness -  (float) (0.25f * ratio);
+        return ((weightedOpenness >= 0.1f) ? weightedOpenness : 0.1f);
     }
 
     public float getDissonanceDecay() {
