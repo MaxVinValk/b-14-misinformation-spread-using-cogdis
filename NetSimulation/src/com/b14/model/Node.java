@@ -12,6 +12,8 @@ import java.util.Random;
 public class Node extends Physics2DObject {
 
     private static int connectionLimit = 50; // for now. If we want super spreaders or influencers we might want to go back to create limit for each object.
+    private static float dissonanceRatioWeight = 0.5f;
+    private static float opennessWeight = 0.1f;
 
     protected ArrayList<Node> neighbours;
     protected int id;
@@ -29,6 +31,9 @@ public class Node extends Physics2DObject {
     private float openness; // how far another belief can be away from your's before being rejected
     private float neuroticism; // use neuroticism to inform resilience to dissonance
     private float extraversion; // use extraversion to define benefit of positive encounter and network size
+
+    // original values for personality traits
+    private float openness_original; // to change openness in case weight is changed.
 
     // Some stats (also needed for dissonance updates)
     private int numberOfContacts;
@@ -59,8 +64,8 @@ public class Node extends Physics2DObject {
 
     public Node(int id, float neuroticism, float extraversion, float openness) {
         this(id);
-
-        this.openness = openness; 
+        this.openness_original = openness;
+        this.openness = opennessWeight * openness; 
         this.dissonanceThreshold = 1f - neuroticism;
         this.currentDissonance = random.nextFloat()*dissonanceThreshold;
         this.extraversion = extraversion; 
@@ -110,21 +115,19 @@ public class Node extends Physics2DObject {
      * Details can also be found in the AOI reader from 2019 by Dr. J. Borst.
      * 
      * We motivate this choice in our report.
+     * @param conflict whether or not the current conact was a conflict
      */
 
-    public void updateDissonance() {
-
-        if(neighbours.size() == 0) {
-            numberOfContacts += 1;
+    public void updateDissonance(boolean conflict) {
+        ++numberOfContacts;
+        if(conflict) {
+            ++numberOfConflicts;
         }
 
         currentDissonance = Math.log(numberOfConflicts/(1.0f-dissonanceDecay))
                             - (dissonanceDecay * Math.log(numberOfContacts))
                             + random.nextGaussian()*0.01f;
 
-        if(id == 482) {
-            System.out.println(currentDissonance + " " + numberOfContacts + " " + numberOfConflicts);
-        }
         // Enforce limits
         currentDissonance = (currentDissonance < 0) ? 0f : currentDissonance;
         currentDissonance = (currentDissonance > 1) ? 1f : currentDissonance;
@@ -153,8 +156,9 @@ public class Node extends Physics2DObject {
             if(Math.abs(n.belief - belief) < getWeightedOpenness()) {
                 confidenceSet.add(n);
                 addNeighbour(n); // update if other agent was in reccomended
+                updateDissonance(false);
             } else {
-                numberOfConflicts += 1;
+                updateDissonance(true);
                 if (currentDissonance >= dissonanceThreshold) {
                     prunedConnections.add(n);
                     
@@ -163,8 +167,6 @@ public class Node extends Physics2DObject {
             
             }
         }
-
-        updateDissonance();
 
         for (Node n : prunedConnections) {
             removeNeighbour(n);
@@ -337,8 +339,8 @@ public class Node extends Physics2DObject {
     public float getWeightedOpenness() {
         double ratio = currentDissonance/dissonanceThreshold;
         ratio = (ratio > 1 ? 1 : ratio);
-        float weightedOpenness = openness -  (float) (0.25f * ratio);
-        return ((weightedOpenness >= 0.1f) ? weightedOpenness : 0.1f);
+        float weightedOpenness = openness -  (float) (dissonanceRatioWeight * ratio);
+        return ((weightedOpenness >= 0.01f) ? weightedOpenness : 0.01f);
     }
 
     public float getDissonanceDecay() {
@@ -368,6 +370,18 @@ public class Node extends Physics2DObject {
 
      public static void setConnectionLimit(int connectionLimit) {
          Node.connectionLimit = connectionLimit;
+     }
+
+     public static void setOpennessWeight(float opennessWeight) {
+         Node.opennessWeight = opennessWeight;
+     }
+
+     public static void setDissonanceRatioWeight(float dissonanceRatioWeight) {
+         Node.dissonanceRatioWeight = dissonanceRatioWeight;
+     }
+
+     public void setReweightedOpenness() {
+         openness = opennessWeight*openness_original;
      }
 
     @Override

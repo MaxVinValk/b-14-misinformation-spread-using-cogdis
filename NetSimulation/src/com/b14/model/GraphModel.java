@@ -84,7 +84,7 @@ public class GraphModel extends GraphPhysicsModel {
                         break;
                     }
                     if((Math.abs(n.getBelief() - agent.getBelief()) < agent.getWeightedOpenness()) &&
-                        !agent.getNeighbours().contains(n)) {
+                        !agent.getNeighbours().contains(n) && agent.canTwoConnect(n)) {
                             recommended.add(n);
                     }
                 }
@@ -182,6 +182,13 @@ public class GraphModel extends GraphPhysicsModel {
                 Node nodeToRemove = n.getNeighbours().get(random.nextInt(n.getConnectionCount()));
                 n.removeNeighbour(nodeToRemove);
             }
+        }
+        pcs.firePropertyChange(new PropertyChangeEvent(this, "modelChange", null, null));
+    }
+
+    public void setReweightedOpenness() {
+        for (Node n : nodes) {
+            n.setReweightedOpenness();
         }
         pcs.firePropertyChange(new PropertyChangeEvent(this, "modelChange", null, null));
     }
