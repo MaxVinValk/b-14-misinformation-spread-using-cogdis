@@ -80,7 +80,7 @@ public class GraphPanel extends JPanel implements PropertyChangeListener {
         g.setFont(font);
         g.setColor(Color.BLACK);
 
-        g.drawString("Running in headless mode :)\n", 50, 50);
+        g.drawString("Running in headless mode\n", 50, 50);
 
         font = getFont().deriveFont(40.0f);
         g.setFont(font);
@@ -96,14 +96,17 @@ public class GraphPanel extends JPanel implements PropertyChangeListener {
         int y = 100;
 
         for (String line : robot) {
-            g.drawString(line, 120, y);
+            g.drawString(line, 650, y);
             y += 50;
         }
 
         font = getFont().deriveFont(20.0f);
         g.setFont(font);
-        g.drawString("Running a model with " + model.getNodes().size() + " nodes", 600, 50);
-        g.drawString("Current model epoch:   " + model.getEpoch(), 600, 75);
+        g.drawString("Running a model with   "              + model.getNodes().size() + " nodes",   60, 100);
+        g.drawString("Current model epoch:   "              + model.getEpoch(),                     60, 125);
+
+        g.drawString("Using recommendation strategy:   "    + model.getRecommendationStrategy(),    60, 175);
+        g.drawString("With recommendation set size:      "  + model.getRecommendationSize(),        60, 200);
 
     }
 
@@ -283,7 +286,7 @@ public class GraphPanel extends JPanel implements PropertyChangeListener {
 
         if (headlessMode) {
             switch (name) {
-                case "modelChange": this.repaint();
+                case "modelChange": case "recommendSettingsChange": this.repaint();
                 break;
             }
         } else {

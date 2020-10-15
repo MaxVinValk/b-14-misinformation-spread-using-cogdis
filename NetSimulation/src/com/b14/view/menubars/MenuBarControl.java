@@ -4,6 +4,7 @@ import com.b14.controller.actions.*;
 import com.b14.model.GraphModel;
 import com.b14.ModelManager;
 import com.b14.model.DataLogger;
+import com.b14.view.GraphFrame;
 import com.b14.view.GraphPanel;
 
 import javax.swing.*;
@@ -14,12 +15,12 @@ import javax.swing.*;
 
 public class MenuBarControl extends JMenu {
 
-    public MenuBarControl(ModelManager manager, GraphModel model, GraphPanel panel, DataLogger dataLogger) {
+    public MenuBarControl(ModelManager manager, GraphModel model, GraphFrame frame) {
         super("Sim Control");
 
         add(new JMenuItem(new ActionInitialize(manager, model)));
         add(new JMenuItem(new ActionUpdateNetworkDissonance(model)));
-        add(new JMenuItem(new ActionUpdateNetworkRecommendation(model)));
+        add(new JMenuItem(new ActionUpdateNetworkRecommendation(model, frame)));
         add(new JMenuItem(new ActionUpdateDissonanceWeight(model)));
         add(new JMenuItem(new ActionUpdateOpennessWeight(model)));
         add(new JMenuItem(new ActionUpdateNodeConnectionLimit(manager, model)));

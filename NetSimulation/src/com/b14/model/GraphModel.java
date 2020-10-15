@@ -1,5 +1,8 @@
 package com.b14.model;
 
+import com.b14.model.recommendationstrategies.RecommendationStrategy;
+
+import javax.naming.OperationNotSupportedException;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
@@ -19,26 +22,22 @@ import java.util.Random;
 
 public class GraphModel extends GraphPhysicsModel {
 
-    public enum RecommendationStrategy {
-        RANDOM, POLARISE
-    }
-
     private int epoch;
 
-    private RecommendationStrategy rs;
+    private RecommendationStrategy.Strategy rs;
     private int recommendationSize;
-
-    private ArrayList<Node> recommended;
 
     private DataLogger dl;
 
+    /**
+     * initializes a graph model
+     * @param dl the data-logger instance that is being used to record data output
+     */
 
     public GraphModel(DataLogger dl) {
         this.dl = dl;
 
-        recommended = new ArrayList<>();
-
-        rs = RecommendationStrategy.POLARISE;
+        rs = RecommendationStrategy.Strategy.POLARIZE;
         recommendationSize = 20;
         epoch = 0;
     }
@@ -54,55 +53,19 @@ public class GraphModel extends GraphPhysicsModel {
     }
 
     /**
-     * Recommendation set selection algorithm.
-     * @param agent the agent for which to create recommend set
-     * @param size the size of the recommendation set
-     * @param rs the algorithm by which to select nodes.
-     */
-
-    // ToDo: distinct functions per algorithm.
-
-    void recommend(Node agent, int size, RecommendationStrategy rs) {
-        recommended.clear();
-        switch (rs) {
-            case RANDOM:
-                while (recommended.size() < size) {
-                    Node n = nodes.get(random.nextInt(nodes.size()));
-                    if (n != agent) {
-                        recommended.add(n);
-                    }
-                }
-                break;
-            
-            case POLARISE:
-                // recommends only other agents the agent does not know that are close to the agents own belief.
-                for (Node n : nodes) {
-                    if(n == agent) {
-                        continue;
-                    }
-                    if(recommended.size() > size) {
-                        break;
-                    }
-                    if((Math.abs(n.getBelief() - agent.getBelief()) < agent.getWeightedOpenness()) &&
-                        !agent.getNeighbours().contains(n) && agent.canTwoConnect(n)) {
-                            recommended.add(n);
-                    }
-                }
-                break;
-        
-            default:
-                break;
-        }
-    }
-
-    /**
      *  Performs 1 spreading step for entire network.
      */
     public void simulateSpreadStep() {
-        for (Node n : nodes) {
-            n.reset(); // clear confidence set
-            recommend(n, recommendationSize, rs);
-            n.receiveMessages(recommended);
+        try {
+            for (Node n : nodes) {
+                n.reset(); // clear confidence set
+                ArrayList<Node> recommended = RecommendationStrategy.recommend(rs, nodes, n, recommendationSize);
+                n.receiveMessages(recommended);
+            }
+        } catch (OperationNotSupportedException e) {
+            System.err.println("Attempted to use a recommendation strategy that has not been implemented yet in recommend.");
+            System.err.println("Update is aborted, but step may have been completed partially. Data may not be valid anymore!");
+            return;
         }
         // perform fraternize on entire network AFTER all received message + dissonance update
         for (Node n : nodes) {
@@ -133,6 +96,7 @@ public class GraphModel extends GraphPhysicsModel {
 
         nextFreeID = 0;
         nodes.clear();
+        epoch = 0;
 
         BufferedReader reader = new BufferedReader(new FileReader(filePath));
         String line = reader.readLine().strip();
@@ -157,20 +121,30 @@ public class GraphModel extends GraphPhysicsModel {
 
     // getters
 
-    public int getEpoch(){
+    public int getEpoch() {
         return epoch;
+    }
+
+    public int getRecommendationSize() {
+        return recommendationSize;
+    }
+
+    public RecommendationStrategy.Strategy getRecommendationStrategy() {
+        return rs;
     }
 
     /*
      * Setters
      */
 
-    public void setRecommendationStrategy(RecommendationStrategy rs) {
+    public void setRecommendationStrategy(RecommendationStrategy.Strategy rs) {
         this.rs = rs;
+        pcs.firePropertyChange(new PropertyChangeEvent(this, "recommendSettingsChange", null, null));
     }
 
     public void setRecommendationSize(int recommendationSize) {
         this.recommendationSize = recommendationSize;
+        pcs.firePropertyChange(new PropertyChangeEvent(this, "recommendSettingsChange", null, null));
     }
 
     public void setConnectionLimitOnNodes(int newLimit) {
