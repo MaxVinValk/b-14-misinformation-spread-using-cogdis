@@ -1,6 +1,5 @@
 package com.b14;
 
-import com.b14.Main;
 import com.b14.controller.InputController;
 import com.b14.model.DataLogger;
 import com.b14.model.GraphModel;
@@ -8,7 +7,7 @@ import com.b14.model.ImageCapture;
 import com.b14.view.Camera;
 import com.b14.view.GraphFrame;
 import com.b14.view.GraphPanel;
-import com.b14.view.MenuBar;
+import com.b14.view.menubars.MenuBar;
 
 import java.awt.*;
 import java.util.concurrent.locks.ReentrantLock;
