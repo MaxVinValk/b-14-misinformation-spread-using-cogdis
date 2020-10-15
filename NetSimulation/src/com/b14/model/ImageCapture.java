@@ -100,9 +100,6 @@ public class ImageCapture {
         camera.setCameraTo(lowX - 50, lowY - 50);
         float heightScale = camera.getHeight() / (float)(highY - lowY + 150);
         camera.setScale(heightScale);
-
-
-
     }
 
     /**
