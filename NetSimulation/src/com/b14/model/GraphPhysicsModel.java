@@ -8,6 +8,10 @@ import java.util.LinkedList;
 import java.util.Queue;
 import java.util.Random;
 
+/**
+ * A class that is responsible for all physics updates to a network of nodes.
+ */
+
 public class GraphPhysicsModel {
 
     protected int nextFreeID;
@@ -28,6 +32,9 @@ public class GraphPhysicsModel {
     protected PropertyChangeSupport pcs;
 
 
+    /**
+     * Creates a new GraphPhysicsModel
+     */
     public GraphPhysicsModel() {
         nodes = new ArrayList<>();
 
@@ -41,7 +48,6 @@ public class GraphPhysicsModel {
      * and all nodes that are close to one another enact a force towards each other, to force them to space apart.
      */
     public double physicsUpdate() {
-
         for (int i = 0; i < nodes.size(); i++) {
             applyPushForce(i);
             applySpringForce(i);
@@ -144,7 +150,7 @@ public class GraphPhysicsModel {
         ArrayList<Node> onlyOneConnection = new ArrayList<>();
 
         for (Node n : nodes) {
-            if (n.getNeighbours().size() == 1) {
+            if (n.getNeighbours().size() == 1 && n.getIndividualConnectionLimit() > 1) {
                 onlyOneConnection.add(n);
             }
         }
@@ -196,9 +202,6 @@ public class GraphPhysicsModel {
                     continue;
                 }
 
-                //We add random noise to prevent overlapping... Overlapping does weird things to the system.
-                //Perhaps should be made more robust to prevent issues with them still overlapping regardless of
-                //the noise
                 double desiredXPos = currentX + linkDistance * Math.cos(angle * i) + (random.nextFloat()*10);
                 double desiredYPos = currentY + linkDistance * Math.sin(angle * i) + (random.nextFloat()*10);
 
@@ -243,11 +246,14 @@ public class GraphPhysicsModel {
     }
 
 
+    /**
+     * Applies the push force to the given node of its surrounding nodes. Each node pushes on all others nearby,
+     * to force nodes that are not connected with a link to space out themselves.
+     * @param nodeIdx
+     */
     private void applyPushForce(int nodeIdx) {
         Node currentNode = nodes.get(nodeIdx);
 
-        // First, the force that pushes them all away from one another for the sake of spacing
-        //It is like springs, but then they only enforce a minimum distance. So they only push away
         ArrayList<Node> tooClose = new ArrayList<>();
 
         for (int j = 0; j < nodes.size(); j++) {
@@ -261,7 +267,6 @@ public class GraphPhysicsModel {
             }
         }
 
-        // Here we apply the forces to the nodes that are too close
         for (Node n : tooClose) {
             double actualDistance = currentNode.getDistance(n);
             double pushForce = PUSH_CONSTANT * (PUSH_RANGE - actualDistance);
@@ -274,10 +279,6 @@ public class GraphPhysicsModel {
     }
 
     private void applySpringForce(int nodeIdx) {
-        /**
-         * Current issue: Exception in thread "main" java.lang.NullPointerException:
-         * Cannot invoke "com.b14.model.Physics2DObject.getX()" because "other" is null
-         */
         Node currentNode = nodes.get(nodeIdx);
 
         for (Node n : currentNode.getNeighbours()) {
@@ -285,7 +286,6 @@ public class GraphPhysicsModel {
             double actualDistance = currentNode.getDistance(n);
             double forceExperienced = SPRING_CONSTANT * (SPRING_LENGTH - actualDistance);
 
-            //Get a vector from this node pointing to the other anchor-point
             Vector2D v = new Vector2D(n.getPosition(), currentNode.getPosition());
 
             v.setToUnitVector();
@@ -297,7 +297,6 @@ public class GraphPhysicsModel {
 
     private void applyGravity() {
         for (Node n : nodes) {
-            //Finally apply the central pulling force:
             Vector2D v = new Vector2D(n.getPosition(), CENTER);
             v.setToUnitVector();
             v.multiplyWith(centerForce);
