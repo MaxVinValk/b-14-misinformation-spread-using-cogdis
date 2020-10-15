@@ -25,10 +25,7 @@ public class GraphPanel extends JPanel implements PropertyChangeListener {
     private static final Color RED_TRANS = new Color(255, 0, 0, 127);
     private static final Color BLUE_TRANS = new Color(0, 0, 255, 127);
     private static final Color BLACK_TRANS = new Color(0, 0, 0, 127);
-    private static final Color GRAY_TRANS = new Color(141, 141, 141, 139);
-
-
-    //TODO: Let the colour vary in gradient by belief
+    private static final Color GRAY_TRANS = new Color(141, 141, 141, 230);
 
 
     private GraphModel model;
@@ -72,8 +69,6 @@ public class GraphPanel extends JPanel implements PropertyChangeListener {
         } else {
             drawNetwork(g);
         }
-
-
     }
 
     /**
@@ -118,17 +113,14 @@ public class GraphPanel extends JPanel implements PropertyChangeListener {
      * @param g A Graphics object used for drawing in java swing.
      */
     private void drawNetwork(Graphics g) {
-        // Retrieve all nodes that are in the camera area:
+
+        assert(controller != null) : "Panel tried to draw wihout an initialized controller reference";
+
+
         ArrayList<Node> visible = new ArrayList<>();
 
-        Node selected = null;
-        int lastClicked = -1;
-
-        //Retrieve which, if any, node is clicked
-        if (controller != null) {
-            selected = controller.getSelectedNode();
-            lastClicked = controller.getLastClicked();
-        }
+        Node selected = controller.getSelectedNode();
+        int lastClicked = controller.getLastClicked();
 
         if (selected != null && lastClicked == MouseEvent.BUTTON3) {
             visible.add(selected);
@@ -147,7 +139,6 @@ public class GraphPanel extends JPanel implements PropertyChangeListener {
         if (selected != null) {
             drawInfoPanel(g, selected.toString());
         }
-
     }
 
 
@@ -190,7 +181,6 @@ public class GraphPanel extends JPanel implements PropertyChangeListener {
      */
 
     private void drawNodes(Graphics g, ArrayList<Node> visibleNodes, Node selected) {
-        //nodes
         Font font = getFont().deriveFont(15.0f * camera.getScale());
         g.setFont(font);
 
@@ -199,7 +189,7 @@ public class GraphPanel extends JPanel implements PropertyChangeListener {
             int screenX = (int)((n.getX() - camera.getX()) * camera.getScale());
             int screenY = (int)((n.getY() - camera.getY()) * camera.getScale());
 
-            int size = (int)(30 * camera.getScale());
+            int size = (int)(n.getSize() * camera.getScale());
 
             if (drawBelief) {
                 g.setColor(n.getColorBelief(selected != null));
@@ -212,7 +202,7 @@ public class GraphPanel extends JPanel implements PropertyChangeListener {
                 g.setColor(Color.BLACK);
             }
 
-            g.fillOval((int)(screenX - size/2), (int)(screenY - size / 2), size, size);
+            g.fillOval((screenX - size/2), (screenY - size / 2), size, size);
 
             if (drawNodeIDs) {
                 g.setColor(Color.WHITE);
@@ -245,6 +235,11 @@ public class GraphPanel extends JPanel implements PropertyChangeListener {
         return visible;
     }
 
+    /**
+     * Draws an information panel on the screen in the top-right corner, with the message that is provided
+     * @param g The graphics objec to draw on
+     * @param message The message to be displayed
+     */
     private void drawInfoPanel(Graphics g, String message) {
         int widthSpacing = 10;
         int heightSpacing = 26;
@@ -301,6 +296,10 @@ public class GraphPanel extends JPanel implements PropertyChangeListener {
     public void addPropertyChangeListener(PropertyChangeListener pcl) {
         pcs.addPropertyChangeListener(pcl);
     }
+
+    /*
+            From hereon we only have toggles, setters and getters
+     */
 
     public void toggleHeadless() {
         setHeadless(!headlessMode);
