@@ -88,6 +88,30 @@ public class Vector2D {
         y *= val;
     }
 
+    /**
+     * Adds the other vector to this one
+     * @param other the vector to add
+     */
+    public void add(Vector2D other) {
+        this.x += other.getX();
+        this.y += other.getY();
+    }
+
+    /**
+     * Adds to the vector
+     * @param x x-value to add
+     * @param y y-value to add
+     */
+
+    public void add(double x, double y) {
+        this.x += x;
+        this.y += y;
+    }
+
+    /*
+     * from here on, getters and setters
+     */
+
     public double getLength() {
         return Math.sqrt(x*x + y*y);
     }
@@ -116,26 +140,6 @@ public class Vector2D {
     public void setToRandomUnitVector() {
         x = random.nextFloat();
         y = Math.sqrt(1 - x*x);
-    }
-
-    /**
-     * Adds the other vector to this one
-     * @param other the vector to add
-     */
-    public void add(Vector2D other) {
-        this.x += other.getX();
-        this.y += other.getY();
-    }
-
-    /**
-     * Adds to the vector
-     * @param x x-value to add
-     * @param y y-value to add
-     */
-
-    public void add(double x, double y) {
-        this.x += x;
-        this.y += y;
     }
 
     @Override
