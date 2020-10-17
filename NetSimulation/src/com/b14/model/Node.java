@@ -12,8 +12,9 @@ import java.util.Random;
 public class Node extends Physics2DObject {
 
     private static int connectionLimit = 50; // for now. If we want super spreaders or influencers we might want to go back to create limit for each object.
-    private static float dissonanceRatioWeight = 0.5f;
-    private static float opennessWeight = 0.1f;
+    private static float dissonanceRatioWeight = 0.5f; // weightfor effect  of dissonance on openness
+    private static float opennessWeight = 0.1f; // maximum belief distance to consider with openness score of 1
+    private static int windowSize = 30; // for contact history window
 
     protected ArrayList<Node> neighbours;
     protected int id;
@@ -35,9 +36,12 @@ public class Node extends Physics2DObject {
     // original values for personality traits
     private float openness_original; // to change openness in case weight is changed.
 
-    // Some stats (also needed for dissonance updates)
+    // Interaction statistics
     private int numberOfContacts;
     private int numberOfConflicts;
+
+    // Moving window of contact history
+    private ArrayList<Integer> contactHistory;
 
     // Sampling seed
     private final static Random random = new Random(0);
@@ -49,6 +53,7 @@ public class Node extends Physics2DObject {
     public Node(int id) {
         this.id = id;
         neighbours = new ArrayList<>();
+        contactHistory = new ArrayList<>();
         belief = random.nextFloat();
         openness = 0.05f + random.nextFloat()*0.2f-0.05f;
         confidenceSet = new ArrayList<>();
@@ -120,17 +125,21 @@ public class Node extends Physics2DObject {
 
     public void updateDissonance(boolean conflict) {
         ++numberOfContacts;
+
         if(conflict) {
             ++numberOfConflicts;
+            contactHistory.add(1);
+        } else {
+            contactHistory.add(0);
         }
 
-        currentDissonance = Math.log(numberOfConflicts/(1.0f-dissonanceDecay))
-                            - (dissonanceDecay * Math.log(numberOfContacts))
-                            + random.nextGaussian()*0.01f;
+        if (contactHistory.size() > windowSize) {
+            contactHistory.remove(0); 
+        }
 
-        // Enforce limits
-        currentDissonance = (currentDissonance < 0) ? 0f : currentDissonance;
-        currentDissonance = (currentDissonance > 1) ? 1f : currentDissonance;
+        // Moving average for window
+        
+        currentDissonance = (double) contactHistory.stream().mapToInt(i -> i).sum() / contactHistory.size();
     }
 
     /**
@@ -151,7 +160,7 @@ public class Node extends Physics2DObject {
         ArrayList<Node> possibleConnections = new ArrayList<>(neighbours);
         ArrayList<Node> prunedConnections = new ArrayList<>();
         possibleConnections.addAll(recommended);
-
+        
         for (Node n : possibleConnections) {
             if(Math.abs(n.belief - belief) < getWeightedOpenness()) {
                 confidenceSet.add(n);
@@ -161,10 +170,7 @@ public class Node extends Physics2DObject {
                 updateDissonance(true);
                 if (currentDissonance >= dissonanceThreshold) {
                     prunedConnections.add(n);
-                    
                 }
-            numberOfContacts += 1; // update number of total contacts
-            
             }
         }
 
@@ -205,7 +211,7 @@ public class Node extends Physics2DObject {
                     /*
                     If I hear what I want to hear that makes me feel
                     good (initially only, mere exposure!!). This boost
-                    depends agent's level of extraversion.
+                    depends on agent's level of extraversion.
                     */
                     boostDissonance(); 
                 }
@@ -351,6 +357,10 @@ public class Node extends Physics2DObject {
         return openness;
     }
 
+    public float getExtraversion() {
+        return extraversion;
+    }
+
     public int getNumberOfContacts() {
         return numberOfContacts;
     }
@@ -389,8 +399,9 @@ public class Node extends Physics2DObject {
         return  "Node:                     " + id                    + "\n" +
                 "Current Belief:        " + belief                + "\n" +
                 "Openness margin:  " + openness              + "\n" +
-                "Current dis:            " + currentDissonance     + "\n" +
+                "Current dis:            " + (float) currentDissonance     + "\n" +
                 "Max. dis:                " + dissonanceThreshold   + "\n" +
-                "Num. neighbours:  " + neighbours.size()     + "/"  + getIndividualConnectionLimit() + "\n";
+                "Num. neighbours:  " + neighbours.size()     + "/"  + getIndividualConnectionLimit() + "\n" + 
+                "Num. conflicts: " + getNumberOfConflicts() + "\n" ;
     }
 }

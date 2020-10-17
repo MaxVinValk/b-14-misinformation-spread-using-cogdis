@@ -33,7 +33,8 @@ public class DataLogger {
     private int captureTimerMax = 100;
 
     private String headers =    "epoch,nodeID,belief,disLeftToThreshold,dissonance,numNeighbours,avgNeighbourBelief," +
-                                "numConfidants,avgConfidantBelief,numberOfContacts,numberOfConflicts\n";
+                                "numConfidants,avgConfidantBelief,numberOfContacts,numberOfConflicts,individualConnLimit,"+
+                                "openness,weightedOpenness,extraversion,neuroticismThreshold\n";
 
     private PropertyChangeSupport pcs;
 
@@ -111,7 +112,9 @@ public class DataLogger {
                         (n.getDissonanceThreshold() - n.getCurrentDissonance()) + "," + n.getCurrentDissonance() + "," +
                         n.getNeighbours().size() + "," + getAvgBelief(n.getNeighbours()) + "," +
                         n.getConfidenceSet().size() + "," + getAvgBelief(n.getConfidenceSet()) + "," +
-                        n.getNumberOfContacts() + "," + n.getNumberOfConflicts() + "\n";
+                        n.getNumberOfContacts() + "," + n.getNumberOfConflicts() + "," + n.getIndividualConnectionLimit() +
+                        "," + n.getOpenness() + "," + n.getWeightedOpenness() + "," + n.getExtraversion() + "," + n.getDissonanceThreshold() +
+                        "\n";
 
                         fw.write(result);
             }
