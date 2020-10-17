@@ -29,3 +29,4 @@ NetSimulation/data_out/*.png
 # generated images within the data_processing image folders
 data_processing/img/polarize/*.png
 data_processing/img/random/*.png
+data_processing/img/neutralize/*.png
