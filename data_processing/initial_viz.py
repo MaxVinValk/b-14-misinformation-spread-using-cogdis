@@ -43,33 +43,33 @@ def plotAverageOverEpochs(dataFrame, par, alg):
     plt.savefig("DMAS/data_processing/img/" + alg + "/" + par + ".png")
     plt.close()
 
-def plotHistogramsForEpoch(dataframe, par, timePoints, alg, rows, cols):
+def plotHistogramsForEpoch(dataframe, par, timepoints, alg, rows, cols, h_space = 0.55, w_space = 0.55):
     """
     Plots histogram for distribution of a selected parameter for
     selection of time points.
 
     Keyword arguments:
-    dataFrame   -- the data frame from which to collect the data
+    dataframe   -- the data frame from which to collect the data
     par         -- the parameter for which the histogram should be calculated
-    timePoints  -- the timepoints for which to create the histogram
+    timepoints  -- the timepoints for which to create the histogram
     alg         -- the algorithm that was used as recommendation 
     rows        -- rows of sub plot figure
     cols        -- cols of sub plot figure
     """
-    if rows*cols != len(timePoints):
+    if rows*cols != len(timepoints):
         raise Exception("The dimensions of the sub-plots must match the number of time points")
 
     row = 0
     col = 0
-    fig, axes = plt.subplots(nrows=rows, ncols=cols)
+    fig, axes = plt.subplots(nrows=rows, ncols=cols, sharey=True)
     plt.subplots_adjust(
-            hspace=0.55,
-            wspace=0.55
+            hspace=h_space,
+            wspace=w_space
         )
 
-    for tp in timePoints:
-        beliefs = dataframe[par][dataframe["epoch"] == tp]
-        axes[row, col].hist(beliefs)
+    for tp in timepoints:
+        dt = dataframe[par][dataframe["epoch"] == tp]
+        axes[row, col].hist(dt)
         axes[row, col].set_title("Epoch: " + str(tp))
         col += 1
         if col > (cols - 1):
@@ -79,6 +79,98 @@ def plotHistogramsForEpoch(dataframe, par, timePoints, alg, rows, cols):
     plt.savefig("DMAS/data_processing/img/" + alg + "/histogram_" + par + ".png")
     plt.close()
 
+def plotSimulationComparison(dataframes, par, titles, rows, cols, aggregate = True, h_space = 0.55, w_space = 0.55):
+    """
+    Plots selected function applied to selected parameter over epoch for multiple simulations.
+
+    Keyword arguments:
+    dataframes  -- the data frames on which to base the comparisons
+    par         -- the parameter for which the function should be calculated
+    titles         -- the algorithm that was used as recommendation 
+    rows        -- rows of sub plot figure
+    cols        -- cols of sub plot figure
+    aggregate   -- which function to calculate
+    """
+    if rows*cols != len(dataframes):
+        raise Exception("The dimensions of the sub-plots must at least match the number of dataframes to compare")
+
+    if len(dataframes) != len(titles):
+        raise Exception("For each dataframe a title needs to be provided.")
+
+    row = 0
+    col = 0
+    fig, axes = plt.subplots(nrows=rows, ncols=cols, sharey=True)
+    plt.subplots_adjust(
+            hspace=h_space,
+            wspace=w_space
+        )
+    
+    for frame, title in zip(dataframes, titles):
+
+        if aggregate:
+            dt = frame.groupby(["epoch"]).agg(
+                aggPar = pd.NamedAgg(column=par, aggfunc = "mean")
+
+                                                )
+            axes[row, col].plot(range(len(dt)),dt, color="black")
+
+        else:
+            nodeIDs = set(frame["nodeID"])
+            for ID in nodeIDs:
+                dt_individual = frame[par][frame["nodeID"] == ID]
+                axes[row, col].plot(range(len(dt_individual)), dt_individual, color = "black")
+        
+        axes[row, col].set_title(title)
+
+        col += 1
+        if col > (cols - 1):
+            col = 0
+            row += 1
+
+    plt.savefig("DMAS/data_processing/img/simulation_comparisons/comparison_" + par + ".png")
+    plt.close()
+
+def plotHistogramComparison(dataframes, timepoints, par, titles, rows, cols, h_space = 0.55, w_space = 0.55):
+    """
+    Plots histogram for distribution of a selected parameter for
+    selection of time points for different data sets.
+
+    Keyword arguments:
+    dataframes  -- the data frames from which to collect the data
+    timePoints  -- the timepoints for which to create the histogram
+    par         -- the parameter for which the histogram should be calculated
+    titles      -- the titles for the dataframes
+    rows        -- rows of sub plot figure
+    cols        -- cols of sub plot figure
+    """
+    if rows*cols != len(dataframes)*len(timepoints):
+            raise Exception("The dimensions of the sub-plots must at match the number of dataframes * number of timepoints to compare.")
+
+    if len(dataframes) != len(titles):
+        raise Exception("For each dataframe a title needs to be provided.")
+
+    row = 0
+    col = 0
+    fig, axes = plt.subplots(nrows=rows, ncols=cols, sharey=True)
+    plt.subplots_adjust(
+            hspace=h_space,
+            wspace=w_space
+        )
+
+    for frame, title in zip(dataframes, titles):
+
+        for tp in timepoints:
+            dt = frame[par][frame["epoch"] == tp]
+            axes[row, col].hist(dt)
+            axes[row, col].set_title(title + " Epoch: " + str(tp))
+            col += 1
+            if col > (cols - 1):
+                col = 0
+                row += 1
+
+    plt.savefig("DMAS/data_processing/img/simulation_comparisons/hist_comparison_" + par + ".png")
+    plt.close()
+    
 if __name__ == "__main__":
     # Read data into pd dataframe
 
@@ -118,3 +210,10 @@ if __name__ == "__main__":
         plotAverageOverEpochs(dataFramePolarize, par, "polarize")
         plotAverageOverEpochs(dataFrameNeutralize, par, "neutralize")
     
+    # Comparisons across dataframes:
+    plotHistogramComparison([dataFrameNeutralize,
+                             dataFramePolarize,
+                             dataFrameRandom],
+                             [1,10,25,50,100],
+                             "belief",
+                             ["N", "P", "R"],3,5)

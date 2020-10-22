@@ -30,3 +30,4 @@ NetSimulation/data_out/*.png
 data_processing/img/polarize/*.png
 data_processing/img/random/*.png
 data_processing/img/neutralize/*.png
+data_processing/img/simulation_comparisons/*.png
