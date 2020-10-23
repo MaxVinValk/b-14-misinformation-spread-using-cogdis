@@ -18,6 +18,7 @@ public class ActionResetZoom extends AbstractAction {
 
         this.camera = camera;
     }
+
     @Override
     public void actionPerformed(ActionEvent e) {
         camera.setScale(1.0f);

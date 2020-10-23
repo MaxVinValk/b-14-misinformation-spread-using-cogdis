@@ -7,8 +7,8 @@ import javax.swing.*;
 import java.awt.event.ActionEvent;
 
 /**
- *  Updates maximum impact the dissonance ratio should have on one's openness.
- *  With higher values individuals become more narrow-minded if they experience dissonance
+ * Updates maximum impact the dissonance ratio should have on one's openness.
+ * With higher values individuals become more narrow-minded if they experience dissonance
  */
 
 public class ActionUpdateDissonanceWeight extends AbstractAction {
@@ -24,10 +24,17 @@ public class ActionUpdateDissonanceWeight extends AbstractAction {
     public void actionPerformed(ActionEvent event) {
 
         float dissonanceRatioWeight;
+        String input;
 
         do {
             try {
-                dissonanceRatioWeight = Float.parseFloat(JOptionPane.showInputDialog("Weight applied to dissonance ratio to penalize openness (0-1):"));
+                input = JOptionPane.showInputDialog("Weight applied to dissonance ratio to penalize openness (0-1):", 0.5);
+
+                if (input == null) {
+                    return;
+                }
+
+                dissonanceRatioWeight = Float.parseFloat(input);
             } catch (NumberFormatException | NullPointerException e) {
                 dissonanceRatioWeight = -2;
             }

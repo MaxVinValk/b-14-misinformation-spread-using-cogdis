@@ -6,7 +6,7 @@ import javax.swing.*;
 import java.awt.event.ActionEvent;
 
 /**
- *  Toggles physics simulation on/off
+ * Toggles physics simulation on/off
  */
 
 public class ActionTogglePhysics extends AbstractAction {

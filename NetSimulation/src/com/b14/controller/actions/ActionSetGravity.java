@@ -22,11 +22,18 @@ public class ActionSetGravity extends AbstractAction {
     public void actionPerformed(ActionEvent event) {
 
         double gravitationalPull;
+        String input;
 
         do {
             try {
-                gravitationalPull = Double.parseDouble(JOptionPane.showInputDialog("Gravitational pull force " +
-                        "(Currently: " + model.getCenterForce() + ", needs to be >= 0, <= 1000)"));
+                input = JOptionPane.showInputDialog("Gravitational pull force " +
+                        "(Currently: " + model.getCenterForce() + ", needs to be >= 0, <= 1000)", 0.5f);
+
+                if (input == null) {
+                    return;
+                }
+
+                gravitationalPull = Double.parseDouble(input);
             } catch (NumberFormatException e) {
                 gravitationalPull = -1;
             }

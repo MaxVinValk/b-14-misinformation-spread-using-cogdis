@@ -9,7 +9,7 @@ import java.awt.event.ActionEvent;
 import java.beans.PropertyChangeSupport;
 
 /**
- *  Sets new recommendation strategy and size
+ * Sets new recommendation strategy and size
  */
 
 //TODO: Make the pop-up multiple-choice
@@ -29,9 +29,11 @@ public class ActionUpdateNetworkRecommendation extends AbstractAction {
     @Override
     public void actionPerformed(ActionEvent event) {
 
+        String input;
+
         Object[] options = RecommendationStrategy.Strategy.values();
 
-        RecommendationStrategy.Strategy rs = (RecommendationStrategy.Strategy)JOptionPane.showInputDialog(frame,
+        RecommendationStrategy.Strategy rs = (RecommendationStrategy.Strategy) JOptionPane.showInputDialog(frame,
                 "Select a recommendation strategy", "", JOptionPane.PLAIN_MESSAGE, null,
                 options, RecommendationStrategy.Strategy.values()[0]);
 
@@ -43,8 +45,14 @@ public class ActionUpdateNetworkRecommendation extends AbstractAction {
 
         do {
             try {
-                size = Integer.parseInt(JOptionPane.showInputDialog("Select recommendation set size" +
-                        " (set to 0 to disable, currently set to: " + model.getRecommendationSize() + "):"));
+                input = JOptionPane.showInputDialog("Select recommendation set size" +
+                        " (set to 0 to disable, currently set to: " + model.getRecommendationSize() + "):", 20);
+
+                if (input == null) {
+                    return;
+                }
+
+                size = Integer.parseInt(input);
             } catch (NumberFormatException e) {
                 size = -1;
             }

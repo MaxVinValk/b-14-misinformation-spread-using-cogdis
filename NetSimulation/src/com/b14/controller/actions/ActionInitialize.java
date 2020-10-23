@@ -22,10 +22,17 @@ public class ActionInitialize extends AbstractAction {
     public void actionPerformed(ActionEvent event) {
 
         int numNodes;
+        String input;
 
         do {
             try {
-                numNodes = Integer.parseInt(JOptionPane.showInputDialog("Number of nodes (>=5)?"));
+                input = JOptionPane.showInputDialog("Number of nodes (>=5)?", 100);
+
+                if (input == null) {
+                    return;
+                }
+
+                numNodes = Integer.parseInt(input);
             } catch (NumberFormatException e) {
                 numNodes = -1;
             }

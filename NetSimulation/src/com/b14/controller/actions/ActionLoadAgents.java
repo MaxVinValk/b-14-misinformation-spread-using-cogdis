@@ -43,7 +43,7 @@ public class ActionLoadAgents extends AbstractAction {
 
             } catch (Exception exception) {
                 JOptionPane.showMessageDialog(frame, "Could not open provided file. Are you sure it is" +
-                                " properly formatted?", "Error loading file", JOptionPane.ERROR_MESSAGE);
+                        " properly formatted?", "Error loading file", JOptionPane.ERROR_MESSAGE);
 
                 model.startRandom(10);
             } finally {

@@ -15,13 +15,13 @@ import java.util.ArrayList;
 import java.util.Random;
 
 /**
- *  The panel is responsible for actually drawing the network
- *  on the screen.
+ * The panel is responsible for actually drawing the network
+ * on the screen.
  */
 
 public class GraphPanel extends JPanel implements PropertyChangeListener {
 
-    //Bunch of constant colors, used for the edges
+    //Some constant colors, used for the edges
     private static final Color RED_TRANS = new Color(255, 0, 0, 127);
     private static final Color BLUE_TRANS = new Color(0, 0, 255, 127);
     private static final Color BLACK_TRANS = new Color(0, 0, 0, 127);
@@ -43,8 +43,9 @@ public class GraphPanel extends JPanel implements PropertyChangeListener {
 
     /**
      * Creates a new graph panel
-     * @param model     The model that has to be displayed
-     * @param camera    The camera that decides what area to show
+     *
+     * @param model  The model that has to be displayed
+     * @param camera The camera that decides what area to show
      */
     public GraphPanel(GraphModel model, Camera camera) {
         this.model = model;
@@ -59,6 +60,7 @@ public class GraphPanel extends JPanel implements PropertyChangeListener {
 
     /**
      * Performs all drawing of graphics done
+     *
      * @param g A Graphics object used for drawing in java swing.
      */
     private void drawSelf(Graphics g) {
@@ -73,6 +75,7 @@ public class GraphPanel extends JPanel implements PropertyChangeListener {
 
     /**
      * Draws the placeholder text for headless mode
+     *
      * @param g
      */
     private void drawHeadless(Graphics g) {
@@ -85,13 +88,13 @@ public class GraphPanel extends JPanel implements PropertyChangeListener {
         font = getFont().deriveFont(40.0f);
         g.setFont(font);
 
-        String[] robot =  { "       .- - -.     ",
-                            "     } n n {    ",
-                            "      \\_ - _/    ",
-                            "      /| []|\\    ",
-                            "   ()/|___|\\()  ",
-                            "       /| |\\     ",
-                            "     (0) (0)"};
+        String[] robot = {"       .- - -.     ",
+                "     } n n {    ",
+                "      \\_ - _/    ",
+                "      /| []|\\    ",
+                "   ()/|___|\\()  ",
+                "       /| |\\     ",
+                "     (0) (0)"};
 
         int y = 100;
 
@@ -102,22 +105,23 @@ public class GraphPanel extends JPanel implements PropertyChangeListener {
 
         font = getFont().deriveFont(20.0f);
         g.setFont(font);
-        g.drawString("Running a model with   "              + model.getNodes().size() + " nodes",   60, 100);
-        g.drawString("Current model epoch:   "              + model.getEpoch(),                     60, 125);
+        g.drawString("Running a model with   " + model.getNodes().size() + " nodes", 60, 100);
+        g.drawString("Current model epoch:   " + model.getEpoch(), 60, 125);
 
-        g.drawString("Using recommendation strategy:   "    + model.getRecommendationStrategy(),    60, 175);
-        g.drawString("With recommendation set size:      "  + model.getRecommendationSize(),        60, 200);
+        g.drawString("Using recommendation strategy:   " + model.getRecommendationStrategy(), 60, 175);
+        g.drawString("With recommendation set size:      " + model.getRecommendationSize(), 60, 200);
 
     }
 
 
     /**
      * Draws the entire network
+     *
      * @param g A Graphics object used for drawing in java swing.
      */
     private void drawNetwork(Graphics g) {
 
-        assert(controller != null) : "Panel tried to draw wihout an initialized controller reference";
+        assert (controller != null) : "Panel tried to draw wihout an initialized controller reference";
 
 
         ArrayList<Node> visible = new ArrayList<>();
@@ -147,17 +151,18 @@ public class GraphPanel extends JPanel implements PropertyChangeListener {
 
     /**
      * Draws in all edges that originate from a visible node
-     * @param g             A Graphics object used for drawing in java swing.
-     * @param visibleNodes  All the nodes that are currently visible
-     * @param selected      Give the value of a node if there is a selected node, null otherwise
+     *
+     * @param g            A Graphics object used for drawing in java swing.
+     * @param visibleNodes All the nodes that are currently visible
+     * @param selected     Give the value of a node if there is a selected node, null otherwise
      */
 
     private void drawEdges(Graphics g, ArrayList<Node> visibleNodes, Node selected) {
         g.setColor(Color.BLACK);
 
         for (Node n : visibleNodes) {
-            int x1 = (int)((n.getX() - camera.getX()) * camera.getScale());
-            int y1 = (int)((n.getY() - camera.getY()) * camera.getScale());
+            int x1 = (int) ((n.getX() - camera.getX()) * camera.getScale());
+            int y1 = (int) ((n.getY() - camera.getY()) * camera.getScale());
 
             for (Node n2 : n.getNeighbours()) {
 
@@ -169,8 +174,8 @@ public class GraphPanel extends JPanel implements PropertyChangeListener {
                     g.setColor((selected == null ? Color.BLACK : GraphPanel.BLACK_TRANS));
                 }
 
-                int x2 = (int)((n2.getX() - camera.getX()) * camera.getScale());
-                int y2 = (int)((n2.getY() - camera.getY()) * camera.getScale());
+                int x2 = (int) ((n2.getX() - camera.getX()) * camera.getScale());
+                int y2 = (int) ((n2.getY() - camera.getY()) * camera.getScale());
                 g.drawLine(x1, y1, x2, y2);
             }
         }
@@ -178,9 +183,10 @@ public class GraphPanel extends JPanel implements PropertyChangeListener {
 
     /**
      * Draws in all nodes that are visible
-     * @param g             A Graphics object used for drawing in java swing.
-     * @param visibleNodes  All the nodes that are currently visible
-     * @param selected      Give the value of a node if there is a selected node, null otherwise
+     *
+     * @param g            A Graphics object used for drawing in java swing.
+     * @param visibleNodes All the nodes that are currently visible
+     * @param selected     Give the value of a node if there is a selected node, null otherwise
      */
 
     private void drawNodes(Graphics g, ArrayList<Node> visibleNodes, Node selected) {
@@ -189,10 +195,10 @@ public class GraphPanel extends JPanel implements PropertyChangeListener {
 
         for (Node n : visibleNodes) {
 
-            int screenX = (int)((n.getX() - camera.getX()) * camera.getScale());
-            int screenY = (int)((n.getY() - camera.getY()) * camera.getScale());
+            int screenX = (int) ((n.getX() - camera.getX()) * camera.getScale());
+            int screenY = (int) ((n.getY() - camera.getY()) * camera.getScale());
 
-            int size = (int)(n.getSize() * camera.getScale());
+            int size = (int) (n.getSize() * camera.getScale());
 
             if (drawBelief) {
                 g.setColor(n.getColorBelief(selected != null));
@@ -205,7 +211,7 @@ public class GraphPanel extends JPanel implements PropertyChangeListener {
                 g.setColor(Color.BLACK);
             }
 
-            g.fillOval((screenX - size/2), (screenY - size / 2), size, size);
+            g.fillOval((screenX - size / 2), (screenY - size / 2), size, size);
 
             if (drawNodeIDs) {
                 g.setColor(Color.WHITE);
@@ -217,6 +223,7 @@ public class GraphPanel extends JPanel implements PropertyChangeListener {
 
     /**
      * Get all nodes within the camera view
+     *
      * @return all the nodes within the camera view
      */
     private ArrayList<Node> getVisibleNodes() {
@@ -225,7 +232,7 @@ public class GraphPanel extends JPanel implements PropertyChangeListener {
 
         for (Node n : model.getNodes()) {
 
-            int size = (int)(n.getSize() * camera.getScale());
+            int size = (int) (n.getSize() * camera.getScale());
 
             Vector2D pos = n.getPosition();
 
@@ -240,7 +247,8 @@ public class GraphPanel extends JPanel implements PropertyChangeListener {
 
     /**
      * Draws an information panel on the screen in the top-right corner, with the message that is provided
-     * @param g The graphics objec to draw on
+     *
+     * @param g       The graphics objec to draw on
      * @param message The message to be displayed
      */
     private void drawInfoPanel(Graphics g, String message) {
@@ -258,7 +266,7 @@ public class GraphPanel extends JPanel implements PropertyChangeListener {
             }
         }
 
-        int x = getWidth() - widthSpacing * mostChars - 3*bevel;
+        int x = getWidth() - widthSpacing * mostChars - 3 * bevel;
         int y = bevel;
 
         //draw background box:
@@ -286,12 +294,18 @@ public class GraphPanel extends JPanel implements PropertyChangeListener {
 
         if (headlessMode) {
             switch (name) {
-                case "modelChange": case "recommendSettingsChange": this.repaint();
-                break;
+                case "modelChange":
+                case "recommendSettingsChange":
+                    this.repaint();
+                    break;
             }
         } else {
             switch (name) {
-                case "physicsUpdate": case "cameraChange": case "modelChange": case "nodeSelected": this.repaint();
+                case "physicsUpdate":
+                case "cameraChange":
+                case "modelChange":
+                case "nodeSelected":
+                    this.repaint();
             }
         }
     }

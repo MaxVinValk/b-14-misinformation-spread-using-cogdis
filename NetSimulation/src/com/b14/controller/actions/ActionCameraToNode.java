@@ -9,7 +9,7 @@ import java.awt.event.ActionEvent;
 import java.util.ArrayList;
 
 /**
- *  Performs the action of pulling the camera to node 0. Handy if you lost the nodes in view
+ * Performs the action of pulling the camera to node 0. Handy if you lost the nodes in view
  */
 
 public class ActionCameraToNode extends AbstractAction {

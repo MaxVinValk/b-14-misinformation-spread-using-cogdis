@@ -10,7 +10,7 @@ import java.util.Random;
 import java.util.concurrent.locks.ReentrantLock;
 
 /**
- *  Changes connection limit for nodes.
+ * Changes connection limit for nodes.
  */
 
 public class ActionUpdateNodeConnectionLimit extends AbstractAction {
@@ -29,10 +29,17 @@ public class ActionUpdateNodeConnectionLimit extends AbstractAction {
     public void actionPerformed(ActionEvent event) {
 
         int connectionLimit;
+        String input;
 
         do {
             try {
-                connectionLimit = Integer.parseInt(JOptionPane.showInputDialog("New connection limit (must be larger than 1, should be larger than 5):"));
+                input = JOptionPane.showInputDialog("New connection limit (must be larger than 1, should be larger than 5):", 50);
+
+                if (input == null) {
+                    return;
+                }
+
+                connectionLimit = Integer.parseInt(input);
             } catch (NumberFormatException e) {
                 connectionLimit = 0;
             }

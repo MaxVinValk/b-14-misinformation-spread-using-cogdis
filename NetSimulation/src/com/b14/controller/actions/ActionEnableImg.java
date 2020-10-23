@@ -19,9 +19,17 @@ public class ActionEnableImg extends AbstractAction {
     @Override
     public void actionPerformed(ActionEvent event) {
         int num;
+        String input;
+
         do {
             try {
-                num = Integer.parseInt(JOptionPane.showInputDialog("How often should a frame be captured? (>= 1)"));
+                input = JOptionPane.showInputDialog("How often should a frame be captured? (>= 1)", 100);
+
+                if (input == null) {
+                    return;
+                }
+
+                num = Integer.parseInt(input);
             } catch (NumberFormatException e) {
                 num = -1;
             }

@@ -11,7 +11,7 @@ import java.beans.PropertyChangeSupport;
 import java.util.concurrent.locks.ReentrantLock;
 
 /**
- *  Not meant to be an actual implementation, more so to demonstrate how we can run the simulation in general.
+ * Not meant to be an actual implementation, more so to demonstrate how we can run the simulation in general.
  */
 
 public class ActionRunSimulationSteps extends AbstractAction {
@@ -29,10 +29,17 @@ public class ActionRunSimulationSteps extends AbstractAction {
     public void actionPerformed(ActionEvent event) {
 
         int timesSpread;
+        String input;
 
         do {
             try {
-                timesSpread = Integer.parseInt(JOptionPane.showInputDialog("Number of full exchanges + pruning to simulate?"));
+                input = JOptionPane.showInputDialog("Number of full exchanges + pruning to simulate?", 10);
+
+                if (input == null) {
+                    return;
+                }
+
+                timesSpread = Integer.parseInt(input);
             } catch (NumberFormatException e) {
                 timesSpread = -1;
             }

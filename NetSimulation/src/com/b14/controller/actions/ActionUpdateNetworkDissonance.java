@@ -6,7 +6,7 @@ import javax.swing.*;
 import java.awt.event.ActionEvent;
 
 /**
- *  Inits the spread of information
+ * Inits the spread of information
  */
 
 public class ActionUpdateNetworkDissonance extends AbstractAction {
@@ -22,11 +22,18 @@ public class ActionUpdateNetworkDissonance extends AbstractAction {
     public void actionPerformed(ActionEvent event) {
 
         float dissonanceUpdate;
+        String input;
 
         do {
             try {
-                dissonanceUpdate = Float.parseFloat(JOptionPane.showInputDialog("Dissonance update (-1.0 - 1.0):"));
-            } catch (NumberFormatException | NullPointerException e) {
+                input = JOptionPane.showInputDialog("Dissonance update (-1.0 - 1.0):", 0.0f);
+
+                if (input == null) {
+                    return;
+                }
+
+                dissonanceUpdate = Float.parseFloat(input);
+            } catch (NumberFormatException e) {
                 dissonanceUpdate = -2;
             }
 

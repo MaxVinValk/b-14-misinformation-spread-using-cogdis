@@ -24,11 +24,18 @@ public class ActionSetAvgMaxMovement extends AbstractAction implements PropertyC
     @Override
     public void actionPerformed(ActionEvent event) {
         float num;
+        String input;
         do {
             try {
-                num = Float.parseFloat(JOptionPane.showInputDialog("Please specify the maximum allowed average" +
+                input = JOptionPane.showInputDialog("Please specify the maximum allowed average" +
                         "velocity in a system before a capture is taken (> 0)\nCurrent: " +
-                        dl.getIc().getMaxAvgVelocityBeforeCapture()));
+                        dl.getIc().getMaxAvgVelocityBeforeCapture(), 10.0f);
+
+                if (input == null) {
+                    return;
+                }
+
+                num = Float.parseFloat(input);
 
             } catch (NumberFormatException e) {
                 num = -1;

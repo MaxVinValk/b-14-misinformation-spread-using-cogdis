@@ -37,8 +37,9 @@ public class InputController extends MouseInputAdapter implements KeyListener {
 
     /**
      * Creates an input controller
-     * @param panel     The panel that displays the simulation
-     * @param camera    The camera that determines what is within the panel view
+     *
+     * @param panel  The panel that displays the simulation
+     * @param camera The camera that determines what is within the panel view
      */
     public InputController(ModelManager manager, GraphModel model, Camera camera, GraphPanel panel, GraphFrame frame) {
 
@@ -57,7 +58,7 @@ public class InputController extends MouseInputAdapter implements KeyListener {
 
     @Override
     public void mouseClicked(MouseEvent event) {
-        if (event.getButton() == MouseEvent.BUTTON1 || event.getButton() == MouseEvent.BUTTON3 ) {
+        if (event.getButton() == MouseEvent.BUTTON1 || event.getButton() == MouseEvent.BUTTON3) {
             Node oldSelected = selectedNode;
             selectedNode = model.getNodeOnPoint(camera.cameraToWorld(event.getX(), event.getY()));
             lastClicked = event.getButton();
