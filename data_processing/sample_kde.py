@@ -135,7 +135,7 @@ class Sampler():
 
 
 if __name__ == "__main__":
-    n = 5000
+    n = 1000
     sampler = Sampler(n=n)
     sampler.fit("DMAS/data_processing/data_agents/sampled_data_input.csv")
     sampler.export("DMAS/data_processing/data_agents/{}.csvagents".format(n))
