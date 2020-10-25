@@ -4,6 +4,7 @@ import com.b14.controller.actions.ActionStepSim;
 import com.b14.model.GraphModel;
 import com.b14.ModelManager;
 import com.b14.model.Node;
+import com.b14.model.Vector2D;
 import com.b14.view.Camera;
 import com.b14.view.GraphFrame;
 import com.b14.view.GraphPanel;
@@ -23,6 +24,7 @@ public class InputController extends MouseInputAdapter implements KeyListener {
 
     private Camera camera;
     private GraphModel model;
+    private GraphPanel panel;
 
     private PropertyChangeSupport pcs;
 
@@ -48,8 +50,10 @@ public class InputController extends MouseInputAdapter implements KeyListener {
         panel.addMouseListener(this);
         panel.addMouseMotionListener(this);
         panel.addMouseWheelListener(this);
+
         this.camera = camera;
         this.model = model;
+        this.panel = panel;
 
         spaceAction = new ActionStepSim(manager, model);
 
@@ -58,6 +62,10 @@ public class InputController extends MouseInputAdapter implements KeyListener {
 
     @Override
     public void mouseClicked(MouseEvent event) {
+        if (panel.isHeadless()) {
+            return;
+        }
+
         if (event.getButton() == MouseEvent.BUTTON1 || event.getButton() == MouseEvent.BUTTON3) {
             Node oldSelected = selectedNode;
             selectedNode = model.getNodeOnPoint(camera.cameraToWorld(event.getX(), event.getY()));
@@ -69,7 +77,6 @@ public class InputController extends MouseInputAdapter implements KeyListener {
 
     @Override
     public void mousePressed(MouseEvent event) {
-
         if (event.getButton() == MouseEvent.BUTTON1) {
             mousePressLocationX = event.getX();
             mousePressLocationY = event.getY();
@@ -88,7 +95,7 @@ public class InputController extends MouseInputAdapter implements KeyListener {
     @Override
     public void mouseDragged(MouseEvent event) {
 
-        if (leftMouseButtonDown) {
+        if (leftMouseButtonDown && !panel.isHeadless()) {
 
             double movementX = (-(event.getX() - mousePressLocationX) / camera.getScale());
             double movementY = (-(event.getY() - mousePressLocationY) / camera.getScale());
@@ -102,7 +109,19 @@ public class InputController extends MouseInputAdapter implements KeyListener {
 
     @Override
     public void mouseWheelMoved(MouseWheelEvent event) {
+
+        if (panel.isHeadless()) {
+            return;
+        }
+
+        Vector2D originalMouseWorldLocation = camera.cameraToWorld(event.getX(), event.getY());
+
         camera.scale(event.getWheelRotation() < 0);
+
+        Vector2D newMouseWorldLocation = camera.cameraToWorld(event.getX(), event.getY());
+        Vector2D shift = new Vector2D(newMouseWorldLocation, originalMouseWorldLocation);
+        camera.moveCamera(shift.getX(), shift.getY());
+
     }
 
     public Node getSelectedNode() {
