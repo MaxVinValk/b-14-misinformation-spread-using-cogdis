@@ -259,13 +259,29 @@ public class Node extends Physics2DObject {
      * Determines the color of the node based on belief.
      * @return the color of the node
      */
-    public Color getColorBelief(boolean transparent) {
+    public Color getColorBelief(Color zeroBelief, Color oneBelief, boolean transparent) {
 
         float beliefDeviation = Math.abs(0.5f - belief) * 2;
 
-        int r = (int)((belief > 0.5 ? 1 : 0) * 255 * beliefDeviation);
-        int g = 0;
-        int b = (int)((belief < 0.5 ? 1 : 0) * 255 * beliefDeviation);
+        int beliefOverHalf = (belief > 0.5 ? 1 : 0);
+        int beliefUnderHalf = (belief < 0.5 ? 1 : 0);
+
+        int r = (int)(  beliefOverHalf  * beliefDeviation * oneBelief.getRed() +
+                        beliefUnderHalf * beliefDeviation * zeroBelief.getRed()
+        );
+
+        int g = (int)(  beliefOverHalf  * beliefDeviation * oneBelief.getGreen() +
+                beliefUnderHalf * beliefDeviation * zeroBelief.getGreen()
+        );
+
+        int b = (int)(  beliefOverHalf  * beliefDeviation * oneBelief.getBlue() +
+                beliefUnderHalf * beliefDeviation * zeroBelief.getBlue()
+        );
+
+
+        //int r = (int)((belief > 0.5 ? 1 : 0) * 255 * beliefDeviation);
+        //int g = 0;
+        //int b = (int)((belief < 0.5 ? 1 : 0) * 255 * beliefDeviation);
         int a = 127 + ((transparent ? 0 : 1) * 128);
 
         return new Color(r, g, b, a);
@@ -275,11 +291,14 @@ public class Node extends Physics2DObject {
      * Determines the color of the node based on dissonance
      * @return the color of the node
      */
-    public Color getColorDissonance(boolean transparent) {
-        int isDistressed = (isDissonanceOverThreshold() ? 255 : 0);
+    public Color getColorDissonance(Color distressColour, Color normalColor, boolean transparent) {
         int a = 127 + ((transparent ? 0 : 1) * 128);
 
-        return new Color(0, isDistressed, 0, a);
+        if (isDissonanceOverThreshold()) {
+            return new Color(distressColour.getRed(), distressColour.getGreen(), distressColour.getBlue(), a);
+        } else {
+            return new Color(normalColor.getRed(), normalColor.getGreen(), normalColor.getBlue(), a);
+        }
     }
 
 

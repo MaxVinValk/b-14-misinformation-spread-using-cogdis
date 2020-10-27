@@ -25,8 +25,6 @@ public class MenuBarView extends JMenu {
 
         addSeparator();
 
-        add(new JMenuItem(new ActionToggleDrawIDs(panel)));
-
         ActionShowBelief asb = new ActionShowBelief(panel);
         ActionShowDissonance asd = new ActionShowDissonance(panel);
 
@@ -39,6 +37,10 @@ public class MenuBarView extends JMenu {
         addSeparator();
         add(new JMenuItem(new ActionResetZoom(camera)));
         add(new JMenuItem(new ActionCameraToNode(model, camera)));
+
+        addSeparator();
+        add(new JMenuItem(new ActionLaunchColorMenu(panel)));
+        add(new JMenuItem(new ActionResetColors(panel)));
 
     }
 }
