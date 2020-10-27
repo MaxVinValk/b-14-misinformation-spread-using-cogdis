@@ -7,8 +7,6 @@ import com.b14.view.GraphFrame;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
-import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.util.concurrent.locks.ReentrantLock;
 
 public class ActionLoadAgents extends AbstractAction {

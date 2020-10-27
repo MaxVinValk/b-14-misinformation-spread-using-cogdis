@@ -1,13 +1,10 @@
 package com.b14.controller.actions;
 
-import com.b14.model.GraphModel;
 import com.b14.ModelManager;
+import com.b14.model.GraphModel;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
-import java.beans.PropertyChangeSupport;
 import java.util.concurrent.locks.ReentrantLock;
 
 /**

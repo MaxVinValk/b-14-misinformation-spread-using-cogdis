@@ -4,12 +4,10 @@ import com.b14.model.DataLogger;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 
 public class ActionEnableImg extends AbstractAction {
 
-    private DataLogger dataLogger;
+    private final DataLogger dataLogger;
 
     public ActionEnableImg(DataLogger dataLogger) {
         super("Enable/configure image output");

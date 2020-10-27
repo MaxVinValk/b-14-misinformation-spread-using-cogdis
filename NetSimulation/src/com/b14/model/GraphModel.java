@@ -4,20 +4,14 @@ import com.b14.model.recommendationstrategies.RecommendationStrategy;
 
 import javax.naming.OperationNotSupportedException;
 import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
-import java.beans.PropertyChangeSupport;
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
-import java.nio.Buffer;
 import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.Queue;
-import java.util.Random;
 
 /**
- *  Functionality for the entire network is stored here.
+ * Functionality for the entire network is stored here.
  */
 
 public class GraphModel extends GraphPhysicsModel {
@@ -27,10 +21,11 @@ public class GraphModel extends GraphPhysicsModel {
     private RecommendationStrategy.Strategy rs;
     private int recommendationSize;
 
-    private DataLogger dl;
+    private final DataLogger dl;
 
     /**
      * initializes a graph model
+     *
      * @param dl the data-logger instance that is being used to record data output
      */
 
@@ -43,7 +38,7 @@ public class GraphModel extends GraphPhysicsModel {
     }
 
     /**
-     *  Setup a simple simulation.
+     * Setup a simple simulation.
      */
 
     public void startRandom(int numNodes) {
@@ -53,7 +48,7 @@ public class GraphModel extends GraphPhysicsModel {
     }
 
     /**
-     *  Performs 1 spreading step for entire network.
+     * Performs 1 spreading step for entire network.
      */
     public void simulateSpreadStep() {
         try {
@@ -80,8 +75,9 @@ public class GraphModel extends GraphPhysicsModel {
     }
 
     /**
-     *  Updates dissonance level for each agent.
-     *  @param dissonance The update in dissonance that will be applied to each agent.
+     * Updates dissonance level for each agent.
+     *
+     * @param dissonance The update in dissonance that will be applied to each agent.
      */
     public void updateDissonances(float dissonance) {
         for (Node n : nodes) {
@@ -92,7 +88,7 @@ public class GraphModel extends GraphPhysicsModel {
     /**
      * Loads in agents on the basis of a CSV file specifying the traits of each agent in the network.
      */
-    public void setAgentsFromFile(String filePath) throws FileNotFoundException, IOException {
+    public void setAgentsFromFile(String filePath) throws IOException {
 
         nextFreeID = 0;
         nodes.clear();
@@ -110,8 +106,8 @@ public class GraphModel extends GraphPhysicsModel {
             if (line != null) {
                 String[] vals = line.strip().split(",");
 
-                nodes.add(new Node( nextFreeID++, Float.parseFloat(vals[0]), Float.parseFloat(vals[1]),
-                                    Float.parseFloat(vals[2])));
+                nodes.add(new Node(nextFreeID++, Float.parseFloat(vals[0]), Float.parseFloat(vals[1]),
+                        Float.parseFloat(vals[2])));
             }
         } while (line != null);
 
@@ -129,28 +125,28 @@ public class GraphModel extends GraphPhysicsModel {
         return recommendationSize;
     }
 
-    public RecommendationStrategy.Strategy getRecommendationStrategy() {
-        return rs;
+    public void setRecommendationSize(int recommendationSize) {
+        this.recommendationSize = recommendationSize;
+        pcs.firePropertyChange(new PropertyChangeEvent(this, "recommendSettingsChange", null, null));
     }
 
     /*
      * Setters
      */
 
-    public void setRecommendationStrategy(RecommendationStrategy.Strategy rs) {
-        this.rs = rs;
-        pcs.firePropertyChange(new PropertyChangeEvent(this, "recommendSettingsChange", null, null));
+    public RecommendationStrategy.Strategy getRecommendationStrategy() {
+        return rs;
     }
 
-    public void setRecommendationSize(int recommendationSize) {
-        this.recommendationSize = recommendationSize;
+    public void setRecommendationStrategy(RecommendationStrategy.Strategy rs) {
+        this.rs = rs;
         pcs.firePropertyChange(new PropertyChangeEvent(this, "recommendSettingsChange", null, null));
     }
 
     public void setConnectionLimitOnNodes(int newLimit) {
         Node.setConnectionLimit(newLimit);
 
-        for(Node n : nodes) {
+        for (Node n : nodes) {
 
             while (n.getConnectionCount() > n.getIndividualConnectionLimit()) {
                 Node nodeToRemove = n.getNeighbours().get(random.nextInt(n.getConnectionCount()));

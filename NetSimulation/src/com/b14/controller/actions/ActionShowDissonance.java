@@ -9,7 +9,7 @@ import java.beans.PropertyChangeListener;
 
 public class ActionShowDissonance extends AbstractAction implements PropertyChangeListener {
 
-    private GraphPanel panel;
+    private final GraphPanel panel;
 
     public ActionShowDissonance(GraphPanel panel) {
         super("Show dissonance");

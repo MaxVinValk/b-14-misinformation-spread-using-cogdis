@@ -8,13 +8,13 @@ import java.util.Random;
 
 public class Vector2D {
 
+    private final static Random random = new Random(0);
     private double x;
     private double y;
 
-    private final static Random random = new Random(0);
-
     /**
      * Creates a vector by copying another
+     *
      * @param other Another vector to be copied
      */
 
@@ -25,6 +25,7 @@ public class Vector2D {
 
     /**
      * Create a vector
+     *
      * @param x
      * @param y
      */
@@ -37,19 +38,21 @@ public class Vector2D {
 
     /**
      * Given 2 vectors, it creates a vector to the first from the second
-     * @param to    destination Coords
-     * @param from  origin Coords
+     *
+     * @param to   destination Coords
+     * @param from origin Coords
      */
     public Vector2D(Vector2D to, Vector2D from) {
-        this(to.getX(), to.getY(),from.getX(), from.getY());
+        this(to.getX(), to.getY(), from.getX(), from.getY());
     }
 
     /**
      * Given 4 coordinates, creates a vector to the first pair from the second
-     * @param x1    to x-coordinate
-     * @param y1    to y-coordinate
-     * @param x2    from x-coordinate
-     * @param y2    from y-coordinate
+     *
+     * @param x1 to x-coordinate
+     * @param y1 to y-coordinate
+     * @param x2 from x-coordinate
+     * @param y2 from y-coordinate
      */
     public Vector2D(double x1, double y1, double x2, double y2) {
         x = x2 - x1;
@@ -81,6 +84,7 @@ public class Vector2D {
 
     /**
      * Multiplies the vector with a scalar
+     *
      * @param val the multiplier
      */
     public void multiplyWith(double val) {
@@ -90,6 +94,7 @@ public class Vector2D {
 
     /**
      * Adds the other vector to this one
+     *
      * @param other the vector to add
      */
     public void add(Vector2D other) {
@@ -99,6 +104,7 @@ public class Vector2D {
 
     /**
      * Adds to the vector
+     *
      * @param x x-value to add
      * @param y y-value to add
      */
@@ -113,19 +119,19 @@ public class Vector2D {
      */
 
     public double getLength() {
-        return Math.sqrt(x*x + y*y);
+        return Math.sqrt(x * x + y * y);
     }
 
     public double getX() {
         return x;
     }
 
-    public double getY() {
-        return y;
-    }
-
     public void setX(double x) {
         this.x = x;
+    }
+
+    public double getY() {
+        return y;
     }
 
     public void setY(double y) {
@@ -139,7 +145,7 @@ public class Vector2D {
 
     public void setToRandomUnitVector() {
         x = random.nextFloat();
-        y = Math.sqrt(1 - x*x);
+        y = Math.sqrt(1 - x * x);
     }
 
     @Override

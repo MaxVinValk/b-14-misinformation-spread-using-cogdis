@@ -31,33 +31,26 @@ public class GraphPanel extends JPanel implements PropertyChangeListener {
     private static final Color DEFAULT_DISTRESS_COLOR = Color.GREEN;
     private static final Color DEFAULT_NO_DISTRESS_COLOR = Color.BLACK;
     private static final Color DEFAULT_BACKGROUND_COLOR = Color.WHITE;
-
-    //Edge Colour
-    private Color conflictingEdgeColor;
+    private final Random random = new Random(0);
 
     // Colours used to determine node colour
-
+    //Edge Colour
+    private Color conflictingEdgeColor;
     //Colours for showing belief
     private Color zeroBeliefColor;
     private Color oneBeliefColor;
-
     //Colours for showing distress
     private Color distressColor;
     private Color noDistressColor;
-
     private Color backgroundColor;
-
-    private GraphModel model;
-    private Camera camera;
+    private final GraphModel model;
+    private final Camera camera;
     private InputController controller = null;
-
-    private final Random random = new Random(0);
-
     private boolean headlessMode = true;
     private boolean drawBelief = true;
     private boolean drawNodeIDs = false;
 
-    private PropertyChangeSupport pcs;
+    private final PropertyChangeSupport pcs;
 
 
     /**
@@ -77,11 +70,11 @@ public class GraphPanel extends JPanel implements PropertyChangeListener {
 
     public void resetColors() {
         conflictingEdgeColor = DEFAULT_CONFLICTING_EDGE_COLOR;
-        zeroBeliefColor     = DEFAULT_ZERO_BELIEF_COLOR;
-        oneBeliefColor      = DEFAULT_ONE_BELIEF_COLOR;
-        distressColor       = DEFAULT_DISTRESS_COLOR;
-        noDistressColor     = DEFAULT_NO_DISTRESS_COLOR;
-        backgroundColor     = DEFAULT_BACKGROUND_COLOR;
+        zeroBeliefColor = DEFAULT_ZERO_BELIEF_COLOR;
+        oneBeliefColor = DEFAULT_ONE_BELIEF_COLOR;
+        distressColor = DEFAULT_DISTRESS_COLOR;
+        noDistressColor = DEFAULT_NO_DISTRESS_COLOR;
+        backgroundColor = DEFAULT_BACKGROUND_COLOR;
     }
 
     public void addInputController(InputController controller) {
@@ -245,7 +238,7 @@ public class GraphPanel extends JPanel implements PropertyChangeListener {
 
             if (drawNodeIDs) {
                 g.setColor(Color.WHITE);
-                g.drawString(new String("" + n.getId()), (int) (screenX - 5 * camera.getScale()),
+                g.drawString("" + n.getId(), (int) (screenX - 5 * camera.getScale()),
                         (int) (screenY + 5 * camera.getScale()));
             }
         }
@@ -362,11 +355,6 @@ public class GraphPanel extends JPanel implements PropertyChangeListener {
         repaint();
     }
 
-    public void setHeadless(boolean val) {
-        headlessMode = val;
-        repaint();
-    }
-
     public void setDrawBelief(boolean val) {
         boolean oldVal = drawBelief;
         drawBelief = val;
@@ -374,32 +362,13 @@ public class GraphPanel extends JPanel implements PropertyChangeListener {
         pcs.firePropertyChange(new PropertyChangeEvent(this, "changedDrawBelief", oldVal, drawBelief));
     }
 
-    public void setConflictingEdgeColor(Color c) {
-        conflictingEdgeColor = c;
-    }
-
-    public void setZeroBeliefColor(Color c) {
-        zeroBeliefColor = c;
-    }
-
-    public void setOneBeliefColor(Color c) {
-        oneBeliefColor = c;
-    }
-
-    public void setDistressColor(Color c) {
-        distressColor = c;
-    }
-
-    public void setNoDistressColor(Color c) {
-        noDistressColor = c;
-    }
-
-    public void setBackgroundColor(Color c) {
-        backgroundColor = c;
-    }
-
     public boolean isHeadless() {
         return headlessMode;
+    }
+
+    public void setHeadless(boolean val) {
+        headlessMode = val;
+        repaint();
     }
 
     public boolean isDrawingBelief() {
@@ -410,23 +379,47 @@ public class GraphPanel extends JPanel implements PropertyChangeListener {
         return conflictingEdgeColor;
     }
 
+    public void setConflictingEdgeColor(Color c) {
+        conflictingEdgeColor = c;
+    }
+
     public Color getZeroBeliefColor() {
         return zeroBeliefColor;
+    }
+
+    public void setZeroBeliefColor(Color c) {
+        zeroBeliefColor = c;
     }
 
     public Color getOneBeliefColor() {
         return oneBeliefColor;
     }
 
+    public void setOneBeliefColor(Color c) {
+        oneBeliefColor = c;
+    }
+
     public Color getDistressColor() {
         return distressColor;
+    }
+
+    public void setDistressColor(Color c) {
+        distressColor = c;
     }
 
     public Color getNoDistressColor() {
         return noDistressColor;
     }
 
+    public void setNoDistressColor(Color c) {
+        noDistressColor = c;
+    }
+
     public Color getBackgroundColor() {
         return backgroundColor;
+    }
+
+    public void setBackgroundColor(Color c) {
+        backgroundColor = c;
     }
 }

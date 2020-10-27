@@ -1,11 +1,9 @@
 package com.b14.view.menubars;
 
+import com.b14.ModelManager;
 import com.b14.controller.actions.*;
 import com.b14.model.GraphModel;
-import com.b14.ModelManager;
-import com.b14.model.DataLogger;
 import com.b14.view.GraphFrame;
-import com.b14.view.GraphPanel;
 
 import javax.swing.*;
 

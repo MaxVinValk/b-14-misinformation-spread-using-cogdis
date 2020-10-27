@@ -17,11 +17,12 @@ public class Physics2DObject {
     public Physics2DObject() {
         position = new Vector2D(0, 0);
         acceleration = new Vector2D(0, 0);
-        velocity = new Vector2D(0 ,0);
+        velocity = new Vector2D(0, 0);
     }
 
     /**
      * Returns the distance between this object and another
+     *
      * @param other The other Physics2DObject object
      * @return
      */
@@ -32,6 +33,7 @@ public class Physics2DObject {
 
     /**
      * Displaces this object by the provided vector
+     *
      * @param displacement vector indicating displacement
      */
     public void moveBy(Vector2D displacement) {
@@ -53,6 +55,7 @@ public class Physics2DObject {
 
     /**
      * Accelerates the object
+     *
      * @param x acceleration in the x-axis
      * @param y acceleration in the y-axis
      */
@@ -62,6 +65,7 @@ public class Physics2DObject {
 
     /**
      * Accelerates the object
+     *
      * @param other the vector whose velocity gets applied to this one
      */
     public void addAcceleration(Vector2D other) {
@@ -84,44 +88,45 @@ public class Physics2DObject {
         position.setY(y);
     }
 
-    public void setPosition(Vector2D newPosition) {
-        position = newPosition;
-    }
-
     public void setAcceleration(double x, double y) {
         acceleration.set(x, y);
-    }
-
-    public void setX(double x) {
-        position.setX(x);
-    }
-
-    public void setY(double y) {
-        position.setY(y);
     }
 
     public double getX() {
         return position.getX();
     }
 
+    public void setX(double x) {
+        position.setX(x);
+    }
+
     public double getY() {
         return position.getY();
+    }
+
+    public void setY(double y) {
+        position.setY(y);
     }
 
     public Vector2D getPosition() {
         return position;
     }
 
+    public void setPosition(Vector2D newPosition) {
+        position = newPosition;
+    }
+
     public Vector2D getAcceleration() {
         return acceleration;
     }
 
-    public Vector2D getVelocity() { return velocity; }
+    public Vector2D getVelocity() {
+        return velocity;
+    }
 
     public double getMass() {
         return mass;
     }
-
 
 
 }

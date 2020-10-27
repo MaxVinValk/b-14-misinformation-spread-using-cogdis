@@ -11,7 +11,7 @@ import java.io.File;
 import java.io.IOException;
 
 /**
- *  This class is responsible for generating image output from the simulation to files
+ * This class is responsible for generating image output from the simulation to files
  */
 
 public class ImageCapture {
@@ -19,22 +19,23 @@ public class ImageCapture {
     private final String DIR_BELIEF = "/belief";
     private final String DIR_DISSONANCE = "/dissonance";
 
-    private ModelManager manager;
-    private GraphPanel panel;
-    private Camera camera;
-    private GraphModel model;
+    private final ModelManager manager;
+    private final GraphPanel panel;
+    private final Camera camera;
+    private final GraphModel model;
 
     private String outputFolder = null;
 
-    private int maxPhysicsSettleStepsBeforeCapture  = 5000;
-    private float maxAvgVelocityBeforeCapture       = 10.0f;
+    private final int maxPhysicsSettleStepsBeforeCapture = 5000;
+    private float maxAvgVelocityBeforeCapture = 10.0f;
 
     /**
      * Sets up an image capture
-     * @param manager   the manager the image capture is attached to, to acquire the physics lock
-     * @param model     the model that we are capturing from
-     * @param camera    the camera that the panel uses to decide which region to capture
-     * @param panel     the panel which has all the drawing logic
+     *
+     * @param manager the manager the image capture is attached to, to acquire the physics lock
+     * @param model   the model that we are capturing from
+     * @param camera  the camera that the panel uses to decide which region to capture
+     * @param panel   the panel which has all the drawing logic
      */
     public ImageCapture(ModelManager manager, GraphModel model, Camera camera, GraphPanel panel) {
         this.manager = manager;
@@ -72,15 +73,15 @@ public class ImageCapture {
 
         Vector2D initPos = model.getNodes().get(0).getPosition();
 
-        int lowX = (int)initPos.getX();
-        int lowY = (int)initPos.getY();
+        int lowX = (int) initPos.getX();
+        int lowY = (int) initPos.getY();
         int highX = lowX;
         int highY = lowY;
 
         for (Node n : model.getNodes()) {
             Vector2D pos = n.getPosition();
 
-            int x = (int)pos.getX();
+            int x = (int) pos.getX();
             int y = (int) pos.getY();
 
             if (x < lowX) {
@@ -98,7 +99,7 @@ public class ImageCapture {
         }
 
         camera.setCameraTo(lowX - 50, lowY - 50);
-        float heightScale = camera.getHeight() / (float)(highY - lowY + 150);
+        float heightScale = camera.getHeight() / (float) (highY - lowY + 150);
         camera.setScale(heightScale);
     }
 
@@ -120,6 +121,7 @@ public class ImageCapture {
 
     /**
      * Creates an image and performs the drawing logic on it.
+     *
      * @return an image which was drawn on by the panel
      */
     private BufferedImage paintImage() {
@@ -137,12 +139,13 @@ public class ImageCapture {
 
     /**
      * Saves the given image to an image
-     * @param bi            The image to save
-     * @param subDirectory  The sub-directory in which the image will be stored
+     *
+     * @param bi           The image to save
+     * @param subDirectory The sub-directory in which the image will be stored
      */
     private void saveToFile(BufferedImage bi, String subDirectory) {
 
-        assert(outputFolder != null) : "image was not provided with an output folder";
+        assert (outputFolder != null) : "image was not provided with an output folder";
 
         File outputFile = new File(outputFolder + subDirectory, model.getEpoch() + ".png");
 
@@ -156,6 +159,7 @@ public class ImageCapture {
 
     /**
      * Change the root output folder to be whatever string is passed in. Also sets up sub-directories that are needed
+     *
      * @param outputFolder The new root folder
      */
 

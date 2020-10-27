@@ -9,7 +9,7 @@ import java.beans.PropertyChangeListener;
 
 public class ActionSetAvgMaxMovement extends AbstractAction implements PropertyChangeListener {
 
-    private DataLogger dl;
+    private final DataLogger dl;
 
     public ActionSetAvgMaxMovement(DataLogger dl) {
         super("set max avg. movement (capture)");

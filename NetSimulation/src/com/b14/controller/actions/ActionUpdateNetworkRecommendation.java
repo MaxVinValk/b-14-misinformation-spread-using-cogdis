@@ -6,7 +6,6 @@ import com.b14.view.GraphFrame;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
-import java.beans.PropertyChangeSupport;
 
 /**
  * Sets new recommendation strategy and size

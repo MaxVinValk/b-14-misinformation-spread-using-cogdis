@@ -13,7 +13,7 @@ import java.awt.*;
 import java.util.concurrent.locks.ReentrantLock;
 
 /**
- *  This class is responsible for managing the entire simulation
+ * This class is responsible for managing the entire simulation
  */
 
 public class ModelManager {
@@ -27,9 +27,8 @@ public class ModelManager {
     private final Camera camera;
 
     private final DataLogger dataLogger;
-
-    private boolean simulatePhysics = false;
     ReentrantLock physicsLock = new ReentrantLock();
+    private boolean simulatePhysics = false;
 
     /**
      * Sets up all necessary elements for running the simulation, including menus, windows, and the model itself
@@ -54,7 +53,7 @@ public class ModelManager {
 
         MenuBar menuBar = new MenuBar(this, model, camera, panel, frame, dataLogger);
         frame.setJMenuBar(menuBar);
-        
+
         frame.setupGraph();
 
         InputController inputController = new InputController(this, model, camera, panel, frame);
@@ -89,7 +88,7 @@ public class ModelManager {
 
             //update panels
             try {
-                Thread.sleep(1000/FPS);
+                Thread.sleep(1000 / FPS);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }

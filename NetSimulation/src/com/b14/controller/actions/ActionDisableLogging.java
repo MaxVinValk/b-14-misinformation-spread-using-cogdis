@@ -9,7 +9,7 @@ import java.beans.PropertyChangeListener;
 
 public class ActionDisableLogging extends AbstractAction implements PropertyChangeListener {
 
-    private DataLogger dataLogger;
+    private final DataLogger dataLogger;
 
     public ActionDisableLogging(DataLogger dataLogger) {
         super("Disable data output");

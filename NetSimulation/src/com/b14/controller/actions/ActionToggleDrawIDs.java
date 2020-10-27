@@ -7,7 +7,7 @@ import java.awt.event.ActionEvent;
 
 public class ActionToggleDrawIDs extends AbstractAction {
 
-    private GraphPanel panel;
+    private final GraphPanel panel;
 
     public ActionToggleDrawIDs(GraphPanel panel) {
         super("Toggle node IDs");

@@ -14,23 +14,11 @@ import java.awt.event.ComponentEvent;
 public class GraphFrame extends JFrame {
 
 
-    /*
-        This internal class is used to resize the camera when the window itself is resized
-     */
-    class ResizeListener extends ComponentAdapter {
-        public void componentResized(ComponentEvent e) { resize();}
-    }
-
-    //The function that is called on window-resize
-    private void resize() {
-        camera.setSize(this.getSize().width, this.getSize().height);
-    }
+    private final GraphPanel panel;
+    private final Camera camera;
 
 
     //Start of actual class
-
-    private GraphPanel panel;
-    private Camera camera;
 
     /**
      * Creates a new graph frame.
@@ -53,8 +41,13 @@ public class GraphFrame extends JFrame {
         this.addComponentListener(new ResizeListener());
     }
 
+    //The function that is called on window-resize
+    private void resize() {
+        camera.setSize(this.getSize().width, this.getSize().height);
+    }
+
     /**
-     *  Run all setup needed to start displaying
+     * Run all setup needed to start displaying
      */
     public void setupGraph() {
         this.pack();
@@ -63,11 +56,19 @@ public class GraphFrame extends JFrame {
     }
 
     /**
-     *
      * @return the panel that is attached to the frame
      */
     public GraphPanel getPanel() {
         return panel;
+    }
+
+    /*
+        This internal class is used to resize the camera when the window itself is resized
+     */
+    class ResizeListener extends ComponentAdapter {
+        public void componentResized(ComponentEvent e) {
+            resize();
+        }
     }
 
 

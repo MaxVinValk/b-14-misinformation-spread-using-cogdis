@@ -9,7 +9,7 @@ import java.beans.PropertyChangeListener;
 
 public class ActionShowBelief extends AbstractAction implements PropertyChangeListener {
 
-    private GraphPanel panel;
+    private final GraphPanel panel;
 
     public ActionShowBelief(GraphPanel panel) {
         super("Show belief");

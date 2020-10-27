@@ -8,9 +8,9 @@ import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 
 /**
- *  The camera class is responsible for keeping track of where the view of the user is located.
- *  Without a camera, we could only draw on the screen-coordinates themselves. The camera allows us to move
- *  the view independently of the coordinate system used in the background.
+ * The camera class is responsible for keeping track of where the view of the user is located.
+ * Without a camera, we could only draw on the screen-coordinates themselves. The camera allows us to move
+ * the view independently of the coordinate system used in the background.
  */
 
 public class Camera {
@@ -27,10 +27,11 @@ public class Camera {
     private int width;
     private int height;
 
-    private PropertyChangeSupport pcs;
+    private final PropertyChangeSupport pcs;
 
     /**
      * Creates a camera at 0,0 with a specified width and height
+     *
      * @param dim the dimensions that the camera needs to assume
      */
 
@@ -43,6 +44,7 @@ public class Camera {
 
     /**
      * Move the camera around
+     *
      * @param x x-movement
      * @param y y-movement
      */
@@ -56,6 +58,7 @@ public class Camera {
     /**
      * Given a position, this centers the camera on it.
      * TODO: Does not work well with zoom yet. For now it resets the zoom
+     *
      * @param pos The position to center on
      */
     public void centerCameraOn(Vector2D pos) {
@@ -73,6 +76,7 @@ public class Camera {
 
     /**
      * This function zooms the camera in or out.
+     *
      * @param scrollUp indicates scroll direction
      */
 
@@ -109,17 +113,21 @@ public class Camera {
     }
 
     public int getWidthScaled() {
-        return (int)(width / scale);
+        return (int) (width / scale);
     }
 
     public int getHeightScaled() {
-        return (int)(height / scale);
+        return (int) (height / scale);
     }
 
     public float getScale() {
         return scale;
     }
 
+    public void setScale(float scale) {
+        this.scale = scale;
+        pcs.firePropertyChange(new PropertyChangeEvent(this, "cameraChange", null, null));
+    }
 
     public void setSize(int width, int height) {
         this.width = width;
@@ -127,20 +135,15 @@ public class Camera {
         pcs.firePropertyChange(new PropertyChangeEvent(this, "cameraChange", null, null));
     }
 
-
     /**
      * Transforms camera (screen) coordinates to world coordinates
+     *
      * @param x x-pos on screen
      * @param y y-pos on screen
      * @return vector holding location in world that was clicked.
      */
     public Vector2D cameraToWorld(int x, int y) {
-        return new Vector2D(this.x + x/scale, this.y + y/scale);
-    }
-
-    public void setScale(float scale) {
-        this.scale = scale;
-        pcs.firePropertyChange(new PropertyChangeEvent(this, "cameraChange", null, null));
+        return new Vector2D(this.x + x / scale, this.y + y / scale);
     }
 
     public void addPropertyChangeListener(PropertyChangeListener pcl) {

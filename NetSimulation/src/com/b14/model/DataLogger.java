@@ -1,8 +1,5 @@
 package com.b14.model;
 
-import jdk.jfr.Event;
-
-import java.awt.*;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
@@ -29,14 +26,14 @@ public class DataLogger {
 
     private GraphModel model = null;
     private ImageCapture ic = null;
-    private int captureTimer    = 0;
+    private int captureTimer = 0;
     private int captureTimerMax = 100;
 
-    private String headers =    "epoch,nodeID,belief,disLeftToThreshold,dissonance,numNeighbours,avgNeighbourBelief," +
-                                "numConfidants,avgConfidantBelief,numberOfContacts,numberOfConflicts,individualConnLimit,"+
-                                "openness,weightedOpenness,extraversion,neuroticismThreshold\n";
+    private final String headers = "epoch,nodeID,belief,disLeftToThreshold,dissonance,numNeighbours,avgNeighbourBelief," +
+            "numConfidants,avgConfidantBelief,numberOfContacts,numberOfConflicts,individualConnLimit," +
+            "openness,weightedOpenness,extraversion,neuroticismThreshold\n";
 
-    private PropertyChangeSupport pcs;
+    private final PropertyChangeSupport pcs;
 
     public DataLogger() {
 
@@ -54,7 +51,7 @@ public class DataLogger {
 
     private void startNewSession() {
 
-        assert(ic != null) : "Image capture not added to logger!";
+        assert (ic != null) : "Image capture not added to logger!";
 
         if (!allowOutput) {
             createdFileSinceToggled = false;
@@ -87,6 +84,7 @@ public class DataLogger {
 
     /**
      * Takes the data currently in the model and logs data of relevance
+     *
      * @param epoch the epoch this information belongs to.
      */
     public void logData(int epoch) {
@@ -116,7 +114,7 @@ public class DataLogger {
                         "," + n.getOpenness() + "," + n.getWeightedOpenness() + "," + n.getExtraversion() + "," + n.getDissonanceThreshold() +
                         "\n";
 
-                        fw.write(result);
+                fw.write(result);
             }
 
             fw.close();
@@ -128,13 +126,14 @@ public class DataLogger {
             if (generateImages) {
                 ic.captureImage();
             }
-            captureTimer = captureTimerMax-1;
+            captureTimer = captureTimerMax - 1;
         }
 
     }
 
     /**
      * Sets whether or not the logger should generate output.
+     *
      * @param value Allow or disallow output
      */
 

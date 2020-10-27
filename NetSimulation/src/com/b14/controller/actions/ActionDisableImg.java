@@ -9,7 +9,7 @@ import java.beans.PropertyChangeListener;
 
 public class ActionDisableImg extends AbstractAction implements PropertyChangeListener {
 
-    private DataLogger dataLogger;
+    private final DataLogger dataLogger;
 
     public ActionDisableImg(DataLogger dataLogger) {
         super("Disable img output");

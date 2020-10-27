@@ -7,7 +7,7 @@ import java.awt.event.ActionEvent;
 
 public class ActionToggleLogging extends AbstractAction {
 
-    private DataLogger dataLogger;
+    private final DataLogger dataLogger;
 
     public ActionToggleLogging(DataLogger dataLogger) {
         super("Toggle output");

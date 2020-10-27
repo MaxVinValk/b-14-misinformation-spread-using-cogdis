@@ -1,15 +1,23 @@
 package com.b14.view.popup_menus;
 
 import javax.swing.*;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
 import java.awt.*;
+
+/**
+ * The panel which contains 1 colour picker menu
+ */
 
 public class ColorChooserPanel extends JPanel {
 
-    private JColorChooser tcc;
-    private int id;
+    private final JColorChooser tcc;
+    private final int id;
 
+    /**
+     * Sets up 1 colour picker
+     *
+     * @param selectedColour The initially selected colour
+     * @param id             An ID number to track which colour is being set with this picker
+     */
     public ColorChooserPanel(Color selectedColour, int id) {
         super(new BorderLayout());
         this.id = id;

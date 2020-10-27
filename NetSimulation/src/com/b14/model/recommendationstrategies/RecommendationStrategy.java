@@ -7,25 +7,26 @@ import java.util.ArrayList;
 import java.util.Random;
 
 public class RecommendationStrategy {
-    public enum Strategy {
-        RANDOM, POLARIZE, NEUTRALIZE
-    }
-
     private static final Random random = new Random(0);
 
     public static ArrayList<Node> recommend(Strategy strategy, ArrayList<Node> nodes, Node current, int size) throws OperationNotSupportedException {
         switch (strategy) {
-            case RANDOM: return recommendRandom(nodes, current, size);
-            case POLARIZE: return recommendPolarize(nodes, current, size);
-            case NEUTRALIZE: return recommendNeutralize(nodes, current, size);
-            default: throw new OperationNotSupportedException();
+            case RANDOM:
+                return recommendRandom(nodes, current, size);
+            case POLARIZE:
+                return recommendPolarize(nodes, current, size);
+            case NEUTRALIZE:
+                return recommendNeutralize(nodes, current, size);
+            default:
+                throw new OperationNotSupportedException();
         }
     }
 
     /**
      * Recommends random other nodes to the agent
-     * @param agent     the agent for which the recommendation set is constructed
-     * @param size      the maximum size of the recommended connections
+     *
+     * @param agent the agent for which the recommendation set is constructed
+     * @param size  the maximum size of the recommended connections
      */
     private static ArrayList<Node> recommendRandom(ArrayList<Node> nodes, Node agent, int size) {
         ArrayList<Node> recommended = new ArrayList<>();
@@ -42,8 +43,9 @@ public class RecommendationStrategy {
 
     /**
      * Recommends nodes to node agent that are similar to the agent in belief
-     * @param agent     the agent for which the recommendation set is constructed
-     * @param size      the maximum size of the recommended connections
+     *
+     * @param agent the agent for which the recommendation set is constructed
+     * @param size  the maximum size of the recommended connections
      */
 
     private static ArrayList<Node> recommendPolarize(ArrayList<Node> nodes, Node agent, int size) {
@@ -56,7 +58,7 @@ public class RecommendationStrategy {
             if (recommended.size() > size) {
                 break;
             }
-            if((Math.abs(n.getBelief() - agent.getBelief()) < agent.getWeightedOpenness()) &&
+            if ((Math.abs(n.getBelief() - agent.getBelief()) < agent.getWeightedOpenness()) &&
                     !agent.getNeighbours().contains(n) && agent.canTwoConnect(n)) {
                 recommended.add(n);
             }
@@ -86,5 +88,9 @@ public class RecommendationStrategy {
         }
 
         return recommended;
+    }
+
+    public enum Strategy {
+        RANDOM, POLARIZE, NEUTRALIZE
     }
 }

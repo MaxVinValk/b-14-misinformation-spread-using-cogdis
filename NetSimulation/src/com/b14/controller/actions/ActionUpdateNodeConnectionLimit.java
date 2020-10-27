@@ -1,8 +1,8 @@
 package com.b14.controller.actions;
 
+import com.b14.ModelManager;
 import com.b14.model.GraphModel;
 import com.b14.model.Node;
-import com.b14.ModelManager;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;

@@ -7,12 +7,21 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import java.awt.*;
 
+/**
+ * The panel for colour selection
+ */
+
 public class ColorChooserTabPanel extends JPanel implements ChangeListener {
 
-    private JTabbedPane tabbedPane;
-    private ColorChooserPreviewPanel previewPanel;
-    private GraphPanel panel;
+    private final JTabbedPane tabbedPane;
+    private final ColorChooserPreviewPanel previewPanel;
+    private final GraphPanel panel;
 
+    /**
+     * Sets up the panels for colour picking, as well as the preview panel
+     *
+     * @param panel the graphPanel the colours are picked for
+     */
     public ColorChooserTabPanel(GraphPanel panel) {
         super(new GridLayout(2, 1));
 
@@ -60,12 +69,24 @@ public class ColorChooserTabPanel extends JPanel implements ChangeListener {
 
             //Not the most elegant, but does the job
             switch (selected.getID()) {
-                case 0: panel.setZeroBeliefColor(newColor);         break;
-                case 1: panel.setOneBeliefColor(newColor);          break;
-                case 2: panel.setConflictingEdgeColor(newColor);    break;
-                case 3: panel.setDistressColor(newColor);           break;
-                case 4: panel.setNoDistressColor(newColor);         break;
-                case 5: panel.setBackgroundColor(newColor);         break;
+                case 0:
+                    panel.setZeroBeliefColor(newColor);
+                    break;
+                case 1:
+                    panel.setOneBeliefColor(newColor);
+                    break;
+                case 2:
+                    panel.setConflictingEdgeColor(newColor);
+                    break;
+                case 3:
+                    panel.setDistressColor(newColor);
+                    break;
+                case 4:
+                    panel.setNoDistressColor(newColor);
+                    break;
+                case 5:
+                    panel.setBackgroundColor(newColor);
+                    break;
             }
 
             previewPanel.repaint();

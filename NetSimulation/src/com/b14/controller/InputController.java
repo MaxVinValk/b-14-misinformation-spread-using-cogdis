@@ -1,8 +1,8 @@
 package com.b14.controller;
 
+import com.b14.ModelManager;
 import com.b14.controller.actions.ActionStepSim;
 import com.b14.model.GraphModel;
-import com.b14.ModelManager;
 import com.b14.model.Node;
 import com.b14.model.Vector2D;
 import com.b14.view.Camera;
@@ -22,11 +22,11 @@ import java.beans.PropertyChangeSupport;
 
 public class InputController extends MouseInputAdapter implements KeyListener {
 
-    private Camera camera;
-    private GraphModel model;
-    private GraphPanel panel;
+    private final Camera camera;
+    private final GraphModel model;
+    private final GraphPanel panel;
 
-    private PropertyChangeSupport pcs;
+    private final PropertyChangeSupport pcs;
 
     private boolean leftMouseButtonDown = false;
     private int mousePressLocationX = 0;
@@ -35,7 +35,7 @@ public class InputController extends MouseInputAdapter implements KeyListener {
     private Node selectedNode = null;
     private int lastClicked = -1;
 
-    private ActionStepSim spaceAction;
+    private final ActionStepSim spaceAction;
 
     /**
      * Creates an input controller

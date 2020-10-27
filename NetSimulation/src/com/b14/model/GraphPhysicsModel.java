@@ -14,22 +14,18 @@ import java.util.Random;
 
 public class GraphPhysicsModel {
 
-    protected int nextFreeID;
     protected final Random random = new Random(0);
-    protected ArrayList<Node> nodes;
-
     //For stable behaviour, pushRange < springLength
-    private final double PUSH_RANGE         = 90.0f;
-    private final double PUSH_CONSTANT      = 0.1f;
-
-    private final double SPRING_LENGTH      = 110.0f;
-    private final double SPRING_CONSTANT    = 0.005f;
-
+    private final double PUSH_RANGE = 90.0f;
+    private final double PUSH_CONSTANT = 0.1f;
+    private final double SPRING_LENGTH = 110.0f;
+    private final double SPRING_CONSTANT = 0.005f;
     //Gravitational pull to a point
-    private final Vector2D CENTER           = new Vector2D(512, 384);
-    private double centerForce              = 0.5f;
-
+    private final Vector2D CENTER = new Vector2D(512, 384);
+    protected int nextFreeID;
+    protected ArrayList<Node> nodes;
     protected PropertyChangeSupport pcs;
+    private double centerForce = 0.5f;
 
 
     /**
@@ -62,7 +58,7 @@ public class GraphPhysicsModel {
     }
 
     /**
-     *  Setup a simple simulation.
+     * Setup a simple simulation.
      */
 
     protected void startRandom(int numNodes) {
@@ -72,12 +68,13 @@ public class GraphPhysicsModel {
     }
 
     /**
-     *  Create Nodes.
+     * Create Nodes.
+     *
      * @param numNodes Number of nodes to be created for the network.
      */
 
     private void createNodes(int numNodes) {
-        assert(numNodes > 5) : "Too few nodes defined in startRandom";
+        assert (numNodes > 5) : "Too few nodes defined in startRandom";
         nextFreeID = 0;
         nodes.clear();
 
@@ -192,7 +189,7 @@ public class GraphPhysicsModel {
 
             ArrayList<Node> neighbours = currentNode.getNeighbours();
 
-            double angle = (2*Math.PI) / neighbours.size();
+            double angle = (2 * Math.PI) / neighbours.size();
 
             for (int i = 0; i < neighbours.size(); i++) {
 
@@ -202,8 +199,8 @@ public class GraphPhysicsModel {
                     continue;
                 }
 
-                double desiredXPos = currentX + linkDistance * Math.cos(angle * i) + (random.nextFloat()*10);
-                double desiredYPos = currentY + linkDistance * Math.sin(angle * i) + (random.nextFloat()*10);
+                double desiredXPos = currentX + linkDistance * Math.cos(angle * i) + (random.nextFloat() * 10);
+                double desiredYPos = currentY + linkDistance * Math.sin(angle * i) + (random.nextFloat() * 10);
 
                 currentNeighbour.setPosition(desiredXPos, desiredYPos);
                 nodesToProcess.add(currentNeighbour);
@@ -235,8 +232,8 @@ public class GraphPhysicsModel {
 
                 while (getNodeOnPoint(x, y) != null) {
                     spiralPosition += spiralStepSize;
-                    x = (int)(0.25 * spiralPosition * Math.cos(spiralPosition));
-                    y = (int)(0.25 * spiralPosition * Math.sin(spiralPosition));
+                    x = (int) (0.25 * spiralPosition * Math.cos(spiralPosition));
+                    y = (int) (0.25 * spiralPosition * Math.sin(spiralPosition));
                 }
 
                 n.setPosition(x, y);
@@ -249,6 +246,7 @@ public class GraphPhysicsModel {
     /**
      * Applies the push force to the given node of its surrounding nodes. Each node pushes on all others nearby,
      * to force nodes that are not connected with a link to space out themselves.
+     *
      * @param nodeIdx
      */
     private void applyPushForce(int nodeIdx) {
@@ -306,6 +304,7 @@ public class GraphPhysicsModel {
 
     /**
      * Transfers all accelerations to velocities, and returns average velocity at this step
+     *
      * @return the average velocity
      */
     private double transferForces() {
@@ -324,6 +323,7 @@ public class GraphPhysicsModel {
 
     /**
      * Finds the node that is on the indicated coordinates.
+     *
      * @param x The x (world) coordinate to check
      * @param y The y (world) coordinate to check
      * @return The node if there is one on point (x, y), and NULL otherwise

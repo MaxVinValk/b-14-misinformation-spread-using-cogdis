@@ -14,9 +14,8 @@ import javax.swing.*;
 public class MenuBarView extends JMenu {
 
     /**
-     *
-     * @param model     The main model used in the simulation
-     * @param camera    The camera that is used to determine what is in view (and what not)
+     * @param model  The main model used in the simulation
+     * @param camera The camera that is used to determine what is in view (and what not)
      */
     public MenuBarView(GraphModel model, Camera camera, GraphPanel panel) {
         super("View");

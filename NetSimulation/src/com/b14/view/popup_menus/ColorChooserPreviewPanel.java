@@ -5,10 +5,19 @@ import com.b14.view.GraphPanel;
 import javax.swing.*;
 import java.awt.*;
 
+/**
+ * A preview panel which draws all items for which colours can be chosen
+ */
+
 public class ColorChooserPreviewPanel extends JPanel {
 
     private final GraphPanel panel;
 
+    /**
+     * Creates the preview panel
+     *
+     * @param panel the graphpanel of which the colours are set
+     */
     public ColorChooserPreviewPanel(GraphPanel panel) {
         this.panel = panel;
     }
@@ -18,6 +27,12 @@ public class ColorChooserPreviewPanel extends JPanel {
         super.paintComponent(g);
         drawSelf(g);
     }
+
+    /**
+     * Draws the panel showing all preview items
+     *
+     * @param g The graphics object to draw on
+     */
 
     private void drawSelf(Graphics g) {
         setBackground(panel.getBackgroundColor());
@@ -46,7 +61,5 @@ public class ColorChooserPreviewPanel extends JPanel {
 
         g.setColor(panel.getNoDistressColor());
         g.fillOval(528, 135, 50, 50);
-
-
     }
 }
