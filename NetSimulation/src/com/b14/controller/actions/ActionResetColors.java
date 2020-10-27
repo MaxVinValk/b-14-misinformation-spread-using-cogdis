@@ -18,7 +18,7 @@ public class ActionResetColors extends AbstractAction {
      * @param panel the panel on which we are resetting the colours
      */
     public ActionResetColors(GraphPanel panel) {
-        super("Reset Colours");
+        super("Reset colours");
         this.panel = panel;
     }
 
