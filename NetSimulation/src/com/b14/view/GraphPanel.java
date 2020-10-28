@@ -190,13 +190,16 @@ public class GraphPanel extends JPanel implements PropertyChangeListener {
 
             for (Node n2 : n.getNeighbours()) {
 
-                if ((n.getBelief() > 0.5) && (n2.getBelief() > 0.5)) {
+                /*if ((n.getBelief() > 0.5) && (n2.getBelief() > 0.5)) {
                     g.setColor((selected == null) ? oneBeliefColor : getTransparent(oneBeliefColor));
                 } else if ((n.getBelief() < 0.5) && (n2.getBelief() < 0.5)) {
                     g.setColor((selected == null) ? zeroBeliefColor : getTransparent(zeroBeliefColor));
                 } else {
                     g.setColor((selected == null) ? conflictingEdgeColor : getTransparent(conflictingEdgeColor));
-                }
+                }*/
+
+                float avgBelief = (n.getBelief() + n2.getBelief()) / 2;
+                g.setColor(Node.getColorBelief(zeroBeliefColor, oneBeliefColor, avgBelief, selected != null));
 
                 int x2 = (int) ((n2.getX() - camera.getX()) * camera.getScale());
                 int y2 = (int) ((n2.getY() - camera.getY()) * camera.getScale());

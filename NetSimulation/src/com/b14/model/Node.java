@@ -11,6 +11,30 @@ import java.util.Random;
 
 public class Node extends Physics2DObject {
 
+    public static Color getColorBelief(Color zeroBelief, Color oneBelief, float belief, boolean transparent) {
+        float beliefDeviation = Math.abs(0.5f - belief) * 2;
+
+        int beliefOverHalf = (belief > 0.5 ? 1 : 0);
+        int beliefUnderHalf = (belief < 0.5 ? 1 : 0);
+
+        int r = (int) (beliefOverHalf * beliefDeviation * oneBelief.getRed() +
+                beliefUnderHalf * beliefDeviation * zeroBelief.getRed()
+        );
+
+        int g = (int) (beliefOverHalf * beliefDeviation * oneBelief.getGreen() +
+                beliefUnderHalf * beliefDeviation * zeroBelief.getGreen()
+        );
+
+        int b = (int) (beliefOverHalf * beliefDeviation * oneBelief.getBlue() +
+                beliefUnderHalf * beliefDeviation * zeroBelief.getBlue()
+        );
+
+        int a = 127 + ((transparent ? 0 : 1) * 128);
+
+        return new Color(r, g, b, a);
+    }
+
+
     // Sampling seed
     private final static Random random = new Random(0);
     private static int connectionLimit = 50; // for now. If we want super spreaders or influencers we might want to go back to create limit for each object.
