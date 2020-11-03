@@ -127,7 +127,7 @@ def plotSimulationComparison(dataframes, par, alg, titles, rows=0, cols=0, aggre
                 dt_individual = frame[par][frame["nodeID"] == ID]
                 axes[index].plot(range(len(dt_individual)), dt_individual, color = "black")
         
-        axes[index].set_title(title, fontsize=10)
+        axes[index].set_title(title, fontsize=10, fontweight='bold')
 
         index += 1
 
@@ -166,7 +166,7 @@ def plotHistogramComparison(dataframes, timepoints, par, alg, titles, rows, cols
         for tp in timepoints:
             dt = frame[par][frame["epoch"] == tp]
             axes[row, col].hist(dt)
-            axes[row, col].set_title(title + " Epoch: " + str(tp), fontsize=5)
+            axes[row, col].set_title(title + " Epoch: " + str(tp), fontsize=9, fontweight='bold')
             col += 1
             if col > (cols - 1):
                 col = 0
@@ -232,16 +232,19 @@ if __name__ == "__main__":
                              tp,
                              "belief",
                              "varying_openness",
-                             ["O: 0.05", "O: 0.1", "O: 0.15",
-                              "O: 0.20", "O: 0.25"],
+                             ["", "", "",
+                              "", ""],
                               len(opennessFrames),len(tp),
                               h_space=0.5,w_space=0.3)
 
     plotSimulationComparison(opennessFrames,
                              "belief",
                              "varying_openness",
-                             ["O: 0.05", "O: 0.1", "O: 0.15",
-                              "O: 0.20", "O: 0.25"],
+                            ["Maximum belief range: 0.05",
+                            "Maximum belief range: 0.1",
+                            "Maximum belief range: 0.15",
+                            "Maximum belief range: 0.20",
+                            "Maximum belief range: 0.25"],
                               rows=len(opennessFrames),
                               h_space=0.7,aggregate=False)
     
@@ -249,8 +252,11 @@ if __name__ == "__main__":
         plotSimulationComparison(opennessFrames,
                                  par,
                                  "varying_openness",
-                                 ["O: 0.05", "O: 0.1", "O: 0.15",
-                                 "O: 0.20", "O: 0.25"],
+                                 ["Maximum belief range: 0.05",
+                                 "Maximum belief range: 0.1",
+                                 "Maximum belief range: 0.15",
+                                 "Maximum belief range: 0.20",
+                                 "Maximum belief range: 0.25"],
                                  rows=len(opennessFrames),
                                  h_space=0.7)
 
@@ -260,16 +266,19 @@ if __name__ == "__main__":
                              tp,
                              "belief",
                              "varying_dissonance",
-                             ["D: 1.0", "D: 0.95", "D: 0.9",
-                              "D: 0.85", "D: 0.8"],
+                             ["", "", "",
+                              "", ""],
                               len(dissonanceFrames),len(tp),
                               h_space=0.5,w_space=0.3)
     
     plotSimulationComparison(dissonanceFrames,
                              "belief",
                              "varying_dissonance",
-                             ["D: 1.0", "D: 0.95", "D: 0.9",
-                              "D: 0.85", "D: 0.8"],
+                             ["Dissonance ratio weight: 1.0",
+                                 "Dissonance ratio weight: 0.95",
+                                 "Dissonance ratio weight: 0.9",
+                                 "Dissonance ratio weight: 0.85",
+                                 "Dissonance ratio weight: 0.8"],
                               rows=len(dissonanceFrames),
                               h_space=0.7, aggregate=False)
 
@@ -277,8 +286,11 @@ if __name__ == "__main__":
         plotSimulationComparison(dissonanceFrames,
                                  par,
                                  "varying_dissonance",
-                                 ["D: 1.0", "D: 0.95", "D: 0.9",
-                                 "D: 0.85", "D: 0.8"],
+                                 ["Dissonance ratio weight: 1.0",
+                                 "Dissonance ratio weight: 0.95",
+                                 "Dissonance ratio weight: 0.9",
+                                 "Dissonance ratio weight: 0.85",
+                                 "Dissonance ratio weight: 0.8"],
                                  rows=len(dissonanceFrames),
                                  h_space=0.7)
 
@@ -288,14 +300,14 @@ if __name__ == "__main__":
                              tp,
                              "belief",
                              "strategy_comparisons",
-                             ["Pol. ", "Ran. ", "Neut. "],
+                             ["", "", ""],
                              len(strategyFrames),len(tp),
                              h_space=0.5,w_space=0.3)
     
     plotSimulationComparison(strategyFrames,
                              "belief",
                              "strategy_comparisons",
-                             ["Pol. ", "Ran. ", "Neut. "],
+                             ["Reinforce", "Randomise", "Neutralise"],
                              rows=len(strategyFrames),
                               h_space=0.65, aggregate=False)
 
@@ -303,6 +315,6 @@ if __name__ == "__main__":
         plotSimulationComparison(strategyFrames,
                                  par,
                                  "strategy_comparisons",
-                                 ["Pol. ", "Ran. ", "Neut. "],
+                                 ["Reinforce", "Randomise", "Neutralise"],
                                  rows=len(strategyFrames),
                                  h_space=0.65)
