@@ -1,6 +1,8 @@
+from statistics import mean
+
 import pandas as pd
 from matplotlib import pyplot as plt
-from statistics import mean
+
 
 def plotBeliefConvergence(dataFrame, alg):
     """
@@ -13,13 +15,14 @@ def plotBeliefConvergence(dataFrame, alg):
     nodeIDs = set(dataFrame["nodeID"])
     for ID in nodeIDs:
         belief = dataFrame["belief"][dataFrame["nodeID"] == ID]
-        col = "blue" if mean(belief[len(belief)//2:]) <= 0.5 else "red"
-        plt.plot(range(len(belief)), belief, color = col)
+        col = "blue" if mean(belief[len(belief) // 2:]) <= 0.5 else "red"
+        plt.plot(range(len(belief)), belief, color=col)
     plt.title("Development of individual belief states over time for algorithm: " + alg)
     plt.ylabel("Belief")
     plt.xlabel("Epoch")
     plt.savefig("DMAS/data_processing/img/" + alg + "/" + "individual_beliefs" + ".png")
     plt.close()
+
 
 def plotAverageOverEpochs(dataFrame, par, alg):
     """
@@ -32,18 +35,19 @@ def plotAverageOverEpochs(dataFrame, par, alg):
     """
     dt = dataFrame.groupby(["epoch"]).agg(
 
-            aggPar = pd.NamedAgg(column=par, aggfunc = "mean")
+        aggPar=pd.NamedAgg(column=par, aggfunc="mean")
 
-                                                )
-    
-    plt.plot(range(len(dt)),dt, color="black")
+    )
+
+    plt.plot(range(len(dt)), dt, color="black")
     plt.title("Development of " + par + " average over time for algorithm: " + alg)
     plt.ylabel("Average " + par)
     plt.xlabel("Epoch")
     plt.savefig("DMAS/data_processing/img/" + alg + "/" + par + ".png")
     plt.close()
 
-def plotHistogramsForEpoch(dataframe, par, timepoints, alg, rows, cols, h_space = 0.55, w_space = 0.55):
+
+def plotHistogramsForEpoch(dataframe, par, timepoints, alg, rows, cols, h_space=0.55, w_space=0.55):
     """
     Plots histogram for distribution of a selected parameter for
     selection of time points.
@@ -56,16 +60,16 @@ def plotHistogramsForEpoch(dataframe, par, timepoints, alg, rows, cols, h_space 
     rows        -- rows of sub plot figure
     cols        -- cols of sub plot figure
     """
-    if rows*cols != len(timepoints):
+    if rows * cols != len(timepoints):
         raise Exception("The dimensions of the sub-plots must match the number of time points")
 
     row = 0
     col = 0
     fig, axes = plt.subplots(nrows=rows, ncols=cols, sharey=True, sharex=True)
     plt.subplots_adjust(
-            hspace=h_space,
-            wspace=w_space
-        )
+        hspace=h_space,
+        wspace=w_space
+    )
 
     for tp in timepoints:
         dt = dataframe[par][dataframe["epoch"] == tp]
@@ -79,7 +83,9 @@ def plotHistogramsForEpoch(dataframe, par, timepoints, alg, rows, cols, h_space 
     plt.savefig("DMAS/data_processing/img/" + alg + "/histogram_" + par + ".png")
     plt.close()
 
-def plotSimulationComparison(dataframes, par, figure_name, titles, rows=0, cols=0, aggregate = True, w_space = 0.55, h_space=0.55):
+
+def plotSimulationComparison(dataframes, par, figure_name, titles, rows=0, cols=0, aggregate=True, w_space=0.55,
+                             h_space=0.55):
     """
     Plots selected function applied to selected parameter over epoch for multiple simulations.
 
@@ -101,33 +107,32 @@ def plotSimulationComparison(dataframes, par, figure_name, titles, rows=0, cols=
     if rows > 0 and cols > 0:
         raise Exception("Please only define rows OR columns, not both.")
 
-
     index = 0
     if rows == 0:
         fig, axes = plt.subplots(ncols=cols, sharey=True, sharex=True)
     else:
         fig, axes = plt.subplots(nrows=rows, sharey=True, sharex=True)
-    
+
     plt.subplots_adjust(
-            hspace=h_space,
-            wspace=w_space
-        )
-    
+        hspace=h_space,
+        wspace=w_space
+    )
+
     for frame, title in zip(dataframes, titles):
 
         if aggregate:
             dt = frame.groupby(["epoch"]).agg(
-                aggPar = pd.NamedAgg(column=par, aggfunc = "mean")
+                aggPar=pd.NamedAgg(column=par, aggfunc="mean")
 
-                                                )
-            axes[index].plot(range(len(dt)),dt, color="black")
+            )
+            axes[index].plot(range(len(dt)), dt, color="black")
 
         else:
             nodeIDs = set(frame["nodeID"])
             for ID in nodeIDs:
                 dt_individual = frame[par][frame["nodeID"] == ID]
-                axes[index].plot(range(len(dt_individual)), dt_individual, color = "black")
-        
+                axes[index].plot(range(len(dt_individual)), dt_individual, color="black")
+
         axes[index].set_title(title, fontsize=10, fontweight='bold')
 
         index += 1
@@ -135,7 +140,8 @@ def plotSimulationComparison(dataframes, par, figure_name, titles, rows=0, cols=
     plt.savefig("DMAS/data_processing/img/simulation_comparisons/comparison_" + figure_name + "_" + par + ".png")
     plt.close()
 
-def plotHistogramComparison(dataframes, timepoints, par, figure_name, titles, rows, cols, h_space = 0.55, w_space = 0.55):
+
+def plotHistogramComparison(dataframes, timepoints, par, figure_name, titles, rows, cols, h_space=0.55, w_space=0.55):
     """
     Plots histogram for distribution of a selected parameter for
     selection of time points for different data sets.
@@ -149,8 +155,9 @@ def plotHistogramComparison(dataframes, timepoints, par, figure_name, titles, ro
     rows        -- rows of sub plot figure
     cols        -- cols of sub plot figure
     """
-    if rows*cols != len(dataframes)*len(timepoints):
-            raise Exception("The dimensions of the sub-plots must at match the number of dataframes * number of timepoints to compare.")
+    if rows * cols != len(dataframes) * len(timepoints):
+        raise Exception(
+            "The dimensions of the sub-plots must at match the number of dataframes * number of timepoints to compare.")
 
     if len(dataframes) != len(titles):
         raise Exception("For each dataframe a title needs to be provided.")
@@ -159,9 +166,9 @@ def plotHistogramComparison(dataframes, timepoints, par, figure_name, titles, ro
     col = 0
     fig, axes = plt.subplots(nrows=rows, ncols=cols, sharey=True, sharex=True)
     plt.subplots_adjust(
-            hspace=h_space,
-            wspace=w_space
-        )
+        hspace=h_space,
+        wspace=w_space
+    )
 
     for frame, title in zip(dataframes, titles):
 
@@ -176,7 +183,8 @@ def plotHistogramComparison(dataframes, timepoints, par, figure_name, titles, ro
 
     plt.savefig("DMAS/data_processing/img/simulation_comparisons/hist_comparison_" + figure_name + "_" + par + ".png")
     plt.close()
-    
+
+
 if __name__ == "__main__":
     # Read data into pd dataframe
 
@@ -193,10 +201,10 @@ if __name__ == "__main__":
     dataPolarizeOpenness025 = pd.read_csv("data_out/polarize_100_0.25_0/data.csv", sep=",", header=0)
 
     opennessFrames = [dataPolarizeOpenness005,
-                     dataPolarizeOpenness010,
-                     dataPolarizeOpenness015,
-                     dataPolarizeOpenness020,
-                     dataPolarizeOpenness025]
+                      dataPolarizeOpenness010,
+                      dataPolarizeOpenness015,
+                      dataPolarizeOpenness020,
+                      dataPolarizeOpenness025]
 
     dataPolarizeDissonanceWeight1 = pd.read_csv("data_out/polarize_100_0.25_1/data.csv", sep=",", header=0)
     dataPolarizeDissonanceWeight095 = pd.read_csv("data_out/polarize_100_0.25_0.95/data.csv", sep=",", header=0)
@@ -225,92 +233,92 @@ if __name__ == "__main__":
                "numConfidants"]
 
     # Timepoints for histograms
-    tp = [1,10,15,20,1000]
+    tp = [1, 10, 15, 20, 1000]
 
     # Comparison for openness changes
 
     plotHistogramComparison(opennessFrames,
-                             tp,
-                             "belief",
-                             "varying_openness",
-                             ["", "", "",
-                              "", ""],
-                              len(opennessFrames),len(tp),
-                              h_space=0.5,w_space=0.3)
+                            tp,
+                            "belief",
+                            "varying_openness",
+                            ["", "", "",
+                             "", ""],
+                            len(opennessFrames), len(tp),
+                            h_space=0.5, w_space=0.3)
 
     plotSimulationComparison(opennessFrames,
                              "belief",
                              "varying_openness",
-                            ["Maximum belief range: 0.05",
-                            "Maximum belief range: 0.1",
-                            "Maximum belief range: 0.15",
-                            "Maximum belief range: 0.20",
-                            "Maximum belief range: 0.25"],
-                              rows=len(opennessFrames),
-                              h_space=0.7,aggregate=False)
-    
+                             ["Maximum belief range: 0.05",
+                              "Maximum belief range: 0.1",
+                              "Maximum belief range: 0.15",
+                              "Maximum belief range: 0.20",
+                              "Maximum belief range: 0.25"],
+                             rows=len(opennessFrames),
+                             h_space=0.7, aggregate=False)
+
     for par in avgPars:
         plotSimulationComparison(opennessFrames,
                                  par,
                                  "varying_openness",
                                  ["Maximum belief range: 0.05",
-                                 "Maximum belief range: 0.1",
-                                 "Maximum belief range: 0.15",
-                                 "Maximum belief range: 0.20",
-                                 "Maximum belief range: 0.25"],
+                                  "Maximum belief range: 0.1",
+                                  "Maximum belief range: 0.15",
+                                  "Maximum belief range: 0.20",
+                                  "Maximum belief range: 0.25"],
                                  rows=len(opennessFrames),
                                  h_space=0.7)
 
     # Comparison for dissonance weight impact changes
 
     plotHistogramComparison(dissonanceFrames,
-                             tp,
-                             "belief",
-                             "varying_dissonance",
-                             ["", "", "",
-                              "", ""],
-                              len(dissonanceFrames),len(tp),
-                              h_space=0.5,w_space=0.3)
-    
+                            tp,
+                            "belief",
+                            "varying_dissonance",
+                            ["", "", "",
+                             "", ""],
+                            len(dissonanceFrames), len(tp),
+                            h_space=0.5, w_space=0.3)
+
     plotSimulationComparison(dissonanceFrames,
                              "belief",
                              "varying_dissonance",
                              ["Dissonance ratio weight: 1.0",
-                                 "Dissonance ratio weight: 0.95",
-                                 "Dissonance ratio weight: 0.9",
-                                 "Dissonance ratio weight: 0.85",
-                                 "Dissonance ratio weight: 0.8"],
-                              rows=len(dissonanceFrames),
-                              h_space=0.7, aggregate=False)
+                              "Dissonance ratio weight: 0.95",
+                              "Dissonance ratio weight: 0.9",
+                              "Dissonance ratio weight: 0.85",
+                              "Dissonance ratio weight: 0.8"],
+                             rows=len(dissonanceFrames),
+                             h_space=0.7, aggregate=False)
 
     for par in avgPars:
         plotSimulationComparison(dissonanceFrames,
                                  par,
                                  "varying_dissonance",
                                  ["Dissonance ratio weight: 1.0",
-                                 "Dissonance ratio weight: 0.95",
-                                 "Dissonance ratio weight: 0.9",
-                                 "Dissonance ratio weight: 0.85",
-                                 "Dissonance ratio weight: 0.8"],
+                                  "Dissonance ratio weight: 0.95",
+                                  "Dissonance ratio weight: 0.9",
+                                  "Dissonance ratio weight: 0.85",
+                                  "Dissonance ratio weight: 0.8"],
                                  rows=len(dissonanceFrames),
                                  h_space=0.7)
 
     # Evaluating impact of strategy change
 
     plotHistogramComparison(strategyFrames,
-                             tp,
-                             "belief",
-                             "strategy_comparisons",
-                             ["", "", ""],
-                             len(strategyFrames),len(tp),
-                             h_space=0.5,w_space=0.3)
-    
+                            tp,
+                            "belief",
+                            "strategy_comparisons",
+                            ["", "", ""],
+                            len(strategyFrames), len(tp),
+                            h_space=0.5, w_space=0.3)
+
     plotSimulationComparison(strategyFrames,
                              "belief",
                              "strategy_comparisons",
                              ["Reinforce", "Randomise", "Neutralise"],
                              rows=len(strategyFrames),
-                              h_space=0.65, aggregate=False)
+                             h_space=0.65, aggregate=False)
 
     for par in avgPars:
         plotSimulationComparison(strategyFrames,

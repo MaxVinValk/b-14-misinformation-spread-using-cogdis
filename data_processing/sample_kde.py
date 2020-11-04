@@ -1,12 +1,13 @@
+from os import path
+
+import numpy as np
 import pandas as pd
 import statsmodels.api as sm
-import numpy as np
-from os import path
 
 
 class Sampler():
 
-    def __init__(self, n, method = "normal_reference"):
+    def __init__(self, n, method="normal_reference"):
 
         """
         Initializes sampler class.
@@ -25,9 +26,8 @@ class Sampler():
         ### Used for fallback ###
         self.means = [0.44, 0.55, 0.67]
         self.cov = [[0.0390052298, -0.013795166, -0.0004315343],
-                    [-0.0137951665,  0.022726950,  0.0037587265],
-                    [-0.0004315343,  0.003758727,  0.0169329420]]
-
+                    [-0.0137951665, 0.022726950, 0.0037587265],
+                    [-0.0004315343, 0.003758727, 0.0169329420]]
 
     def kernelSampling(self):
 
@@ -47,18 +47,18 @@ class Sampler():
         KDE = sm.nonparametric.KDEMultivariate(data=self.data,
                                                var_type="ccc",
                                                bw=self.method)
-        
+
         # use bandwidth estimates for covariance structure
-        cov = np.diag(KDE.bw)**2
+        cov = np.diag(KDE.bw) ** 2
         index = 1
         # random indices from sample
-        randomSelection = np.random.randint(0,len(self.data)-1,n) 
+        randomSelection = np.random.randint(0, len(self.data) - 1, n)
         # sampling from multivariate normal kernel
-        kernelSample = np.random.multivariate_normal([0,0,0], cov, size=self.n) 
+        kernelSample = np.random.multivariate_normal([0, 0, 0], cov, size=self.n)
 
-        for rs,ks in zip(randomSelection,kernelSample):
+        for rs, ks in zip(randomSelection, kernelSample):
             newSample = []
-            for var in self.data.loc[rs,:]+ks:
+            for var in self.data.loc[rs, :] + ks:
                 if var < 0:
                     newSample.append(0)
                 elif var > 1:
@@ -91,8 +91,8 @@ class Sampler():
                     newSample.append(var)
             self.sample.loc[index] = newSample
             index += 1
-        
-    def fit(self, pathToData = None, sep=",", header=0):
+
+    def fit(self, pathToData=None, sep=",", header=0):
 
         """
         Fit allows to pass path to datafile, otherwise falls back to
@@ -115,7 +115,7 @@ class Sampler():
                 raise FileNotFoundError("Please specify a valid path to a file.")
         else:
             self.mvnormalSampling()
-    
+
     def export(self, pathToOutput, sep=",", header=True):
 
         """
@@ -129,7 +129,6 @@ class Sampler():
         """
 
         self.sample.to_csv(pathToOutput, sep=sep, header=header, index=False)
-    
 
 
 if __name__ == "__main__":
