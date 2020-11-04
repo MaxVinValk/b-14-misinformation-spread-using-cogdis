@@ -1,8 +1,6 @@
 import pandas as pd
-from scipy.stats import gaussian_kde as kde
 import statsmodels.api as sm
 import numpy as np
-import random as rd
 from os import path
 
 

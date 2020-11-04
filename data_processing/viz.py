@@ -79,17 +79,18 @@ def plotHistogramsForEpoch(dataframe, par, timepoints, alg, rows, cols, h_space 
     plt.savefig("DMAS/data_processing/img/" + alg + "/histogram_" + par + ".png")
     plt.close()
 
-def plotSimulationComparison(dataframes, par, alg, titles, rows=0, cols=0, aggregate = True, w_space = 0.55, h_space=0.55):
+def plotSimulationComparison(dataframes, par, figure_name, titles, rows=0, cols=0, aggregate = True, w_space = 0.55, h_space=0.55):
     """
     Plots selected function applied to selected parameter over epoch for multiple simulations.
 
     Keyword arguments:
     dataframes  -- the data frames on which to base the comparisons
     par         -- the parameter for which the function should be calculated
-    titles         -- the algorithm that was used as recommendation 
+    figure_name -- provide a title for the plot
+    titles      -- the titles for the sub-figures 
     rows        -- rows of sub plot figure
     cols        -- cols of sub plot figure
-    aggregate   -- which function to calculate
+    aggregate   -- which function to calculate (whether to use individual trajectories or aggregates)
     """
     if cols != len(dataframes) and rows != len(dataframes):
         raise Exception("The dimensions of the sub-plots must match the number of dataframes to compare")
@@ -131,10 +132,10 @@ def plotSimulationComparison(dataframes, par, alg, titles, rows=0, cols=0, aggre
 
         index += 1
 
-    plt.savefig("DMAS/data_processing/img/simulation_comparisons/comparison_" + alg + "_" + par + ".png")
+    plt.savefig("DMAS/data_processing/img/simulation_comparisons/comparison_" + figure_name + "_" + par + ".png")
     plt.close()
 
-def plotHistogramComparison(dataframes, timepoints, par, alg, titles, rows, cols, h_space = 0.55, w_space = 0.55):
+def plotHistogramComparison(dataframes, timepoints, par, figure_name, titles, rows, cols, h_space = 0.55, w_space = 0.55):
     """
     Plots histogram for distribution of a selected parameter for
     selection of time points for different data sets.
@@ -143,7 +144,8 @@ def plotHistogramComparison(dataframes, timepoints, par, alg, titles, rows, cols
     dataframes  -- the data frames from which to collect the data
     timePoints  -- the timepoints for which to create the histogram
     par         -- the parameter for which the histogram should be calculated
-    titles      -- the titles for the dataframes
+    figure_name -- provide a title for the plot
+    titles      -- the titles for the sub-figures
     rows        -- rows of sub plot figure
     cols        -- cols of sub plot figure
     """
@@ -172,16 +174,15 @@ def plotHistogramComparison(dataframes, timepoints, par, alg, titles, rows, cols
                 col = 0
                 row += 1
 
-    plt.savefig("DMAS/data_processing/img/simulation_comparisons/hist_comparison_" + alg + "_" + par + ".png")
+    plt.savefig("DMAS/data_processing/img/simulation_comparisons/hist_comparison_" + figure_name + "_" + par + ".png")
     plt.close()
     
 if __name__ == "__main__":
     # Read data into pd dataframe
 
-    # Old dataframes that were available online do not work at the moment since they are being replaced.
-
-    #dataFrameRandom = pd.read_csv("https://onedrive.live.com/download?cid=E556A05E08C89AB7&resid=E556A05E08C89AB7%211047920&authkey=ABgnRxegPx4RAMY", sep=",", header=0)
-    #dataFramePolarize = pd.read_csv("https://onedrive.live.com/download?cid=E556A05E08C89AB7&resid=E556A05E08C89AB7%211047921&authkey=APTLP1ZYXNT7IxM", sep=",", header=0)
+    # Old dataframes that were available online do not work anymore since they are too large in size
+    # to be distributed. However, the agent sets attached to the repository allow to re-create
+    # exactly the data we used.
 
     # Dataframes to test impact of openness and dissonance ratio weights.
 
