@@ -17,8 +17,8 @@ The model manager, located in the main package (com.b14), is responsible for set
 
 Files in the controller are the bridge between the user interaction and the model itself. The files here are mostly for executing specified commands, specified with the GUI, as well including the mouse adapter and file picker.
 
-### Action[...] Files
-Each class that starts with action is the action that is executed when a specific GUI element is clicked, or a corresponding shortcut is used. They are initialized within the view and within the InputController (the latter for shortcut keys).
+### actions
+Each class in the action package is an action that is executed when a specific GUI element is clicked, or a corresponding shortcut is used. They are initialized within the view and within the InputController (the latter for shortcut keys).
 
 ### InputController
 The input controller is responsible for capturing user input and keeping track of which elements the user interacted with last. This information is used by, for example, the graphics drawing, to highlight a node if it is selected.
