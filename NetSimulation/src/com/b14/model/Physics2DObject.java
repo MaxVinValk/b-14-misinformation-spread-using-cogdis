@@ -24,7 +24,7 @@ public class Physics2DObject {
      * Returns the distance between this object and another
      *
      * @param other The other Physics2DObject object
-     * @return
+     * @return the distance between the two Physics2DObjects
      */
     public double getDistance(Physics2DObject other) {
         return Math.sqrt(Math.pow((position.getX() - other.getX()), 2) + Math.pow((position.getY() - other.getY()), 2));

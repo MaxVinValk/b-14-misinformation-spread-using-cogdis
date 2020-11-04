@@ -5,7 +5,6 @@ import com.b14.model.recommendationstrategies.RecommendationStrategy;
 import javax.naming.OperationNotSupportedException;
 import java.beans.PropertyChangeEvent;
 import java.io.BufferedReader;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -16,12 +15,10 @@ import java.util.ArrayList;
 
 public class GraphModel extends GraphPhysicsModel {
 
+    private final DataLogger dl;
     private int epoch;
-
     private RecommendationStrategy.Strategy rs;
     private int recommendationSize;
-
-    private final DataLogger dl;
 
     /**
      * initializes a graph model

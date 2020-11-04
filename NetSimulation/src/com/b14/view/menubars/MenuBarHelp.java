@@ -5,13 +5,12 @@ import com.b14.controller.actions.ActionLaunchAbout;
 import javax.swing.*;
 
 /**
- * Contains simulation info
+ * Contains misc. info
  */
 public class MenuBarHelp extends JMenu {
 
     public MenuBarHelp() {
         super("Help");
-
         add(new JMenuItem(new ActionLaunchAbout()));
     }
 

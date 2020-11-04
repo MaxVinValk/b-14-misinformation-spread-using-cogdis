@@ -27,15 +27,12 @@ public class InputController extends MouseInputAdapter implements KeyListener {
     private final GraphPanel panel;
 
     private final PropertyChangeSupport pcs;
-
+    private final ActionStepSim spaceAction;
     private boolean leftMouseButtonDown = false;
     private int mousePressLocationX = 0;
     private int mousePressLocationY = 0;
-
     private Node selectedNode = null;
     private int lastClicked = -1;
-
-    private final ActionStepSim spaceAction;
 
     /**
      * Creates an input controller

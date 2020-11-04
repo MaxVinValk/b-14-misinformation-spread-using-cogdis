@@ -23,10 +23,8 @@ public class ImageCapture {
     private final GraphPanel panel;
     private final Camera camera;
     private final GraphModel model;
-
-    private String outputFolder = null;
-
     private final int maxPhysicsSettleStepsBeforeCapture = 5000;
+    private String outputFolder = null;
     private float maxAvgVelocityBeforeCapture = 10.0f;
 
     /**
@@ -51,6 +49,7 @@ public class ImageCapture {
 
         boolean prevHeadless = panel.isHeadless();
         panel.setHeadless(false);
+        panel.setShowLegend(false);
 
         letPhysicsSettle();
         setCameraOnAll();

@@ -24,6 +24,10 @@ public class MenuBarView extends JMenu {
 
         addSeparator();
 
+        add(new JMenuItem(new ActionToggleLegend(panel)));
+
+        addSeparator();
+
         ActionShowBelief asb = new ActionShowBelief(panel);
         ActionShowDissonance asd = new ActionShowDissonance(panel);
 

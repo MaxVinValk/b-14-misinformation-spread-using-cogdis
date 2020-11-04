@@ -21,9 +21,6 @@ import java.util.Random;
 
 public class GraphPanel extends JPanel implements PropertyChangeListener {
 
-    //Menu Background Color
-    private static final Color GRAY_TRANS = new Color(141, 141, 141, 230);
-
     //Default colours
     private static final Color DEFAULT_CONFLICTING_EDGE_COLOR = Color.BLACK;
     private static final Color DEFAULT_ZERO_BELIEF_COLOR = Color.BLUE;
@@ -32,7 +29,9 @@ public class GraphPanel extends JPanel implements PropertyChangeListener {
     private static final Color DEFAULT_NO_DISTRESS_COLOR = Color.BLACK;
     private static final Color DEFAULT_BACKGROUND_COLOR = Color.WHITE;
     private final Random random = new Random(0);
-
+    private final GraphModel model;
+    private final Camera camera;
+    private final PropertyChangeSupport pcs;
     // Colours used to determine node colour
     //Edge Colour
     private Color conflictingEdgeColor;
@@ -43,14 +42,11 @@ public class GraphPanel extends JPanel implements PropertyChangeListener {
     private Color distressColor;
     private Color noDistressColor;
     private Color backgroundColor;
-    private final GraphModel model;
-    private final Camera camera;
     private InputController controller = null;
     private boolean headlessMode = true;
     private boolean drawBelief = true;
     private boolean drawNodeIDs = false;
-
-    private final PropertyChangeSupport pcs;
+    private boolean showLegend = true;
 
 
     /**
@@ -97,7 +93,7 @@ public class GraphPanel extends JPanel implements PropertyChangeListener {
     /**
      * Draws the placeholder text for headless mode
      *
-     * @param g
+     * @param g The graphics object on which we draw
      */
     private void drawHeadless(Graphics g) {
         setBackground(Color.WHITE);
@@ -170,6 +166,10 @@ public class GraphPanel extends JPanel implements PropertyChangeListener {
         if (selected != null) {
             drawInfoPanel(g, selected.toString());
         }
+
+        if (showLegend) {
+            drawLegend(g);
+        }
     }
 
 
@@ -190,16 +190,13 @@ public class GraphPanel extends JPanel implements PropertyChangeListener {
 
             for (Node n2 : n.getNeighbours()) {
 
-                /*if ((n.getBelief() > 0.5) && (n2.getBelief() > 0.5)) {
+                if ((n.getBelief() >= 0.5) && (n2.getBelief() >= 0.5)) {
                     g.setColor((selected == null) ? oneBeliefColor : getTransparent(oneBeliefColor));
                 } else if ((n.getBelief() < 0.5) && (n2.getBelief() < 0.5)) {
                     g.setColor((selected == null) ? zeroBeliefColor : getTransparent(zeroBeliefColor));
                 } else {
                     g.setColor((selected == null) ? conflictingEdgeColor : getTransparent(conflictingEdgeColor));
-                }*/
-
-                float avgBelief = (n.getBelief() + n2.getBelief()) / 2;
-                g.setColor(Node.getColorBelief(zeroBeliefColor, oneBeliefColor, avgBelief, selected != null));
+                }
 
                 int x2 = (int) ((n2.getX() - camera.getX()) * camera.getScale());
                 int y2 = (int) ((n2.getY() - camera.getY()) * camera.getScale());
@@ -296,7 +293,7 @@ public class GraphPanel extends JPanel implements PropertyChangeListener {
         int y = bevel;
 
         //draw background box:
-        g.setColor(GraphPanel.GRAY_TRANS);
+        g.setColor(Color.LIGHT_GRAY);
         g.fillRect(x, y, widthSpacing * mostChars + 2 * bevel, heightSpacing * lines.length + bevel);
 
         g.setColor(Color.BLACK);
@@ -306,6 +303,75 @@ public class GraphPanel extends JPanel implements PropertyChangeListener {
         for (int i = 0; i < lines.length; i++) {
             g.drawString(lines[i], x + bevel, y + bevel + i * heightSpacing);
         }
+    }
+
+    /**
+     * Draws the legend which explains the meanings of the colours
+     *
+     * @param g The graphics object on which the legend is drawn
+     */
+    private void drawLegend(Graphics g) {
+
+        int boxOffsetX = 25;
+        int boxOffsetY = 25;
+
+        int colorBoxSize = 15;
+        int edgeOffset = 2;
+
+        g.setColor(Color.BLACK);
+        g.fillRect(boxOffsetX - edgeOffset, boxOffsetY - edgeOffset, 250 + 2 * edgeOffset, 250 + 2 * edgeOffset);
+
+        g.setColor(Color.LIGHT_GRAY);
+        g.fillRect(boxOffsetX, boxOffsetY, 250, 250);
+
+        g.setFont(getFont().deriveFont(getFont().getStyle() | Font.BOLD, 15.0f));
+        g.setColor(Color.BLACK);
+
+        g.drawString("Node colours", boxOffsetX + 20, boxOffsetY + 30);
+
+        Color c1 = (drawBelief ? oneBeliefColor : noDistressColor);
+        Color c2 = (drawBelief ? zeroBeliefColor : distressColor);
+        String s1 = (drawBelief ? "Belief of 1" : "Cog. Dis. below threshold");
+        String s2 = (drawBelief ? "Belief of 0" : "Cog. Dis. above threshold");
+
+        g.setColor(c1);
+        g.fillRect(boxOffsetX + 25, boxOffsetY + 50, colorBoxSize, colorBoxSize);
+
+        g.setColor(Color.BLACK);
+        g.setFont(getFont().deriveFont(12.0f));
+        g.drawString(s1, boxOffsetX + 60, boxOffsetY + 62);
+
+        g.setColor(c2);
+        g.fillRect(boxOffsetX + 25, boxOffsetY + 75, colorBoxSize, colorBoxSize);
+
+        g.setColor(Color.BLACK);
+        g.drawString(s2, boxOffsetX + 60, boxOffsetY + 87);
+
+        g.setFont(getFont().deriveFont(getFont().getStyle() | Font.BOLD, 15.0f));
+
+        // Edges
+        g.drawString("Edge colours", boxOffsetX + 20, boxOffsetY + 120);
+
+        g.setColor(oneBeliefColor);
+        g.fillRect(boxOffsetX + 25, boxOffsetY + 140, colorBoxSize, colorBoxSize);
+
+        g.setColor(Color.BLACK);
+        g.setFont(getFont().deriveFont(12.0f));
+        g.drawString("Belief of both nodes >= 0.5", boxOffsetX + 60, boxOffsetY + 152);
+
+        g.setColor(zeroBeliefColor);
+        g.fillRect(boxOffsetX + 25, boxOffsetY + 165, colorBoxSize, colorBoxSize);
+
+        g.setColor(Color.BLACK);
+        g.setFont(getFont().deriveFont(12.0f));
+        g.drawString("Belief of both nodes < 0.5", boxOffsetX + 60, boxOffsetY + 177);
+
+        g.setColor(conflictingEdgeColor);
+        g.fillRect(boxOffsetX + 25, boxOffsetY + 190, colorBoxSize, colorBoxSize);
+
+        g.setColor(Color.BLACK);
+        g.setFont(getFont().deriveFont(12.0f));
+        g.drawString("Otherwise", boxOffsetX + 60, boxOffsetY + 202);
     }
 
     @Override
@@ -358,6 +424,11 @@ public class GraphPanel extends JPanel implements PropertyChangeListener {
         repaint();
     }
 
+    public void toggleShowLegend() {
+        showLegend = !showLegend;
+        repaint();
+    }
+
     public void setDrawBelief(boolean val) {
         boolean oldVal = drawBelief;
         drawBelief = val;
@@ -372,6 +443,10 @@ public class GraphPanel extends JPanel implements PropertyChangeListener {
     public void setHeadless(boolean val) {
         headlessMode = val;
         repaint();
+    }
+
+    public void setShowLegend(boolean val) {
+        showLegend = val;
     }
 
     public boolean isDrawingBelief() {

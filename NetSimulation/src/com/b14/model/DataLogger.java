@@ -18,22 +18,18 @@ import java.util.Calendar;
 public class DataLogger {
 
     private final static String ROOT_FOLDER = "data_out/";
+    private final String headers = "epoch,nodeID,belief,disLeftToThreshold,dissonance,numNeighbours,avgNeighbourBelief," +
+            "numConfidants,avgConfidantBelief,numberOfContacts,numberOfConflicts,individualConnLimit," +
+            "openness,weightedOpenness,extraversion,neuroticismThreshold\n";
+    private final PropertyChangeSupport pcs;
     private File currentOutput = null;
     private boolean allowOutput = false;
     private boolean generateImages = false;
-
     private boolean createdFileSinceToggled = false;
-
     private GraphModel model = null;
     private ImageCapture ic = null;
     private int captureTimer = 0;
     private int captureTimerMax = 100;
-
-    private final String headers = "epoch,nodeID,belief,disLeftToThreshold,dissonance,numNeighbours,avgNeighbourBelief," +
-            "numConfidants,avgConfidantBelief,numberOfContacts,numberOfConflicts,individualConnLimit," +
-            "openness,weightedOpenness,extraversion,neuroticismThreshold\n";
-
-    private final PropertyChangeSupport pcs;
 
     public DataLogger() {
 

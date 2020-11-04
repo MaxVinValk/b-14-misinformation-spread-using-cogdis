@@ -98,8 +98,7 @@ public class GraphPhysicsModel {
     private void connectProportionate() {
         int numNodes = nodes.size();
 
-        ArrayList<Node> unassigned = new ArrayList<>();
-        unassigned.addAll(nodes);
+        ArrayList<Node> unassigned = new ArrayList<>(nodes);
 
         Node outgoing = unassigned.get(0);
         Node ingoing = unassigned.get(1);
@@ -247,7 +246,7 @@ public class GraphPhysicsModel {
      * Applies the push force to the given node of its surrounding nodes. Each node pushes on all others nearby,
      * to force nodes that are not connected with a link to space out themselves.
      *
-     * @param nodeIdx
+     * @param nodeIdx The index of the node to which  the push force is applied
      */
     private void applyPushForce(int nodeIdx) {
         Node currentNode = nodes.get(nodeIdx);

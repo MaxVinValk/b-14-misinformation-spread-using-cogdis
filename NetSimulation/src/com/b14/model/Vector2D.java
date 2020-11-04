@@ -26,8 +26,8 @@ public class Vector2D {
     /**
      * Create a vector
      *
-     * @param x
-     * @param y
+     * @param x x-value of the vector
+     * @param y y-value of the vector
      */
 
     public Vector2D(double x, double y) {

@@ -11,46 +11,26 @@ import java.util.Random;
 
 public class Node extends Physics2DObject {
 
-    public static Color getColorBelief(Color zeroBelief, Color oneBelief, float belief, boolean transparent) {
-        float beliefDeviation = Math.abs(0.5f - belief) * 2;
-
-        int beliefOverHalf = (belief > 0.5 ? 1 : 0);
-        int beliefUnderHalf = (belief < 0.5 ? 1 : 0);
-
-        int r = (int) (beliefOverHalf * beliefDeviation * oneBelief.getRed() +
-                beliefUnderHalf * beliefDeviation * zeroBelief.getRed()
-        );
-
-        int g = (int) (beliefOverHalf * beliefDeviation * oneBelief.getGreen() +
-                beliefUnderHalf * beliefDeviation * zeroBelief.getGreen()
-        );
-
-        int b = (int) (beliefOverHalf * beliefDeviation * oneBelief.getBlue() +
-                beliefUnderHalf * beliefDeviation * zeroBelief.getBlue()
-        );
-
-        int a = 127 + ((transparent ? 0 : 1) * 128);
-
-        return new Color(r, g, b, a);
-    }
-
-
     // Sampling seed
     private final static Random random = new Random(0);
+    private static final int windowSize = 30; // for contact history window
     private static int connectionLimit = 50; // for now. If we want super spreaders or influencers we might want to go back to create limit for each object.
     private static float dissonanceRatioWeight = 0.5f; // weightfor effect  of dissonance on openness
     private static float opennessWeight = 0.1f; // maximum belief distance to consider with openness score of 1
-    private static final int windowSize = 30; // for contact history window
+    private final ArrayList<Node> confidenceSet; // in theory only values would be possible as well.
+    private final float dissonanceDecay;
+    private final float dissonanceDecrease; // in case of a positive interaction
+    private final float dissonanceIncrease; // negative, in case of conflicting information (Not in use)
+    // Moving window of contact history
+    private final ArrayList<Integer> contactHistory;
+    //Graphics
+    private final float size = 30.0f;
     protected ArrayList<Node> neighbours;
     protected int id;
     // Tuning parameters
     private float belief; // agent's belief at current time
     private double currentDissonance = 0.0f;
     private float dissonanceThreshold; // dissonance becomes unbearable, agent engages in drastic measures: pruning network
-    private final ArrayList<Node> confidenceSet; // in theory only values would be possible as well.
-    private final float dissonanceDecay;
-    private final float dissonanceDecrease; // in case of a positive interaction
-    private final float dissonanceIncrease; // negative, in case of conflicting information (Not in use)
     //personality traits
     private float openness; // how far another belief can be away from your's before being rejected
     private float neuroticism; // use neuroticism to inform resilience to dissonance
@@ -60,10 +40,6 @@ public class Node extends Physics2DObject {
     // Interaction statistics
     private int numberOfContacts;
     private int numberOfConflicts;
-    // Moving window of contact history
-    private final ArrayList<Integer> contactHistory;
-    //Graphics
-    private final float size = 30.0f;
 
 
     public Node(int id) {
@@ -228,8 +204,8 @@ public class Node extends Physics2DObject {
 
     }
 
-    /**
-     * Getters 
+    /*
+      Getters
      */
 
     /**
@@ -379,17 +355,6 @@ public class Node extends Physics2DObject {
         return neighbours.size() < getIndividualConnectionLimit();
     }
 
-    /**
-     * Used to calculate the soft connection limit.
-     * Hard connection limit is determined by
-     *
-     * @param connectionLimit which enforces the
-     *                        maximum of possible connections. We use
-     * @param extraversion    to determine individual
-     *                        differences in their personal network size
-     * @return personal (soft) connection limit
-     */
-
     public int getIndividualConnectionLimit() {
         return (int) (extraversion * connectionLimit);
     }
@@ -398,7 +363,7 @@ public class Node extends Physics2DObject {
         double ratio = currentDissonance / dissonanceThreshold;
         ratio = (ratio > 1 ? 1 : ratio);
         float weightedOpenness = openness - (float) (dissonanceRatioWeight * ratio);
-        return ((weightedOpenness >= 0.01f) ? weightedOpenness : 0.01f);
+        return (Math.max(weightedOpenness, 0.01f));
     }
 
     public float getDissonanceDecay() {

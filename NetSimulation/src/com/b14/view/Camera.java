@@ -18,16 +18,12 @@ public class Camera {
     private static final float MAX_SCALE = 16f;
     private static final float MIN_SCALE = 0.125f;
     private static final float SCALE_FACTOR = 1.05f;
-
+    private final PropertyChangeSupport pcs;
     private float scale = 1;
-
     private double x = 0.0f;
     private double y = 0.0f;
-
     private int width;
     private int height;
-
-    private final PropertyChangeSupport pcs;
 
     /**
      * Creates a camera at 0,0 with a specified width and height
