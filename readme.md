@@ -1,6 +1,6 @@
 # Running the program
 
-Details about the app itself can be found in the accompanying manual in the repository. If you want to use the project, this should be your starting point. This readme mostly serves as a quick explanation of the structure of the code itself.
+Details about the app itself can be found in the accompanying manual in the repository. If you want to use the project, this should be your starting point. This readme mostly serves as a quick explanation of the structure of the code itself. For a more detailed discussiont of the theory underlying the model and first experimental results please consult the report in the repository.
 
 A shell script has been added which allows for building the (executable) jar file, namely build.sh. Running this file will generate a jar file, graph.jar, which can be executed.
 
