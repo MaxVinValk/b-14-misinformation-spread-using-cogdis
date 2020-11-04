@@ -27,7 +27,7 @@ The input controller is responsible for capturing user input and keeping track o
 Specifies a file picker for loading in agent parameter files, which can be specified in csv files. More information on loading such parameters can be found in the manual.
 
 ## Model
-In the model all relevant simulation operations are performed. The most important class here is the [GraphModel](#graphmodel), which has [Nodes](#node). There are some additional classes here that facilitate the simulations necessary to view this model as well. Further, there are two classes that deal with capturing data from the program and storing it appropriately, the [DataLogger](#datalogger) and the [ImageCapture](#imagecapture) classes. The sub-package recommendationstrategies holds the [RecomendationStrategy](#recommendationstrategy) class, responsible for recommending new connections to agents.
+In the model all relevant simulation operations are performed. The most important class here is the [GraphModel](#graphmodel), which has [Nodes](#node). There are some additional classes here that facilitate the simulations necessary to view this model as well. Further, there are two classes that deal with capturing data from the program and storing it appropriately, the [DataLogger](#datalogger) and the [ImageCapture](#imagecapture) classes. The sub-package recommendationstrategies holds the [RecommendationStrategy](#recommendationstrategy) class, responsible for recommending new connections to agents.
 
 ### GraphModel
 One of the two "hearts" of the simulation. It tracks all nodes in a simulation, and deals with any logic regarding information spread on a network level. It extends the GraphPhysicsModel, which is responsible for handling the physics updates throughout the network itself.
@@ -54,7 +54,7 @@ Responsible for all data output of the program, such that the results can be ana
 
 Houses logic for taking the current state of the simulation and creating an image output, so that a visual inspection can be performed alongside the data if desired, after the simulation.
 
-### RecomendationStrategy
+### RecommendationStrategy
 The RecommendationStrategy class stores all logic with regards to how to select agents to propose as possible connections.
 
 ## View
