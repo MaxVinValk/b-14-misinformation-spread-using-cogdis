@@ -7,7 +7,7 @@ A shell script has been added which allows for building the (executable) jar fil
 The second easiest way of running the program is opening it up in an IDE. IntelliJ is recommended. After having installed IntelliJ, choose File->Open and select the NetSimulation folder. In the IDE, on the top right there is a field labelled "Edit configurations", right of a green hammer icon. Click it, and then click "Edit configurations" once more. Click the + symbol on the top left of the pop-up that has appeared, then choose "Application" from the drop-down menu. Give it a name, select the main class (Click the (...) behind the field for the class to find the right one). Click okay, and now the application can be executed using the green play button.
 
 # Files
-The project has been split up by the Java convention of separating the [controller](#controller), [model](#model) and [view](#view). Of these, for the course the model is the most relevant. The main entry point of the program can be found, as expected,
+The project has been split up by the Java convention of separating the [controller](#controller), [model](#model) and [view](#view). Of these, for the functionality the model is the most relevant. The main entry point of the program can be found, as expected,
 in the main class and does not warrant further comment.
 
 ## ModelManager
