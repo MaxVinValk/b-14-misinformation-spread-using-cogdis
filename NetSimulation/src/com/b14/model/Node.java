@@ -131,7 +131,7 @@ public class Node extends Physics2DObject {
      * @param conflict whether or not the current conact was a conflict
      */
 
-    public void updateDissonance(boolean conflict) {
+    /*public void updateDissonance(boolean conflict) {
         ++numberOfContacts;
 
         if (conflict) {
@@ -148,6 +148,21 @@ public class Node extends Physics2DObject {
         // Moving average for window
 
         currentDissonance = (double) contactHistory.stream().mapToInt(i -> i).sum() / contactHistory.size();
+    }*/
+
+    public void updateContact(boolean conflict) {
+        ++numberOfContacts;
+
+        if (conflict) {
+            ++numberOfConflicts;
+            contactHistory.add(1);
+        } else {
+            contactHistory.add(0);
+        }
+
+        if (contactHistory.size() > windowSize) {
+            contactHistory.remove(0);
+        }
     }
 
     /**
@@ -167,25 +182,37 @@ public class Node extends Physics2DObject {
 
     public void receiveMessages(ArrayList<Node> recommended) {
         ArrayList<Node> possibleConnections = new ArrayList<>(neighbours);
-        ArrayList<Node> prunedConnections = new ArrayList<>();
+        ArrayList<Node> causedConflict = new ArrayList<>();
         possibleConnections.addAll(recommended);
 
         for (Node n : possibleConnections) {
             if (Math.abs(n.belief - belief) < getWeightedOpenness()) {
                 confidenceSet.add(n);
                 addNeighbour(n); // update if other agent was in reccomended
-                updateDissonance(false);
+                updateContact(false);
+                //updateDissonance(false);
             } else {
-                updateDissonance(true);
+                updateContact(true);
+                //updateDissonance(true);
                 if (currentDissonance >= dissonanceThreshold) {
-                    prunedConnections.add(n);
+                    causedConflict.add(n);
                 }
             }
         }
 
-        for (Node n : prunedConnections) {
-            removeNeighbour(n);
-            boostDissonance(); // reduction strategy has minimal (still linear) immediate effect (currently).
+        for (Node n : causedConflict) {
+
+            float numDrawn = random.nextFloat();
+
+            numDrawn *= 0.99;   // As the max difference is 0.99. Min weighted openness is 0.01, so
+                                // max difference is being of belief 0, encountering a 1, with openness 0.01
+
+            float outsideAcceptableRange = Math.abs(n.belief - belief) - getWeightedOpenness();
+
+            if (outsideAcceptableRange < numDrawn) {
+                removeNeighbour(n);
+                boostDissonance(); // reduction strategy has minimal (still linear) immediate effect (currently).
+            }
         }
         updateBelief();
     }
