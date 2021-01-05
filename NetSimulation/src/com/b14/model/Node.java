@@ -214,6 +214,8 @@ public class Node extends Physics2DObject {
                 boostDissonance(); // reduction strategy has minimal (still linear) immediate effect (currently).
             }
         }
+
+        currentDissonance = (double) contactHistory.stream().mapToInt(i -> i).sum() / contactHistory.size();
         updateBelief();
     }
 
